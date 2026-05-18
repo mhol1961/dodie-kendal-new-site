@@ -83,7 +83,7 @@ const eyebrowClass = isDark ? 'text-brand' : 'text-ink-muted';
         aria-hidden="true"
         loading="eager"
         fetchpriority="high"
-        class={`absolute inset-0 z-0 h-full w-full object-cover ${finalVideo ? 'motion-safe:opacity-0' : ''}`}
+        class={`absolute inset-0 z-0 h-full w-full object-cover ${finalVideo ? 'motion-safe:opacity-0' : 'hero-kenburns'}`}
         style={`object-position: ${bgPosition};`}
       />
       {finalVideo && (
@@ -212,5 +212,19 @@ const eyebrowClass = isDark ? 'text-brand' : 'text-ink-muted';
   /* Organic blob mask for hero portrait */
   .hero-portrait {
     border-radius: 48% 52% 38% 62% / 40% 44% 56% 60%;
+  }
+
+  /* Ken Burns slow zoom — applies ONLY to static hero images (no video alternative).
+     prefers-reduced-motion disables it entirely. */
+  .hero-kenburns {
+    animation: hero-kenburns 28s ease-in-out infinite alternate;
+    transform-origin: center center;
+  }
+  @keyframes hero-kenburns {
+    0%   { transform: scale(1.02) translate3d(0, 0, 0); }
+    100% { transform: scale(1.10) translate3d(-1.5%, 1%, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-kenburns { animation: none; transform: none; }
   }
 </style>

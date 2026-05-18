@@ -1,6 +1,8 @@
 ---
 import Base from '@layouts/Base.astro';
+import Hero from '@components/Hero.astro';
 import ContactForm from '@components/ContactForm.astro';
+import ClosingCTA from '@components/ClosingCTA.astro';
 import { getSeo } from '@lib/seo';
 import { breadcrumb } from '@lib/schema';
 
@@ -27,16 +29,65 @@ const schemas = [
     { name: 'Contact' },
   ]),
 ];
+
+const next = [
+  {
+    num: '01',
+    title: 'I see it within an hour',
+    body: "Notes come straight to me — no assistant, no auto-responder, no triage. If you sent it during the day I have already read it.",
+  },
+  {
+    num: '02',
+    title: 'A personal reply in 24-48 hours',
+    body: "I write back personally, Monday through Saturday. If your question fits a free 15-min question-fit call, I will offer one in the reply.",
+  },
+  {
+    num: '03',
+    title: 'If it feels right, you book',
+    body: "If a session feels like the right next step, I will send you the booking link and the prep guide. If it is not the right time, I will say so — no pressure.",
+  },
+];
 ---
 <Base seo={seo} schemas={schemas}>
-  <section class="section-y bg-bg-base">
-    <div class="container-default grid gap-12 lg:grid-cols-[1fr,360px]">
+  <!-- HERO — fountain pen video matches "write me a note" -->
+  <Hero
+    variant="qhht"
+    eyebrow="Contact"
+    headlineLead="Write me a note —"
+    headlineItalic="I read every one."
+    subhead="Have a question before you book? Want to know if QHHT is right for what you're working through? Send a short note. I usually respond within 24–48 hours, Monday through Saturday."
+    bgImage="/video/fountain-pen-write-poster.jpg"
+    bgVideo="/video/fountain-pen-write.mp4"
+    bgPosition="center"
+  />
+
+  <!-- TRUST STRIP — response time, no triage, personal -->
+  <section class="bg-bg-inverse-deeper py-5 text-inverse-muted border-y border-brand/15">
+    <div class="container-default flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.24em]">
+      <span>I read every note personally</span>
+      <span aria-hidden="true" class="hidden sm:inline text-brand opacity-60">·</span>
+      <span>24–48 hour reply window</span>
+      <span aria-hidden="true" class="hidden sm:inline text-brand opacity-60">·</span>
+      <span>Monday through Saturday</span>
+      <span aria-hidden="true" class="hidden sm:inline text-brand opacity-60">·</span>
+      <span>No auto-responder</span>
+    </div>
+  </section>
+
+  <!-- FORM + SIDEBAR — main contact surface -->
+  <section class="bg-bg-base py-20 md:py-24">
+    <div class="container-default grid gap-12 lg:grid-cols-[1.2fr,400px]">
+      <!-- Form column -->
       <div>
-        <p class="text-xs uppercase tracking-wider text-ink-muted">Contact</p>
-        <h1 class="mt-2 font-display">Reach out — I'll write back personally.</h1>
-        <p class="mt-6 max-w-prose text-lg leading-relaxed text-ink-secondary">
-          Have a question before you book? Want to know if QHHT is right for what you're working through?
-          Send me a note. I usually respond within 24–48 hours, Monday through Saturday.
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">Send a note</p>
+        <h2 class="mt-3 font-display text-ink">
+          <span class="block">Tell me what you're</span>
+          <span class="italic-accent block text-brand">working through.</span>
+        </h2>
+        <p class="mt-5 max-w-prose text-lg leading-relaxed text-ink-secondary">
+          The more honest you can be in the message, the better I can answer.
+          There's no formula — write the way you'd write to a friend who happens
+          to have answers about this work.
         </p>
 
         <div class="mt-10">
@@ -44,39 +95,103 @@ const schemas = [
         </div>
       </div>
 
-      <aside class="space-y-6 self-start rounded-lg border border-border-subtle bg-bg-sunken p-6 lg:sticky lg:top-24">
-        <div>
-          <p class="text-xs uppercase tracking-wider text-ink-muted">Or reach me directly</p>
-          <ul class="mt-3 space-y-3 text-sm">
+      <!-- Direct-contact sidebar -->
+      <aside class="space-y-6 self-start lg:sticky lg:top-24">
+        <div class="rounded-lg border border-border-subtle bg-bg-sunken p-6">
+          <p class="text-xs uppercase tracking-[0.24em] text-brand">Or reach me directly</p>
+          <ul class="mt-4 space-y-4 text-sm">
             <li>
-              <p class="text-ink-muted">Phone</p>
-              <a href="tel:+15612016918" class="text-base text-ink hover:text-brand">1-561-201-6918</a>
+              <p class="text-[10px] uppercase tracking-[0.24em] text-ink-muted">Phone</p>
+              <a href="tel:+15612016918" class="mt-1 inline-block text-lg text-ink hover:text-brand">
+                1-561-201-6918
+              </a>
             </li>
             <li>
-              <p class="text-ink-muted">Email</p>
-              <a href="mailto:dodiekendall@gmail.com" class="text-base text-ink hover:text-brand">dodiekendall@gmail.com</a>
+              <p class="text-[10px] uppercase tracking-[0.24em] text-ink-muted">Email</p>
+              <a href="mailto:dodiekendall@gmail.com" class="mt-1 inline-block text-lg text-ink hover:text-brand break-words">
+                dodiekendall@gmail.com
+              </a>
             </li>
             <li>
-              <p class="text-ink-muted">Hours</p>
-              <p class="text-base text-ink">Monday – Saturday<br />9am – 6pm ET</p>
+              <p class="text-[10px] uppercase tracking-[0.24em] text-ink-muted">Hours</p>
+              <p class="mt-1 text-base text-ink">Monday – Saturday<br />9 am – 6 pm ET</p>
             </li>
             <li>
-              <p class="text-ink-muted">Location</p>
-              <p class="text-base text-ink">Palm Beach County, FL<br />Remote sessions worldwide</p>
+              <p class="text-[10px] uppercase tracking-[0.24em] text-ink-muted">Location</p>
+              <p class="mt-1 text-base text-ink">Palm Beach County, FL<br />Remote sessions worldwide</p>
             </li>
           </ul>
         </div>
 
-        <div class="border-t border-border-subtle pt-5">
-          <p class="text-xs uppercase tracking-wider text-ink-muted">Ready to book?</p>
+        <!-- Inline portrait + "I read every one" callout -->
+        <div class="rounded-lg border border-border-subtle bg-bg-raised p-6 shadow-sm">
+          <div class="flex items-center gap-4">
+            <img
+              src="/dodie-portrait-portrait.jpg"
+              alt="Dodie Kendall"
+              width="64"
+              height="64"
+              loading="lazy"
+              class="h-16 w-16 shrink-0 rounded-full object-cover object-top shadow-sm"
+            />
+            <div>
+              <p class="font-display text-lg text-ink leading-tight">Dodie Kendall</p>
+              <p class="text-xs text-ink-muted">QHHT Practitioner · Palm Beach FL</p>
+            </div>
+          </div>
+          <p class="mt-4 text-sm text-ink-secondary leading-relaxed">
+            "I read every note that comes through and reply personally — usually
+            from the same studio I run sessions in. Looking forward to hearing
+            from you."
+          </p>
+        </div>
+
+        <!-- Ready-to-book CTA inline -->
+        <div class="rounded-lg border border-brand/30 bg-brand/5 p-6">
+          <p class="text-xs uppercase tracking-[0.24em] text-brand">Already ready?</p>
+          <p class="mt-2 text-base text-ink leading-relaxed">
+            Skip the form — go straight to my GHL calendar.
+          </p>
           <a
             href="/book"
-            class="mt-3 inline-flex w-full items-center justify-center rounded-pill bg-brand px-5 py-2.5 text-sm font-medium text-ink-inverse shadow-sm transition-all hover:bg-brand-hover hover:shadow-md"
+            class="mt-4 inline-flex w-full items-center justify-center rounded-pill bg-brand px-5 py-2.5 text-sm font-medium text-ink-inverse shadow-sm transition-all hover:bg-brand-hover hover:shadow-md"
           >
-            Book a Session
+            Book a Session →
           </a>
         </div>
       </aside>
     </div>
   </section>
+
+  <!-- WHAT HAPPENS AFTER YOU SEND — sets expectations, reduces send-anxiety -->
+  <section class="bg-bg-inverse-deeper py-20 md:py-24 text-inverse">
+    <div class="container-default max-w-5xl">
+      <header class="mb-14 max-w-2xl">
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">What happens after you hit send</p>
+        <h2 class="mt-3 font-display text-inverse">
+          <span class="block">No black box.</span>
+          <span class="italic-accent block text-brand">Here's the path.</span>
+        </h2>
+      </header>
+
+      <ol class="grid gap-8 md:grid-cols-3 md:gap-10" role="list">
+        {next.map((step) => (
+          <li class="relative rounded-lg border border-brand/20 bg-bg-inverse/60 backdrop-blur-sm p-6">
+            <p class="font-display text-5xl text-brand/40 leading-none">{step.num}</p>
+            <h3 class="mt-4 font-display text-xl text-inverse leading-snug">{step.title}</h3>
+            <p class="mt-3 text-inverse-muted leading-relaxed text-sm">{step.body}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- CLOSING — alternative direct contact -->
+  <ClosingCTA
+    headlineLead="Or — easier still:"
+    headlineItalic="just call me."
+    subhead="If you'd rather talk it through, the number is right there. Most people who book end up speaking with me first anyway."
+    cta={{ label: '📞 1-561-201-6918', href: 'tel:+15612016918' }}
+    trustLine="Monday – Saturday · 9 am – 6 pm ET"
+  />
 </Base>
