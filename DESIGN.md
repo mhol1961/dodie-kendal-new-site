@@ -7,24 +7,29 @@ color_system: oklch
 tokens:
   color:
     background:
-      base:          "oklch(0.97 0.01 80)"        # warm off-white (sand)
+      base:          "oklch(0.97 0.008 85)"       # warm cream (slightly cooler than sand)
       raised:        "oklch(0.99 0.005 85)"       # near-paper, slight warm tint
-      sunken:        "oklch(0.93 0.015 75)"       # deeper sand for footers
-      gradient-from: "oklch(0.95 0.025 75)"       # sunrise top
-      gradient-to:   "oklch(0.91 0.035 60)"       # sunrise bottom (peach-clay)
+      sunken:        "oklch(0.93 0.012 80)"       # deeper cream for footers
+      gradient-from: "oklch(0.95 0.020 80)"       # cream top
+      gradient-to:   "oklch(0.91 0.030 65)"       # cream → peach bottom
+      inverse:       "oklch(0.18 0.018 240)"      # deep night — dark hero/closing
+      inverse-deeper:"oklch(0.10 0.020 240)"      # darker night for vignette anchors
     surface:
       card:          "oklch(0.99 0.005 85)"
-      overlay:       "oklch(0.20 0.02 60 / 0.6)"  # photo overlay
+      overlay:       "oklch(0.12 0.02 240 / 0.55)"  # dark photo overlay
     ink:
-      primary:       "oklch(0.25 0.02 60)"        # deep warm umber (body)
-      secondary:     "oklch(0.45 0.025 55)"       # softer warm gray (subtext)
+      primary:       "oklch(0.22 0.02 60)"        # deep warm umber (body)
+      secondary:     "oklch(0.42 0.025 55)"       # softer warm gray (subtext)
       muted:         "oklch(0.50 0.02 50)"        # captions/meta — AA on bg-base + bg-sunken
-      inverse:       "oklch(0.97 0.01 80)"        # text on dark surface
+      inverse:       "oklch(0.97 0.008 85)"       # cream text on dark surface
+      inverse-muted: "oklch(0.82 0.020 80)"       # softened cream on dark for subtext
     brand:
-      primary:       "oklch(0.55 0.14 32)"        # terracotta-coral — AA with ink-inverse text
-      primary-hover: "oklch(0.48 0.15 30)"
-      accent:        "oklch(0.72 0.08 95)"        # honey-gold (used sparingly)
-      sage:          "oklch(0.68 0.05 145)"       # grounding sage (icons, accents)
+      primary:       "oklch(0.62 0.16 22)"        # coral-pink — matches Dodie's existing wordmark
+      primary-hover: "oklch(0.55 0.17 20)"        # deeper coral
+      teal:          "oklch(0.42 0.10 195)"       # jewel teal (jewel accent)
+      teal-glow:     "oklch(0.78 0.13 195)"       # aurora cyan glow (highlights only)
+      accent:        "oklch(0.72 0.08 95)"        # honey-gold (rare)
+      sage:          "oklch(0.68 0.05 145)"       # grounding sage (rare)
     semantic:
       success:       "oklch(0.65 0.10 145)"
       warning:       "oklch(0.78 0.13 80)"
@@ -35,10 +40,20 @@ tokens:
       strong:        "oklch(0.75 0.02 65)"
   typography:
     display:
-      family:        "'Cormorant Garamond', 'Cormorant', Georgia, serif"
+      family:        "'Fraunces', 'Cormorant Garamond', Georgia, serif"
+      weight:        "500"                        # default; variable face supports 100–900
+      tracking:      "-0.02em"
+      leading:       "1.05"
+      opsz-display:  "144"                        # optical size for giant display
+    display-italic:
+      family:        "'Fraunces', 'Cormorant Garamond', Georgia, serif"
       weight:        "500"
-      tracking:      "-0.01em"
-      leading:       "1.1"
+      style:         "italic"
+      tracking:      "-0.015em"
+    serif-text:
+      family:        "'Cormorant Garamond', 'Cormorant', Georgia, serif"  # editorial body-display
+      weight:        "500"
+      leading:       "1.2"
     body:
       family:        "'Inter Variable', 'Inter', system-ui, sans-serif"   # body only, NEVER display
       weight:        "400"

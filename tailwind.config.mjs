@@ -13,14 +13,19 @@ export default {
         'bg-base':     'oklch(var(--bg-base) / <alpha-value>)',
         'bg-raised':   'oklch(var(--bg-raised) / <alpha-value>)',
         'bg-sunken':   'oklch(var(--bg-sunken) / <alpha-value>)',
+        'bg-inverse':  'oklch(var(--bg-inverse) / <alpha-value>)',
+        'bg-inverse-deeper': 'oklch(var(--bg-inverse-deeper) / <alpha-value>)',
         // Ink
         'ink':         'oklch(var(--ink-primary) / <alpha-value>)',
         'ink-secondary':'oklch(var(--ink-secondary) / <alpha-value>)',
         'ink-muted':   'oklch(var(--ink-muted) / <alpha-value>)',
         'ink-inverse': 'oklch(var(--ink-inverse) / <alpha-value>)',
+        'ink-inverse-muted': 'oklch(var(--ink-inverse-muted) / <alpha-value>)',
         // Brand
         'brand':       'oklch(var(--brand-primary) / <alpha-value>)',
         'brand-hover': 'oklch(var(--brand-primary-hover) / <alpha-value>)',
+        'teal':        'oklch(var(--brand-teal) / <alpha-value>)',
+        'teal-glow':   'oklch(var(--brand-teal-glow) / <alpha-value>)',
         'accent':      'oklch(var(--brand-accent) / <alpha-value>)',
         'sage':        'oklch(var(--brand-sage) / <alpha-value>)',
         // Semantic
@@ -33,7 +38,8 @@ export default {
         'border-strong':'oklch(var(--border-strong) / <alpha-value>)',
       },
       fontFamily: {
-        display: ['"Cormorant Garamond"', 'Cormorant', 'Georgia', 'serif'],
+        display: ['"Fraunces"', '"Cormorant Garamond"', 'Georgia', 'serif'],
+        serif:   ['"Cormorant Garamond"', '"Fraunces"', 'Georgia', 'serif'],
         body:    ['"Inter Variable"', 'Inter', 'system-ui', 'sans-serif'],
         mono:    ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
@@ -68,7 +74,7 @@ export default {
         'sm':   '0 1px 2px 0 oklch(0.25 0.02 60 / 0.05)',
         'md':   '0 4px 12px -2px oklch(0.25 0.02 60 / 0.08)',
         'lg':   '0 12px 32px -6px oklch(0.25 0.02 60 / 0.12)',
-        'glow': '0 0 0 1px oklch(0.55 0.14 32 / 0.25), 0 8px 24px -8px oklch(0.55 0.14 32 / 0.3)',
+        'glow': '0 0 0 1px oklch(0.62 0.16 22 / 0.28), 0 12px 32px -8px oklch(0.62 0.16 22 / 0.45)',
       },
       transitionDuration: {
         'fast': '150ms',
@@ -84,6 +90,11 @@ export default {
       },
       backgroundImage: {
         'sunrise': 'linear-gradient(135deg, oklch(var(--bg-gradient-from)) 0%, oklch(var(--bg-gradient-to)) 100%)',
+        'aurora':
+          'radial-gradient(ellipse 80% 60% at 18% 32%, oklch(var(--brand-teal) / 0.45), transparent 60%),' +
+          'radial-gradient(ellipse 60% 50% at 85% 70%, oklch(var(--brand-primary) / 0.35), transparent 65%),' +
+          'radial-gradient(ellipse 100% 80% at 50% 110%, oklch(var(--bg-inverse-deeper) / 1), transparent 60%),' +
+          'linear-gradient(180deg, oklch(var(--bg-inverse)) 0%, oklch(var(--bg-inverse-deeper)) 100%)',
       },
     },
   },

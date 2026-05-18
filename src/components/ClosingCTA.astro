@@ -1,0 +1,93 @@
+---
+/**
+ * ClosingCTA — dark, urgent, mirrors hero. Aurora background, single coral CTA,
+ * trust line below. Visual punctuation for the bottom of a page.
+ */
+interface Props {
+  headlineLead?: string;
+  headlineItalic?: string;
+  headlineTail?: string;
+  headline?: string;
+  subhead?: string;
+  cta: { label: string; href: string };
+  trustLine?: string;
+}
+
+const {
+  headlineLead,
+  headlineItalic,
+  headlineTail,
+  headline,
+  subhead,
+  cta,
+  trustLine,
+} = Astro.props;
+---
+<section class="relative isolate overflow-hidden bg-aurora py-24 md:py-32 text-inverse">
+  <!-- Aurora orbs (CSS-only) -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 z-0">
+    <span class="closing-orb closing-orb-1"></span>
+    <span class="closing-orb closing-orb-2"></span>
+  </div>
+
+  <div class="relative z-10 container-default text-center">
+    {(headlineLead || headlineItalic || headlineTail) ? (
+      <h2 class="mx-auto max-w-4xl font-display">
+        {headlineLead && <span class="block">{headlineLead}</span>}
+        {headlineItalic && (
+          <span class="italic-accent block text-teal-glow">{headlineItalic}</span>
+        )}
+        {headlineTail && <span class="block">{headlineTail}</span>}
+      </h2>
+    ) : (
+      headline && <h2 class="mx-auto max-w-4xl font-display">{headline}</h2>
+    )}
+
+    {subhead && <p class="mx-auto mt-6 max-w-xl text-lg text-inverse-muted leading-relaxed">{subhead}</p>}
+
+    <div class="mt-10 flex justify-center">
+      <a
+        href={cta.href}
+        class="cta-glow inline-flex items-center justify-center rounded-pill px-9 py-4 text-lg font-medium"
+      >
+        {cta.label}
+        <svg class="ml-3 h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
+    {trustLine && (
+      <p class="mt-8 text-xs uppercase tracking-[0.22em] text-inverse-muted">{trustLine}</p>
+    )}
+  </div>
+</section>
+
+<style>
+  .closing-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    animation: drift-c 22s ease-in-out infinite alternate;
+  }
+  .closing-orb-1 {
+    width: 600px; height: 600px;
+    top: -10%; left: -8%;
+    background: oklch(var(--brand-teal) / 0.55);
+  }
+  .closing-orb-2 {
+    width: 480px; height: 480px;
+    bottom: -10%; right: -6%;
+    background: oklch(var(--brand-primary) / 0.45);
+    animation-delay: -10s;
+  }
+  @keyframes drift-c {
+    0%   { transform: translate3d(0, 0, 0); }
+    50%  { transform: translate3d(24px, -22px, 0); }
+    100% { transform: translate3d(-18px, 28px, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .closing-orb { animation: none; }
+  }
+</style>

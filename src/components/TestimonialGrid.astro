@@ -1,70 +1,98 @@
 ---
 /**
- * TestimonialGrid — static grid of testimonial cards. NEVER a carousel.
- * Pulls from the testimonials content collection.
+ * TestimonialGrid — featured testimonial (oversized) + supporting (smaller grid).
+ * Editorial, not three identical cards. Pulls from content collection.
  */
 import { getCollection } from 'astro:content';
 
 interface Props {
-  /** Max items to render. Default: all featured. */
-  limit?: number;
-  /** Only render featured testimonials. Default true. */
-  featuredOnly?: boolean;
   heading?: string;
   subhead?: string;
+  /** Cap the number of supporting testimonials shown alongside the featured one. */
+  supportingLimit?: number;
 }
 
-const { limit, featuredOnly = true, heading = 'What clients say', subhead } = Astro.props;
+const {
+  heading = 'What clients say after a session.',
+  subhead,
+  supportingLimit = 2,
+} = Astro.props;
 
 const all = await getCollection('testimonials').catch(() => []);
-const filtered = featuredOnly ? all.filter((t) => t.data.featured) : all;
-const sorted = [...filtered].sort((a, b) => a.data.order - b.data.order);
-const items = typeof limit === 'number' ? sorted.slice(0, limit) : sorted;
-
-// Generate a soft hue per testimonial for the avatar orb (deterministic by index)
-function avatarHue(idx: number): string {
-  const hues = ['var(--brand-accent)', 'var(--brand-sage)', 'var(--brand-primary)'];
-  return hues[idx % hues.length] ?? 'var(--brand-accent)';
-}
+const sorted = [...all].sort((a, b) => a.data.order - b.data.order);
+const featured = sorted.find((t) => t.data.featured) ?? sorted[0];
+const supporting = sorted
+  .filter((t) => t.id !== featured?.id)
+  .slice(0, supportingLimit);
 ---
-<section class="section-y bg-bg-base">
-  <div class="container-default">
-    <header class="mb-12 max-w-2xl">
-      <p class="text-xs uppercase tracking-wider text-ink-muted">In their words</p>
-      <h2 class="mt-3 font-display">{heading}</h2>
-      {subhead && <p class="mt-3 text-lg text-ink-secondary">{subhead}</p>}
-    </header>
+{featured && (
+  <section class="section-y bg-bg-base">
+    <div class="container-default">
+      <header class="mb-14 max-w-2xl">
+        <p class="text-xs uppercase tracking-[0.22em] text-brand">In their words</p>
+        <h2 class="mt-3 font-display text-ink">
+          {heading}
+        </h2>
+        {subhead && <p class="mt-5 text-lg text-ink-secondary leading-relaxed">{subhead}</p>}
+      </header>
 
-    {items.length === 0 ? (
-      <p class="text-ink-muted">Testimonials are being added — check back soon.</p>
-    ) : (
-      <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" role="list">
-        {items.map((t, idx) => (
-          <li class="flex flex-col rounded-lg border border-border-subtle bg-bg-raised p-6 shadow-md">
-            <blockquote class="flex-1 text-ink-secondary leading-relaxed">
-              <span aria-hidden="true" class="font-display text-3xl leading-none text-accent">&ldquo;</span>
-              <span>{t.data.quote}</span>
-            </blockquote>
-            <footer class="mt-5 flex items-center gap-3 border-t border-border-subtle pt-4">
+      <div class="grid gap-8 md:grid-cols-12 md:gap-10">
+        <!-- Featured (oversized) -->
+        <article class="md:col-span-7 relative rounded-lg border border-border-subtle bg-bg-inverse text-inverse p-8 md:p-12 shadow-[0_30px_60px_-25px_oklch(0.18_0.018_240_/_0.45)]">
+          <span aria-hidden="true" class="absolute -top-6 left-8 font-display text-7xl md:text-8xl leading-none text-brand">&ldquo;</span>
+          <blockquote class="relative">
+            <p class="font-serif text-2xl md:text-[1.625rem] leading-[1.45] text-inverse">
+              {featured.data.quote}
+            </p>
+            <footer class="mt-8 flex items-center gap-4 border-t border-inverse-muted/20 pt-6">
               <span
                 aria-hidden="true"
-                class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-display text-base text-ink-inverse"
-                style={`background-color: oklch(${avatarHue(idx)});`}
+                class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-display text-lg text-inverse"
+                style="background: linear-gradient(135deg, oklch(var(--brand-primary)) 0%, oklch(var(--brand-teal)) 100%);"
               >
-                {(t.data.author?.[0] ?? '·').toUpperCase()}
+                {(featured.data.author?.[0] ?? '·').toUpperCase()}
               </span>
               <div class="text-sm">
-                <div class="font-medium text-ink">{t.data.author}</div>
-                {(t.data.location || t.data.role) && (
-                  <div class="text-ink-muted">
-                    {[t.data.role, t.data.location].filter(Boolean).join(' · ')}
+                <div class="font-medium text-inverse">{featured.data.author}</div>
+                {(featured.data.location || featured.data.role) && (
+                  <div class="text-inverse-muted">
+                    {[featured.data.role, featured.data.location].filter(Boolean).join(' · ')}
                   </div>
                 )}
               </div>
             </footer>
-          </li>
-        ))}
-      </ul>
-    )}
-  </div>
-</section>
+          </blockquote>
+        </article>
+
+        <!-- Supporting (vertical stack on desktop) -->
+        <div class="md:col-span-5 flex flex-col gap-6">
+          {supporting.map((t) => (
+            <article class="flex-1 rounded-lg border border-border-subtle bg-bg-raised p-6 shadow-sm">
+              <blockquote class="text-ink-secondary leading-relaxed">
+                <span aria-hidden="true" class="font-display text-3xl leading-none text-brand">&ldquo;</span>
+                <span>{t.data.quote}</span>
+              </blockquote>
+              <footer class="mt-5 flex items-center gap-3 border-t border-border-subtle pt-4 text-sm">
+                <span
+                  aria-hidden="true"
+                  class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-display text-sm text-ink-inverse"
+                  style="background: linear-gradient(135deg, oklch(var(--brand-teal)) 0%, oklch(var(--brand-primary)) 100%);"
+                >
+                  {(t.data.author?.[0] ?? '·').toUpperCase()}
+                </span>
+                <div>
+                  <div class="font-medium text-ink">{t.data.author}</div>
+                  {(t.data.location || t.data.role) && (
+                    <div class="text-ink-muted text-xs">
+                      {[t.data.role, t.data.location].filter(Boolean).join(' · ')}
+                    </div>
+                  )}
+                </div>
+              </footer>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+)}

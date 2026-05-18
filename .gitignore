@@ -50,3 +50,7 @@ src/**/CLAUDE.md
 lighthouse-*.html
 lighthouse-*.json
 C:\\Users\\*
+
+# Scrape cache + review screenshots
+.firecrawl/
+public/full-page-homepage.png

@@ -1,7 +1,7 @@
 ---
 /**
- * LeadMagnetGate — single-field email opt-in form posting to /api/lead-magnet.
- * Progressive enhancement: works without JS (form action posts), uses JS for inline status.
+ * LeadMagnetGate — PDF cover preview + email form, side by side on desktop.
+ * Posts to /api/lead-magnet. Progressive enhancement (works without JS).
  */
 import Input from '@components/ui/Input.astro';
 
@@ -12,66 +12,91 @@ interface Props {
 }
 
 const {
-  heading = 'Begin with a free pre-session prep guide.',
-  subhead = "Before you book, get my short guide to preparing for your first QHHT session — what to expect, how to think about your questions, and what makes a session deeply useful.",
+  subhead = "A short guide to preparing for your first QHHT session — what to expect, how to shape your questions, and what makes a session deeply useful. Free, 12 pages, in your inbox in minutes.",
   buttonLabel = 'Send me the guide',
 } = Astro.props;
+// `heading` prop unused for now (we render a static split heading) — kept on the interface.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _heading = Astro.props.heading;
 ---
-<section class="section-y bg-bg-base">
+<section class="section-y bg-bg-sunken">
   <div class="container-default">
-    <div class="mx-auto max-w-2xl rounded-lg border border-border-subtle bg-bg-raised p-8 shadow-md md:p-12">
-      <h2 class="font-display text-3xl">{heading}</h2>
-      <p class="mt-4 text-lg text-ink-secondary">{subhead}</p>
+    <div class="grid items-center gap-12 md:grid-cols-[0.85fr,1.15fr] lg:gap-20">
+      <!-- PDF cover preview -->
+      <div class="relative mx-auto md:mx-0 max-w-sm">
+        <span aria-hidden="true" class="absolute -inset-6 -z-10 rounded-2xl bg-gradient-to-br from-teal/15 via-brand/15 to-transparent blur-2xl"></span>
+        <img
+          src="/lead-magnet-cover.svg"
+          alt="Cover preview: Before your session — preparing for your first QHHT session"
+          width="600"
+          height="780"
+          loading="lazy"
+          class="w-full h-auto rounded-lg shadow-[0_30px_60px_-20px_oklch(0.18_0.018_240_/_0.45)] rotate-[-3deg] hover:rotate-0 transition-transform duration-500"
+        />
+        <span class="absolute -top-3 -left-3 rounded-pill bg-brand text-ink-inverse px-3 py-1 text-[10px] uppercase tracking-[0.2em] shadow-md">
+          Free · 12 pages
+        </span>
+      </div>
 
-      <form
-        id="lead-magnet-form"
-        action="/api/lead-magnet"
-        method="POST"
-        class="mt-8 flex flex-col gap-4 sm:flex-row"
-        novalidate
-      >
-        <div class="flex-1">
-          <Input
-            id="lead-email"
-            name="email"
-            type="email"
-            label="Email address"
-            visuallyHidden
-            required
-            placeholder="you@somewhere.com"
-            autocomplete="email"
-          />
-        </div>
-        <Input
-          id="lead-first-name"
-          name="firstName"
-          label="First name"
-          visuallyHidden
-          ariaHidden
-          tabIndex={-1}
-          inputClass="hidden"
-        />
-        <Input
-          id="lead-trap"
-          name="website"
-          label="Leave blank"
-          visuallyHidden
-          ariaHidden
-          tabIndex={-1}
-          inputClass="hidden"
-        />
-        <input type="hidden" name="consentMarketing" value="true" />
-        <button
-          type="submit"
-          class="inline-flex items-center justify-center rounded-pill bg-brand px-7 py-3 font-medium text-ink-inverse shadow-md transition-all hover:bg-brand-hover hover:shadow-glow"
+      <!-- Form -->
+      <div>
+        <p class="text-xs uppercase tracking-[0.22em] text-brand">A small first step</p>
+        <h2 class="mt-3 font-display text-ink">
+          <span class="block">Before</span>
+          <span class="italic-accent block text-brand">you book.</span>
+        </h2>
+        <p class="mt-5 max-w-prose text-lg text-ink-secondary leading-relaxed">{subhead}</p>
+
+        <form
+          id="lead-magnet-form"
+          action="/api/lead-magnet"
+          method="POST"
+          class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-stretch"
+          novalidate
         >
-          {buttonLabel}
-        </button>
-      </form>
-      <p class="mt-3 text-xs text-ink-muted">
-        We'll never share your address. Unsubscribe any time.
-      </p>
-      <p id="lead-magnet-status" class="mt-4 text-sm" role="status" aria-live="polite"></p>
+          <div class="flex-1">
+            <Input
+              id="lead-email"
+              name="email"
+              type="email"
+              label="Email address"
+              visuallyHidden
+              required
+              placeholder="you@somewhere.com"
+              autocomplete="email"
+            />
+          </div>
+          <Input
+            id="lead-first-name"
+            name="firstName"
+            label="First name"
+            visuallyHidden
+            ariaHidden
+            tabIndex={-1}
+            inputClass="hidden"
+          />
+          <Input
+            id="lead-trap"
+            name="website"
+            label="Leave blank"
+            visuallyHidden
+            ariaHidden
+            tabIndex={-1}
+            inputClass="hidden"
+          />
+          <input type="hidden" name="consentMarketing" value="true" />
+          <button
+            type="submit"
+            class="cta-glow inline-flex items-center justify-center rounded-pill px-7 py-3.5 font-medium text-base shrink-0"
+          >
+            {buttonLabel}
+          </button>
+        </form>
+        <p class="mt-3 text-xs text-ink-muted">
+          We'll never share your address. Unsubscribe any time.
+        </p>
+        <p id="lead-magnet-status" class="mt-4 text-sm" role="status" aria-live="polite"></p>
+      </div>
     </div>
   </div>
 </section>
@@ -91,13 +116,9 @@ const {
         status.className = 'mt-4 text-sm text-error';
         return;
       }
-
-      // Default firstName to "Friend" so we don't lose the opt-in if it's empty
       const fn = firstName.value && firstName.value.trim() ? firstName.value.trim() : 'Friend';
-
       status.textContent = 'Sending…';
       status.className = 'mt-4 text-sm text-ink-muted';
-
       try {
         const res = await fetch('/api/lead-magnet', {
           method: 'POST',

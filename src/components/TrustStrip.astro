@@ -1,0 +1,28 @@
+---
+/**
+ * TrustStrip — single-line credibility band that sits right under the hero.
+ * Reads as proof, not navigation. Dot-separated items in caption type.
+ */
+interface Props {
+  items: string[];
+  variant?: 'light' | 'dark';
+}
+
+const { items, variant = 'light' } = Astro.props;
+
+const wrapperClass = variant === 'dark'
+  ? 'bg-bg-inverse-deeper text-inverse-muted'
+  : 'bg-bg-base text-ink-secondary';
+---
+<section class={`${wrapperClass} border-y border-border-subtle/40`}>
+  <div class="container-default flex flex-wrap items-center justify-center gap-x-6 gap-y-2 py-5 text-[11px] uppercase tracking-[0.2em]">
+    {items.map((item, idx) => (
+      <Fragment>
+        <span>{item}</span>
+        {idx < items.length - 1 && (
+          <span aria-hidden="true" class="hidden sm:inline text-brand opacity-60">·</span>
+        )}
+      </Fragment>
+    ))}
+  </div>
+</section>

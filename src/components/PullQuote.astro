@@ -1,18 +1,34 @@
 ---
+/**
+ * PullQuote — major typographic moment. Oversized Fraunces italic on warm cream,
+ * with a single coral hairline rule above.
+ */
 interface Props {
   quote: string;
   attribution?: string;
+  variant?: 'light' | 'dark';
 }
-const { quote, attribution } = Astro.props;
+const { quote, attribution, variant = 'light' } = Astro.props;
+
+const wrap = variant === 'dark' ? 'bg-bg-inverse text-inverse' : 'bg-bg-base text-ink';
+const muted = variant === 'dark' ? 'text-inverse-muted' : 'text-ink-muted';
+const accent = variant === 'dark' ? 'bg-teal-glow' : 'bg-brand';
 ---
-<section class="section-y">
-  <div class="container-prose text-center">
-    <span aria-hidden="true" class="text-accent font-display text-7xl leading-none block mb-2">&ldquo;</span>
-    <blockquote class="font-display text-2xl md:text-3xl text-ink leading-snug italic">
-      {quote}
+<section class={`${wrap} py-24 md:py-32`}>
+  <div class="container-default max-w-5xl text-center">
+    <span aria-hidden="true" class={`mx-auto block h-px w-16 ${accent}`}></span>
+    <blockquote class="mt-10">
+      <p
+        class="italic-accent font-display text-[clamp(2rem,5vw,4.5rem)] leading-[1.1] tracking-[-0.02em]"
+        style="font-variation-settings: 'opsz' 144, 'wght' 450, 'SOFT' 100;"
+      >
+        &ldquo;{quote}&rdquo;
+      </p>
+      {attribution && (
+        <cite class={`mt-8 inline-block not-italic text-xs uppercase tracking-[0.22em] ${muted}`}>
+          — {attribution}
+        </cite>
+      )}
     </blockquote>
-    {attribution && (
-      <cite class="not-italic block mt-4 text-sm text-ink-muted">— {attribution}</cite>
-    )}
   </div>
 </section>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 780" role="img" aria-label="Pre-Session Prep Guide cover">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#101522"/>
+      <stop offset="100%" stop-color="#0a0e1a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="32%" r="55%">
+      <stop offset="0%" stop-color="#1a8d8e" stop-opacity="0.55"/>
+      <stop offset="60%" stop-color="#0e1117" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="coralGlow" cx="50%" cy="78%" r="45%">
+      <stop offset="0%" stop-color="#d97056" stop-opacity="0.42"/>
+      <stop offset="60%" stop-color="#0e1117" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="paper" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3"/>
+      <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.04 0"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+  </defs>
+
+  <!-- Cover background -->
+  <rect width="600" height="780" rx="14" fill="url(#bg)"/>
+  <rect width="600" height="780" rx="14" fill="url(#glow)"/>
+  <rect width="600" height="780" rx="14" fill="url(#coralGlow)"/>
+  <rect width="600" height="780" rx="14" fill="white" opacity="0.03" filter="url(#paper)"/>
+
+  <!-- Spine highlight -->
+  <rect x="0" y="0" width="3" height="780" fill="#d97056" opacity="0.85"/>
+
+  <!-- Eyebrow -->
+  <text x="56" y="120" font-family="'Cormorant Garamond', Georgia, serif" font-size="14" letter-spacing="6" fill="#d97056" font-weight="600">
+    DODIE KENDALL · QHHT
+  </text>
+  <line x1="56" y1="138" x2="180" y2="138" stroke="#d97056" stroke-width="1" opacity="0.7"/>
+
+  <!-- Title -->
+  <text x="56" y="220" font-family="'Fraunces','Cormorant Garamond',Georgia,serif" font-size="64" fill="#f7f3ec" font-weight="450">
+    Before
+  </text>
+  <text x="56" y="290" font-family="'Fraunces','Cormorant Garamond',Georgia,serif" font-size="64" font-style="italic" fill="#a3d4d5" font-weight="450">
+    your session.
+  </text>
+
+  <!-- Subhead -->
+  <text x="56" y="340" font-family="'Inter','Inter Variable',sans-serif" font-size="16" fill="#f7f3ec" opacity="0.78">
+    A short guide to preparing for your first
+  </text>
+  <text x="56" y="362" font-family="'Inter','Inter Variable',sans-serif" font-size="16" fill="#f7f3ec" opacity="0.78">
+    Quantum Healing Hypnosis Technique session.
+  </text>
+
+  <!-- Bullet preview block -->
+  <g transform="translate(56, 440)">
+    <text x="0" y="0" font-family="'Cormorant Garamond',Georgia,serif" font-size="16" fill="#d97056" letter-spacing="3">
+      INSIDE
+    </text>
+    <line x1="0" y1="12" x2="80" y2="12" stroke="#d97056" stroke-width="1" opacity="0.7"/>
+    <g font-family="'Inter','Inter Variable',sans-serif" font-size="15" fill="#f7f3ec" opacity="0.88">
+      <text x="0" y="42">— What the Theta state actually feels like</text>
+      <text x="0" y="70">— How to shape your three guiding questions</text>
+      <text x="0" y="98">— Day-of: what to eat, wear, bring</text>
+      <text x="0" y="126">— What unfolds in the week after</text>
+    </g>
+  </g>
+
+  <!-- Footer / sigil -->
+  <g transform="translate(300, 660)">
+    <circle cx="0" cy="0" r="32" fill="none" stroke="#d97056" stroke-width="1" opacity="0.75"/>
+    <circle cx="0" cy="0" r="22" fill="none" stroke="#a3d4d5" stroke-width="1" opacity="0.55"/>
+    <circle cx="0" cy="0" r="6" fill="#d97056" opacity="0.9"/>
+  </g>
+  <text x="300" y="730" font-family="'Inter','Inter Variable',sans-serif" font-size="11" letter-spacing="3" fill="#f7f3ec" opacity="0.55" text-anchor="middle">
+    FREE · 12 PAGES · DELIVERED INSTANTLY
+  </text>
+</svg>

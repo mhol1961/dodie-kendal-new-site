@@ -1,71 +1,196 @@
 ---
-// Hero component — variants for home, about, qhht, generic.
-// Per DESIGN.md Layout §1: home is split-asymmetric with portrait inside a pill-shaped mask.
+/**
+ * Hero — cinematic editorial. Aurora-on-night background, real portrait,
+ * oversized Fraunces display with italic accent, single primary CTA.
+ *
+ * Variants:
+ *   home    — full-bleed aurora + portrait + trust line
+ *   about   — dark gradient, text-only, oversized headline
+ *   qhht    — dark gradient, text-only, asymmetric pull
+ *   generic — light cream variant for utility pages
+ */
 interface Props {
   variant?: 'home' | 'about' | 'qhht' | 'generic';
   eyebrow?: string;
-  headline: string;
+  /** Plain text before the italic accent. */
+  headlineLead?: string;
+  /** Optional italic phrase rendered in serif italic. */
+  headlineItalic?: string;
+  /** Optional plain text after the italic accent. */
+  headlineTail?: string;
+  /** Fallback single-line headline (used if lead/italic/tail not provided). */
+  headline?: string;
   subhead?: string;
   primaryCta?: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
+  /** Trust line below CTAs (no link). */
+  trustLine?: string;
   portraitSrc?: string;
   portraitAlt?: string;
 }
 
 const {
-  variant = 'generic',
+  variant = 'home',
   eyebrow,
+  headlineLead,
+  headlineItalic,
+  headlineTail,
   headline,
   subhead,
   primaryCta,
   secondaryCta,
+  trustLine,
   portraitSrc,
   portraitAlt = '',
 } = Astro.props;
+
+const isHome = variant === 'home';
+const isDark = variant === 'home' || variant === 'about' || variant === 'qhht';
+const titleClass = isDark ? 'text-inverse' : 'text-ink';
+const subClass = isDark ? 'text-inverse-muted' : 'text-ink-secondary';
+const eyebrowClass = isDark ? 'text-teal-glow' : 'text-ink-muted';
 ---
-<section class={`bg-sunrise ${variant === 'home' ? 'section-y' : 'pt-16 pb-12 md:pt-24 md:pb-16'}`}>
-  <div class="container-default">
-    <div class={variant === 'home' ? 'grid grid-cols-1 md:grid-cols-2 gap-12 items-center' : 'max-w-3xl mx-auto text-center'}>
-      <div>
+
+<section
+  class={`relative isolate overflow-hidden ${isDark ? 'bg-aurora' : 'bg-sunrise'} ${isHome ? 'min-h-[88vh] flex items-center' : 'pt-20 pb-16 md:pt-28 md:pb-20'}`}
+>
+  <!-- Aurora particles (CSS-only, prefers-reduced-motion safe) -->
+  {isDark && (
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 z-0">
+      <span class="aurora-orb aurora-orb-1"></span>
+      <span class="aurora-orb aurora-orb-2"></span>
+      <span class="aurora-orb aurora-orb-3"></span>
+    </div>
+  )}
+
+  <div class={`relative z-10 container-default w-full ${isHome ? 'py-20 md:py-28' : ''}`}>
+    <div class={isHome ? 'grid items-center gap-12 md:grid-cols-[1.1fr,0.9fr] lg:gap-16' : 'max-w-4xl'}>
+      <div class={isHome ? 'order-2 md:order-1' : ''}>
         {eyebrow && (
-          <p class="text-xs uppercase tracking-wider text-ink-muted mb-4 font-medium">{eyebrow}</p>
+          <p class={`text-xs uppercase tracking-[0.22em] mb-6 font-medium ${eyebrowClass}`}>
+            {eyebrow}
+          </p>
         )}
-        <h1 class="font-display text-ink leading-tight">{headline}</h1>
+
+        {(headlineLead || headlineItalic || headlineTail) ? (
+          <h1 class={`font-display ${titleClass}`}>
+            {headlineLead && <span class="block">{headlineLead}</span>}
+            {headlineItalic && (
+              <span class="italic-accent block text-teal-glow">{headlineItalic}</span>
+            )}
+            {headlineTail && <span class="block">{headlineTail}</span>}
+          </h1>
+        ) : (
+          headline && <h1 class={`font-display leading-tight ${titleClass}`}>{headline}</h1>
+        )}
+
         {subhead && (
-          <p class="mt-6 text-lg text-ink-secondary max-w-prose">{subhead}</p>
+          <p class={`mt-7 max-w-xl text-lg md:text-xl leading-relaxed ${subClass}`}>{subhead}</p>
         )}
+
         {(primaryCta || secondaryCta) && (
-          <div class="mt-8 flex flex-wrap gap-4">
+          <div class="mt-10 flex flex-wrap items-center gap-5">
             {primaryCta && (
               <a
                 href={primaryCta.href}
-                class="inline-flex items-center justify-center rounded-pill bg-brand text-ink-inverse px-7 py-3 font-medium shadow-md hover:bg-brand-hover hover:shadow-glow transition-all"
+                class="cta-glow inline-flex items-center justify-center rounded-pill px-8 py-3.5 font-medium text-base"
               >
                 {primaryCta.label}
+                <svg class="ml-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
+                </svg>
               </a>
             )}
             {secondaryCta && (
               <a
                 href={secondaryCta.href}
-                class="inline-flex items-center justify-center rounded-pill border border-border-strong text-ink px-7 py-3 font-medium hover:border-brand hover:text-brand transition-colors"
+                class={`inline-flex items-center gap-2 text-sm font-medium underline-offset-8 transition-colors ${isDark ? 'text-inverse hover:text-teal-glow' : 'text-ink hover:text-brand'}`}
               >
-                {secondaryCta.label}
+                <span class="underline decoration-1 underline-offset-[6px]">{secondaryCta.label}</span>
+                <span aria-hidden="true">↗</span>
               </a>
             )}
           </div>
         )}
+
+        {trustLine && (
+          <p class={`mt-8 text-xs uppercase tracking-[0.22em] ${isDark ? 'text-inverse-muted' : 'text-ink-muted'}`}>
+            {trustLine}
+          </p>
+        )}
       </div>
-      {variant === 'home' && portraitSrc && (
-        <div class="flex justify-center md:justify-end">
-          <img
-            src={portraitSrc}
-            alt={portraitAlt}
-            class="rounded-pill shadow-lg max-w-md w-full object-cover"
-            loading="eager"
-            fetchpriority="high"
-          />
+
+      {isHome && portraitSrc && (
+        <div class="relative order-1 flex justify-center md:order-2 md:justify-end">
+          <div class="relative">
+            <!-- Soft halo behind portrait -->
+            <span aria-hidden="true" class="absolute -inset-6 -z-10 rounded-pill blur-3xl bg-gradient-to-br from-teal/40 via-brand/30 to-transparent"></span>
+            <img
+              src={portraitSrc}
+              alt={portraitAlt}
+              width="540"
+              height="675"
+              loading="eager"
+              fetchpriority="high"
+              class="relative h-auto w-[260px] sm:w-[320px] md:w-[380px] lg:w-[440px] aspect-[4/5] object-cover rounded-[42% 58% 38% 62% / 38% 42% 58% 62%] shadow-[0_30px_60px_-20px_oklch(0.05_0.02_240_/_0.7)]"
+            />
+            <!-- Floating credential chip -->
+            <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 md:left-auto md:right-4 md:translate-x-0 rounded-pill bg-bg-base/95 backdrop-blur px-4 py-2 shadow-md border border-border-subtle">
+              <p class="text-[10px] uppercase tracking-[0.22em] text-ink-muted">QHHT · Dolores Cannon lineage</p>
+            </div>
+          </div>
         </div>
       )}
     </div>
   </div>
+
+  <!-- Optional bottom fade so the hero blends into the section below -->
+  {isDark && (
+    <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-bg-base"></div>
+  )}
 </section>
+
+<style>
+  /* Custom organic mask — Tailwind arbitrary border-radius struggles with multi-corner.
+     Apply here with the right syntax. */
+  img[class*="rounded-["] {
+    border-radius: 42% 58% 38% 62% / 38% 42% 58% 62%;
+  }
+
+  .aurora-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.55;
+    will-change: transform;
+    animation: drift 18s ease-in-out infinite alternate;
+  }
+  .aurora-orb-1 {
+    width: 520px; height: 520px;
+    top: 8%; left: -6%;
+    background: oklch(var(--brand-teal) / 0.6);
+    animation-delay: 0s;
+  }
+  .aurora-orb-2 {
+    width: 460px; height: 460px;
+    bottom: -10%; right: -8%;
+    background: oklch(var(--brand-primary) / 0.45);
+    animation-delay: -6s;
+    animation-duration: 24s;
+  }
+  .aurora-orb-3 {
+    width: 320px; height: 320px;
+    top: 38%; right: 22%;
+    background: oklch(var(--brand-teal-glow) / 0.25);
+    animation-delay: -12s;
+    animation-duration: 30s;
+  }
+  @keyframes drift {
+    0%   { transform: translate3d(0, 0, 0) scale(1); }
+    50%  { transform: translate3d(20px, -18px, 0) scale(1.05); }
+    100% { transform: translate3d(-12px, 22px, 0) scale(0.97); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .aurora-orb { animation: none; }
+  }
+</style>

@@ -45,7 +45,9 @@ const isProd = import.meta.env.PROD;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <!-- Self-hosted fonts (drop the files into /public/fonts/ in Phase 1) -->
+    <!-- Self-hosted fonts -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Fraunces-VariableUpright.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Fraunces-VariableItalic.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/CormorantGaramond-Medium.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/InterVariable.woff2" crossorigin />
 
