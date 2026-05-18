@@ -1,0 +1,19 @@
+name = "dodie-kendal-new-site"
+main = "./dist/_worker.js/index.js"
+compatibility_date = "2026-05-18"
+compatibility_flags = ["nodejs_compat"]
+
+# Static assets directory. Cloudflare Workers Assets serves files from /dist
+# directly from the edge. The Worker (above) handles SSR routes that have
+# `export const prerender = false` — namely /book and /api/*.
+#
+# `run_worker_first = true` means the Worker is the entry for every request.
+# The Astro adapter's _worker.js/index.js inspects the request path: it serves
+# prerendered HTML via env.ASSETS.fetch() for static routes, and runs SSR for
+# the dynamic ones. This is the pattern @astrojs/cloudflare v11 generates.
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+run_worker_first = true
+
+# Observability is enabled in the CF dashboard separately — no toml flag needed.
