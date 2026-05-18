@@ -42,9 +42,19 @@ const subgreeting = "Have a question about QHHT? Drop a quick note and I'll get 
     class="absolute bottom-20 right-0 w-[min(92vw,360px)] origin-bottom-right rounded-2xl border border-border-subtle bg-bg-raised shadow-[0_30px_60px_-15px_oklch(0.18_0.018_240_/_0.55)] overflow-hidden"
   >
     <!-- Header -->
-    <header class="bg-aurora text-inverse px-5 py-4">
-      <p id="chat-panel-title" class="font-display text-xl leading-tight">{greeting}</p>
-      <p class="mt-1 text-sm text-inverse-muted leading-snug">{subgreeting}</p>
+    <header class="bg-aurora text-inverse px-5 py-4 flex items-start gap-3">
+      <img
+        src="/dodie-avatar.png"
+        alt="Dodie Kendall"
+        width="48"
+        height="48"
+        loading="lazy"
+        class="h-12 w-12 shrink-0 rounded-full object-cover object-top border border-brand/30 shadow-md"
+      />
+      <div>
+        <p id="chat-panel-title" class="font-display text-xl leading-tight">{greeting}</p>
+        <p class="mt-1 text-sm text-inverse-muted leading-snug">{subgreeting}</p>
+      </div>
     </header>
 
     <!-- Quick contact form -->
