@@ -23,9 +23,11 @@ interface Props {
   trustLine?: string;
   portraitSrc?: string;
   portraitAlt?: string;
-  /** Background image URL. Defaults per variant. */
+  /** Background image URL (used as poster + reduced-motion fallback). Defaults per variant. */
   bgImage?: string;
-  /** Object position for the bg image. Default: "center". */
+  /** Optional background video (mp4) that plays muted, looped, autoplay. */
+  bgVideo?: string;
+  /** Object position for the bg media. Default: "center". */
   bgPosition?: string;
 }
 
@@ -43,6 +45,7 @@ const {
   portraitSrc,
   portraitAlt = '',
   bgImage,
+  bgVideo,
   bgPosition = 'center',
 } = Astro.props;
 
@@ -50,14 +53,18 @@ const isHome = variant === 'home';
 const isDark = variant !== 'generic';
 
 // Variant defaults for background photography
-// (kept distinct from the in-page imagery so heros aren't repeating below)
 const defaultBg: Record<string, string> = {
-  home: '/photos/hero-aurora-real.jpg',
+  home: '/video/hero-aurora-poster.jpg',
   about: '/photos/hero-milky-way.jpg',
   qhht: '/photos/hero-aurora-real.jpg',
   insights: '/photos/hero-milky-way.jpg',
 };
+// Default video — only on the home hero
+const defaultVideo: Record<string, string | undefined> = {
+  home: '/video/hero-aurora.mp4',
+};
 const finalBg = bgImage ?? (isDark ? defaultBg[variant] : undefined);
+const finalVideo = bgVideo ?? defaultVideo[variant];
 
 const titleClass = isDark ? 'text-inverse' : 'text-ink';
 const subClass = isDark ? 'text-inverse-muted' : 'text-ink-secondary';
@@ -67,7 +74,7 @@ const eyebrowClass = isDark ? 'text-teal-glow' : 'text-ink-muted';
 <section
   class={`relative isolate overflow-hidden ${isDark ? 'bg-bg-inverse-deeper' : 'bg-sunrise'} ${isHome ? 'min-h-[90vh] flex items-center' : 'pt-24 pb-20 md:pt-32 md:pb-28'}`}
 >
-  <!-- Background photo -->
+  <!-- Background media: video preferred, photo as poster + reduced-motion fallback -->
   {finalBg && (
     <>
       <img
@@ -76,9 +83,22 @@ const eyebrowClass = isDark ? 'text-teal-glow' : 'text-ink-muted';
         aria-hidden="true"
         loading="eager"
         fetchpriority="high"
-        class="absolute inset-0 z-0 h-full w-full object-cover"
+        class={`absolute inset-0 z-0 h-full w-full object-cover ${finalVideo ? 'motion-safe:opacity-0' : ''}`}
         style={`object-position: ${bgPosition};`}
       />
+      {finalVideo && (
+        <video
+          src={finalVideo}
+          poster={finalBg}
+          autoplay
+          muted
+          loop
+          playsinline
+          aria-hidden="true"
+          class="absolute inset-0 z-0 h-full w-full object-cover motion-reduce:hidden"
+          style={`object-position: ${bgPosition};`}
+        />
+      )}
       <!-- Dark vignette + bottom fade for legibility -->
       <div
         aria-hidden="true"

@@ -66,15 +66,26 @@ const timeline = [
     </div>
   </section>
 
-  <!-- The library metaphor — now with real photography -->
+  <!-- The library metaphor — Seedance video (motion-safe) with photo poster fallback -->
   <section class="relative isolate overflow-hidden bg-bg-inverse-deeper py-24 md:py-32">
-    <!-- Full-width library photo background, fading to dark on left for text legibility -->
     <img
-      src="/photos/qhht-library.jpg"
+      src="/video/qhht-archive-poster.jpg"
       alt=""
       aria-hidden="true"
       loading="lazy"
-      class="absolute inset-0 z-0 h-full w-full object-cover"
+      class="absolute inset-0 z-0 h-full w-full object-cover motion-safe:opacity-0"
+      style="object-position: right center;"
+    />
+    <video
+      src="/video/qhht-archive.mp4"
+      poster="/video/qhht-archive-poster.jpg"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      aria-hidden="true"
+      class="absolute inset-0 z-0 h-full w-full object-cover motion-reduce:hidden"
       style="object-position: right center;"
     />
     <div

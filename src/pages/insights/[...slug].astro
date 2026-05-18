@@ -19,12 +19,16 @@ const all = (await getCollection('insights', ({ data }) => !data.draft).catch(()
 const related = all.filter((p) => p.slug !== post.slug).slice(0, 2);
 
 const heroBySlug: Record<string, string> = {
-  'what-happens-in-a-qhht-session': '/photos/insight-hourglass.jpg',
+  'what-happens-in-a-qhht-session': '/video/hourglass-time-poster.jpg',
   'past-life-regression-vs-qhht': '/photos/hero-milky-way.jpg',
   'how-to-prepare-for-your-first-quantum-healing-session': '/photos/insight-notebook.jpg',
   'choosing-a-qhht-practitioner': '/photos/insight-compass.jpg',
 };
+const heroVideoBySlug: Record<string, string | undefined> = {
+  'what-happens-in-a-qhht-session': '/video/hourglass-time.mp4',
+};
 const postHero = heroBySlug[post.slug];
+const postHeroVideo = heroVideoBySlug[post.slug];
 
 const seo = getSeo({
   path: `/insights/${post.slug}`,
@@ -66,12 +70,25 @@ const schemas = [
         <figure class="mt-8 -mx-4 sm:-mx-6 md:-mx-12">
           <div class="relative overflow-hidden rounded-lg">
             <span aria-hidden="true" class="absolute -inset-6 -z-10 bg-gradient-to-br from-teal/20 via-brand/15 to-transparent blur-3xl"></span>
+            {postHeroVideo && (
+              <video
+                src={postHeroVideo}
+                poster={postHero}
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="metadata"
+                aria-hidden="true"
+                class="absolute inset-0 z-10 w-full h-full object-cover motion-reduce:hidden"
+              />
+            )}
             <img
               src={postHero}
               alt=""
               width="800"
               height="500"
-              class="w-full h-auto aspect-[8/5] object-cover"
+              class={`w-full h-auto aspect-[8/5] object-cover ${postHeroVideo ? 'motion-safe:opacity-0' : ''}`}
               loading="eager"
               fetchpriority="high"
             />
