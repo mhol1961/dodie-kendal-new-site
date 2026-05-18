@@ -21,11 +21,13 @@ const related = all.filter((p) => p.slug !== post.slug).slice(0, 2);
 const heroBySlug: Record<string, string> = {
   'what-happens-in-a-qhht-session': '/video/hourglass-time-poster.jpg',
   'past-life-regression-vs-qhht': '/photos/hero-milky-way.jpg',
-  'how-to-prepare-for-your-first-quantum-healing-session': '/photos/insight-notebook.jpg',
-  'choosing-a-qhht-practitioner': '/photos/insight-compass.jpg',
+  'how-to-prepare-for-your-first-quantum-healing-session': '/video/fountain-pen-write-poster.jpg',
+  'choosing-a-qhht-practitioner': '/video/compass-needle-poster.jpg',
 };
 const heroVideoBySlug: Record<string, string | undefined> = {
   'what-happens-in-a-qhht-session': '/video/hourglass-time.mp4',
+  'how-to-prepare-for-your-first-quantum-healing-session': '/video/fountain-pen-write.mp4',
+  'choosing-a-qhht-practitioner': '/video/compass-needle.mp4',
 };
 const postHero = heroBySlug[post.slug];
 const postHeroVideo = heroVideoBySlug[post.slug];

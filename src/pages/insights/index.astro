@@ -19,12 +19,12 @@ const posts = (await getCollection('insights', ({ data }) => !data.draft).catch(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 
-// Map slug → real photograph
+// Map slug → poster image (uses Seedance video poster stills where available)
 const heroBySlug: Record<string, string> = {
-  'what-happens-in-a-qhht-session': '/photos/insight-hourglass.jpg',
+  'what-happens-in-a-qhht-session': '/video/hourglass-time-poster.jpg',
   'past-life-regression-vs-qhht': '/photos/hero-milky-way.jpg',
-  'how-to-prepare-for-your-first-quantum-healing-session': '/photos/insight-notebook.jpg',
-  'choosing-a-qhht-practitioner': '/photos/insight-compass.jpg',
+  'how-to-prepare-for-your-first-quantum-healing-session': '/video/fountain-pen-write-poster.jpg',
+  'choosing-a-qhht-practitioner': '/video/compass-needle-poster.jpg',
 };
 
 const blogSchema = {

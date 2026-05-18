@@ -36,17 +36,30 @@ const {
 <section class="section-y bg-bg-base">
   <div class="container-default">
     <div class="grid items-stretch gap-12 md:grid-cols-12 md:gap-16">
-      <!-- Photo column — spans 5 of 12, overlaps the copy column visually -->
+      <!-- Photo column — spans 5 of 12, with subtle linen-light video atmospherics behind -->
       <div class="md:col-span-5 lg:col-span-5">
         <div class="relative">
-          <span aria-hidden="true" class="absolute -inset-8 -z-10 rounded-[36% 64% 28% 72% / 38% 32% 68% 62%] bg-gradient-to-br from-teal/20 via-brand/15 to-transparent blur-2xl"></span>
+          <!-- Linen-light atmospheric video, very low opacity behind the photo -->
+          <div aria-hidden="true" class="absolute -inset-10 -z-10 overflow-hidden rounded-3xl">
+            <video
+              src="/video/linen-light.mp4"
+              poster="/video/linen-light-poster.jpg"
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-multiply motion-reduce:hidden"
+            />
+            <div class="absolute inset-0 bg-gradient-to-br from-teal/20 via-brand/15 to-transparent blur-2xl"></div>
+          </div>
           <img
             src={photoSrc}
             alt={photoAlt}
             width="900"
             height="1100"
             loading="lazy"
-            class="w-full h-auto aspect-[9/11] object-cover rounded-lg shadow-[0_30px_60px_-20px_oklch(0.18_0.018_240_/_0.35)]"
+            class="relative w-full h-auto aspect-[9/11] object-cover rounded-lg shadow-[0_30px_60px_-20px_oklch(0.18_0.018_240_/_0.4)]"
           />
           <!-- Credential overlay strip on the photo -->
           <div class="absolute bottom-5 left-5 right-5 rounded-md bg-bg-base/95 backdrop-blur px-4 py-3 shadow-md border border-border-subtle">

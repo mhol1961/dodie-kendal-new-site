@@ -11,8 +11,10 @@ interface Props {
   subhead?: string;
   cta: { label: string; href: string };
   trustLine?: string;
-  /** Background photo path. Defaults to /photos/hero-milky-way.jpg (cosmic-warm). */
+  /** Background poster image. Default: doorway-opens poster (threshold). */
   bgImage?: string;
+  /** Background video. Default: doorway-opens.mp4 — threshold-opening metaphor. */
+  bgVideo?: string;
   bgPosition?: string;
 }
 
@@ -24,20 +26,35 @@ const {
   subhead,
   cta,
   trustLine,
-  bgImage = '/photos/hero-milky-way.jpg',
+  bgImage = '/video/doorway-opens-poster.jpg',
+  bgVideo = '/video/doorway-opens.mp4',
   bgPosition = 'center',
 } = Astro.props;
 ---
 <section class="relative isolate overflow-hidden bg-bg-inverse-deeper py-28 md:py-36 text-inverse">
-  <!-- Photographic background -->
+  <!-- Photographic background (poster + reduced-motion fallback) -->
   <img
     src={bgImage}
     alt=""
     aria-hidden="true"
     loading="lazy"
-    class="absolute inset-0 z-0 h-full w-full object-cover opacity-90"
+    class={`absolute inset-0 z-0 h-full w-full object-cover opacity-90 ${bgVideo ? 'motion-safe:opacity-0' : ''}`}
     style={`object-position: ${bgPosition};`}
   />
+  {bgVideo && (
+    <video
+      src={bgVideo}
+      poster={bgImage}
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      aria-hidden="true"
+      class="absolute inset-0 z-0 h-full w-full object-cover opacity-90 motion-reduce:hidden"
+      style={`object-position: ${bgPosition};`}
+    />
+  )}
   <!-- Dark gradient veil for legibility -->
   <div
     aria-hidden="true"

@@ -183,17 +183,28 @@ function shouldBreakAfter(idx: number): boolean {
           )}
           {shouldBreakAfter(idx) && (
             <figure class="my-16 -mx-4 sm:-mx-6 md:-mx-12">
-              <div class="relative">
+              <div class="relative overflow-hidden rounded-lg shadow-[0_30px_60px_-20px_oklch(0.18_0.018_240_/_0.4)]">
                 <span aria-hidden="true" class="absolute -inset-4 -z-10 rounded-lg bg-gradient-to-br from-teal/15 via-brand/15 to-transparent blur-3xl"></span>
                 <img
-                  src="/dodie-portrait.jpg"
-                  alt="Dodie Kendall portrait"
+                  src="/video/florida-sunrise-poster.jpg"
+                  alt="Florida coast at sunrise — palm fronds framing the horizon"
                   loading="lazy"
-                  class="w-full aspect-[16/10] object-cover object-top rounded-lg shadow-[0_30px_60px_-20px_oklch(0.18_0.018_240_/_0.4)]"
+                  class="w-full aspect-[16/10] object-cover motion-safe:opacity-0"
+                />
+                <video
+                  src="/video/florida-sunrise.mp4"
+                  poster="/video/florida-sunrise-poster.jpg"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                  aria-hidden="true"
+                  class="absolute inset-0 w-full h-full object-cover motion-reduce:hidden"
                 />
               </div>
               <figcaption class="mt-3 text-center text-xs uppercase tracking-[0.22em] text-ink-muted">
-                South Florida · Practicing since the discovery
+                South Florida sunrise — where the practice was born
               </figcaption>
             </figure>
           )}
