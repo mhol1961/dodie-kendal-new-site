@@ -57,8 +57,9 @@
     --border-subtle:     0.88 0.01 70;
     --border-strong:     0.75 0.02 65;
 
-    /* Focus ring */
-    --focus-ring:        0 0 0 3px oklch(0.55 0.14 32 / 0.3);
+    /* Focus ring — two-layer to clear 3:1 against bg-base, bg-raised, and brand surfaces.
+       Inner halo separates the ring from the focused element; outer ring is the brand stroke. */
+    --focus-ring:        0 0 0 2px oklch(var(--bg-base)), 0 0 0 4px oklch(0.55 0.14 32);
   }
 
   html {
