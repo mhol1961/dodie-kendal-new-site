@@ -1,29 +1,159 @@
 ---
-// Sticky header with logo, nav, and primary CTA.
-// Backdrop blur engages once scrollY > 12px (handled by a small island).
+/**
+ * Header — sticky, scroll-aware backdrop blur, keyboard-accessible mobile menu.
+ * DESIGN.md §Layout: 4-column desktop nav, hamburger -> full-screen overlay on mobile.
+ */
+const nav = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
+  { label: 'QHHT', href: '/qhht' },
+  { label: 'FAQ', href: '/faq' },
+  { label: 'Insights', href: '/insights' },
+  { label: 'Contact', href: '/contact' },
+];
+const pathname = Astro.url.pathname;
+function isActive(href: string): boolean {
+  if (href === '/') return pathname === '/';
+  return pathname.startsWith(href);
+}
 ---
-<header class="sticky top-0 z-40 bg-bg-base/80 backdrop-blur-md border-b border-border-subtle">
-  <div class="container-default flex items-center justify-between h-16">
-    <a href="/" class="flex items-center gap-3 group" aria-label="Dodie Kendall QHHT, home">
+<header id="site-header" class="sticky top-0 z-40 border-b border-border-subtle bg-bg-base/90 transition-[background-color,backdrop-filter] duration-base ease-standard">
+  <div class="container-default flex h-16 items-center justify-between">
+    <a href="/" class="group flex items-center gap-3" aria-label="Dodie Kendall QHHT, home">
       <img src="/logo.svg" alt="" width="40" height="40" class="rounded-full" />
-      <span class="font-display text-xl tracking-wide text-brand group-hover:text-brand-hover transition-colors">
+      <span class="font-display text-xl tracking-wide text-ink transition-colors group-hover:text-brand">
         Dodie Kendall
       </span>
     </a>
-    <nav aria-label="Primary" class="hidden md:flex items-center gap-8 text-sm">
-      <a href="/" class="hover:text-brand transition-colors">Home</a>
-      <a href="/about" class="hover:text-brand transition-colors">About</a>
-      <a href="/qhht" class="hover:text-brand transition-colors">QHHT</a>
-      <a href="/faq" class="hover:text-brand transition-colors">FAQ</a>
-      <a href="/insights" class="hover:text-brand transition-colors">Insights</a>
-      <a href="/contact" class="hover:text-brand transition-colors">Contact</a>
+
+    <nav aria-label="Primary" class="hidden items-center gap-8 text-sm md:flex">
+      {nav.map((item) => (
+        <a
+          href={item.href}
+          aria-current={isActive(item.href) ? 'page' : undefined}
+          class={`transition-colors ${isActive(item.href) ? 'text-brand' : 'text-ink-secondary hover:text-brand'}`}
+        >
+          {item.label}
+        </a>
+      ))}
     </nav>
-    <a
-      href="/book"
-      class="inline-flex items-center justify-center rounded-pill bg-brand text-ink-inverse px-5 py-2 text-sm font-medium shadow-sm hover:bg-brand-hover hover:shadow-md transition-all"
-    >
-      Book a Session
-    </a>
-    <!-- TODO Phase 3: hamburger menu for <md -->
+
+    <div class="flex items-center gap-3">
+      <a
+        href="/book"
+        class="hidden rounded-pill bg-brand px-5 py-2 text-sm font-medium text-ink-inverse shadow-sm transition-all hover:bg-brand-hover hover:shadow-md md:inline-flex"
+      >
+        Book a Session
+      </a>
+
+      <button
+        id="mobile-menu-button"
+        type="button"
+        aria-label="Open menu"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-pill border border-border-strong text-ink md:hidden"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="4" y1="7" x2="20" y2="7" />
+          <line x1="4" y1="12" x2="20" y2="12" />
+          <line x1="4" y1="17" x2="20" y2="17" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile overlay menu -->
+  <div
+    id="mobile-menu"
+    hidden
+    class="fixed inset-0 z-50 flex flex-col bg-bg-base/98 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Site navigation"
+  >
+    <div class="container-default flex h-16 items-center justify-between">
+      <a href="/" class="flex items-center gap-3" aria-label="Dodie Kendall QHHT, home">
+        <img src="/logo.svg" alt="" width="40" height="40" class="rounded-full" />
+        <span class="font-display text-xl text-ink">Dodie Kendall</span>
+      </a>
+      <button
+        id="mobile-menu-close"
+        type="button"
+        aria-label="Close menu"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-pill border border-border-strong text-ink"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="6" y1="6" x2="18" y2="18" />
+          <line x1="18" y1="6" x2="6" y2="18" />
+        </svg>
+      </button>
+    </div>
+    <nav class="container-default flex flex-1 flex-col justify-center gap-2" aria-label="Mobile primary">
+      {nav.map((item) => (
+        <a
+          href={item.href}
+          aria-current={isActive(item.href) ? 'page' : undefined}
+          class={`block py-3 font-display text-3xl ${isActive(item.href) ? 'text-brand' : 'text-ink hover:text-brand'}`}
+        >
+          {item.label}
+        </a>
+      ))}
+      <a
+        href="/book"
+        class="mt-8 inline-flex w-fit items-center justify-center rounded-pill bg-brand px-7 py-3 text-base font-medium text-ink-inverse shadow-md hover:bg-brand-hover hover:shadow-glow"
+      >
+        Book a Session
+      </a>
+    </nav>
   </div>
 </header>
+
+<script is:inline>
+  (function () {
+    const header = document.getElementById('site-header');
+    const button = document.getElementById('mobile-menu-button');
+    const closeBtn = document.getElementById('mobile-menu-close');
+    const menu = document.getElementById('mobile-menu');
+    if (!header || !button || !menu || !closeBtn) return;
+
+    // Scroll-aware blur — adds heavier backdrop blur after a small scroll threshold
+    let lastScroll = -1;
+    function onScroll() {
+      const y = window.scrollY;
+      if ((y > 12) === (lastScroll > 12)) return;
+      lastScroll = y;
+      if (y > 12) {
+        header.classList.add('backdrop-blur-md', 'shadow-sm');
+      } else {
+        header.classList.remove('backdrop-blur-md', 'shadow-sm');
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Mobile menu open/close — focus management + Esc to close + body scroll lock
+    let lastFocus = null;
+    function openMenu() {
+      lastFocus = document.activeElement;
+      menu.hidden = false;
+      button.setAttribute('aria-expanded', 'true');
+      document.documentElement.classList.add('overflow-hidden');
+      const firstLink = menu.querySelector('a, button');
+      if (firstLink) firstLink.focus();
+    }
+    function closeMenu() {
+      menu.hidden = true;
+      button.setAttribute('aria-expanded', 'false');
+      document.documentElement.classList.remove('overflow-hidden');
+      if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+    }
+    button.addEventListener('click', openMenu);
+    closeBtn.addEventListener('click', closeMenu);
+    menu.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu();
+    });
+    // Auto-close after a nav click
+    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeMenu));
+  })();
+</script>

@@ -1,0 +1,23 @@
+---
+/**
+ * Badge — small label for category tags, status pills, eyebrow accents.
+ */
+type Tone = 'brand' | 'sage' | 'neutral' | 'accent';
+
+interface Props {
+  tone?: Tone;
+  class?: string;
+}
+
+const { tone = 'neutral', class: className = '' } = Astro.props;
+
+const toneClass = {
+  brand: 'bg-brand/10 text-brand border-brand/30',
+  sage: 'bg-sage/15 text-ink border-sage/40',
+  accent: 'bg-accent/15 text-ink border-accent/40',
+  neutral: 'bg-bg-sunken text-ink-secondary border-border-subtle',
+}[tone];
+---
+<span class={`inline-flex items-center gap-1.5 rounded-pill border px-3 py-1 text-xs font-medium uppercase tracking-wider ${toneClass} ${className}`.trim()}>
+  <slot />
+</span>

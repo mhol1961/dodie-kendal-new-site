@@ -1,32 +1,181 @@
 ---
 import Base from '@layouts/Base.astro';
 import Hero from '@components/Hero.astro';
+import PullQuote from '@components/PullQuote.astro';
 import { getSeo } from '@lib/seo';
 import { breadcrumb } from '@lib/schema';
+
+const SITE_URL = import.meta.env.SITE_URL || 'https://dodiekendall.com';
 
 const seo = getSeo({
   path: '/about',
   title: 'About Dodie Kendall',
-  description: "From Catholic upbringing to Dolores Cannon's QHHT. Read Dodie Kendall's story and approach to Quantum Healing Hypnosis.",
+  description:
+    "How Dodie Kendall — Florida-raised, Catholic-Pentecostal-then-universalist — came to QHHT and the simple truth that only love exists.",
 });
+
+const aboutPageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  url: `${SITE_URL}/about`,
+  mainEntity: { '@id': `${SITE_URL}/#person` },
+};
+
 const schemas = [
-  { '@context': 'https://schema.org', '@type': 'AboutPage', url: seo.canonical },
-  breadcrumb([{ name: 'Home', href: '/' }, { name: 'About' }]),
+  aboutPageSchema,
+  breadcrumb([
+    { name: 'Home', href: '/' },
+    { name: 'About' },
+  ]),
+];
+
+interface BodyChapter { num: string; title: string; body: string[]; pullQuote?: undefined }
+interface QuoteChapter { pullQuote: string; num?: undefined; title?: undefined; body?: undefined }
+type Chapter = BodyChapter | QuoteChapter;
+
+const chapters: Chapter[] = [
+  {
+    num: '01',
+    title: 'The early years: ritual and questioning',
+    body: [
+      "I am a native Floridian, raised in the tradition of the Catholic Church. From baptism and CCD to Catholic High School, the structure of religion was always around me. Yet, inside, I felt a disconnect. The ceremonies often felt intimidating rather than comforting, and as a young woman, I struggled to find the spiritual side of the actions I was performing.",
+      "By my teens, I felt that church was simply for \"old people,\" and I stepped away to find my own way.",
+    ],
+  },
+  {
+    num: '02',
+    title: 'The search for something more',
+    body: [
+      "While teaching aerobics and navigating the typical unwise choices of youth, I met a young woman whose vibrant faith challenged my perceptions. She didn't fit my \"old person\" mold of religion. Following her lead, I found myself in a non-denominational Pentecostal church, witnessing things that both perplexed and intrigued me — tongues, dancing, and a raw, supernatural energy I hadn't seen before.",
+      "When asked the pivotal question — \"Dodie, do you know where you will go if you died tonight?\" — I realized I didn't have an answer. Motivated by a mix of curiosity and the fear of eternal damnation, I invited Jesus into my heart. It was a time of high energy and \"Whooo hooo!\" moments, but it also brought my first real lesson in the complexity of healing.",
+    ],
+  },
+  {
+    pullQuote:
+      "The promise was that the prayer of faith shall heal the sick. My friend and I went to lay hands on him. His physical body did not heal; he passed on to the next dimension.",
+  },
+  {
+    num: '03',
+    title: 'A lesson in healing and transition',
+    body: [
+      "I remember vividly when my brother's friend was in the ICU with acute leukemia. Armed with the promise of scripture, I prayed. He did not heal. I was told he was in heaven because of our prayers, but this was a seed of doubt. A lot of things began to feel out of alignment.",
+      "I eventually left that church, but for years I carried the heavy belief that there was only \"one way\" to God.",
+    ],
+  },
+  {
+    num: '04',
+    title: 'The shift: from fear to universal love',
+    body: [
+      "Life happened. Through the ups and downs, I met beautiful, compassionate people from all walks of life — Buddhists, Muslims, Hindus, and many others. The idea that a loving God would send these souls to eternal damnation no longer resonated with my own soul.",
+      "I chose to abandon that belief system for a new perspective: God is Energy. A loving, universal energy that encompasses all humans. In this space, only love exists, and free will is the greatest gift we have been given.",
+    ],
+  },
+  {
+    pullQuote: "Only love exists.",
+  },
+  {
+    num: '05',
+    title: 'Discovering the Sacred Technology',
+    body: [
+      "I always held onto the scripture that we would do \"greater things\" than those who came before us. I knew we were incredible, sacred, and intelligent beings — but I didn't know how to tap into that potential until I was divinely introduced to Dolores Cannon's QHHT.",
+      "The moment I discovered it, I had an inner knowing. This was the modality that explained everything. It was the bridge between my spiritual past and the healing future I was meant to facilitate.",
+    ],
+  },
+  {
+    num: '06',
+    title: 'The invitation',
+    body: [
+      "Today, I am here to help you experience the Creator's gift: the connection to your Higher Self, the Subconscious, the Holy Spirit. Whatever name you choose to give it, it is the voice that guides us.",
+      "I am the invitation, not the insistence. I speak from love, not urgency. Healing flows through me, not from me.",
+      "My life has changed in beautiful ways because I have learned to trust this path and receive the insights needed to live life to the fullest. This Sacred Technology is a gift from the Creator of the Universe that cares about every detail of your current lifetime — and every other lifetime you have ever lived.",
+      "Only love exists. I invite you to allow me to guide you today, so you can finally receive the messages your Higher Self has been waiting for you to hear.",
+    ],
+  },
 ];
 ---
 <Base seo={seo} schemas={schemas}>
   <Hero
+    variant="about"
     eyebrow="About"
     headline="The path to purpose — from tradition to transcendence."
     subhead="How I came to QHHT, and why I believe I was born to do this work."
   />
-  <!--
-    TODO Phase 5: render the 6 chapters from COPY-DECK.md §About in vertical scroll-triggered cards
-    with pull quotes between every 2 chapters.
-  -->
-  <section class="section-y">
+
+  <section class="section-y bg-bg-base">
     <div class="container-prose">
-      <p class="text-ink-muted text-sm uppercase tracking-wider text-center">[Chapters render here — copy lives in COPY-DECK.md §About]</p>
+      {chapters.map((ch) =>
+        ch.pullQuote !== undefined ? (
+          <PullQuote quote={ch.pullQuote} />
+        ) : (
+          <article class="reveal-on-scroll mb-16">
+            <p class="text-xs uppercase tracking-wider text-ink-muted">Chapter {ch.num}</p>
+            <h2 class="mt-2 font-display text-3xl md:text-4xl">{ch.title}</h2>
+            <div class="mt-6 space-y-5 text-lg leading-relaxed text-ink-secondary">
+              {ch.body!.map((p) => <p>{p}</p>)}
+            </div>
+          </article>
+        )
+      )}
+    </div>
+  </section>
+
+  <section class="section-y bg-sunrise">
+    <div class="container-default text-center">
+      <h2 class="font-display text-4xl md:text-5xl">Your Higher Self is already speaking.</h2>
+      <p class="mx-auto mt-4 max-w-xl text-lg text-ink-secondary">Are you ready to listen?</p>
+      <div class="mt-8">
+        <a
+          href="/book"
+          class="inline-flex items-center justify-center rounded-pill bg-brand px-8 py-4 text-lg font-medium text-ink-inverse shadow-md transition-all hover:bg-brand-hover hover:shadow-glow"
+        >
+          Book a Session
+        </a>
+      </div>
     </div>
   </section>
 </Base>
+
+<style>
+  .reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 600ms ease, transform 600ms ease;
+  }
+  .reveal-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-on-scroll {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll('.reveal-on-scroll').forEach((el) => el.classList.add('is-visible'));
+      return;
+    }
+    if (!('IntersectionObserver' in window)) {
+      document.querySelectorAll('.reveal-on-scroll').forEach((el) => el.classList.add('is-visible'));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -80px 0px', threshold: 0.05 }
+    );
+    document.querySelectorAll('.reveal-on-scroll').forEach((el) => io.observe(el));
+  })();
+</script>

@@ -4,47 +4,65 @@ import { getSeo } from '@lib/seo';
 import { breadcrumb } from '@lib/schema';
 import { getCollection } from 'astro:content';
 
+const SITE_URL = import.meta.env.SITE_URL || 'https://dodiekendall.com';
+
 const seo = getSeo({
   path: '/insights',
   title: 'Insights',
-  description: 'Articles on QHHT, the Subconscious, and the work of Quantum Healing Hypnosis.',
+  description:
+    "Articles on QHHT, the Subconscious, and the practical side of Quantum Healing Hypnosis with Dodie Kendall.",
 });
 
-const posts = (await getCollection('insights', ({ data }) => !data.draft)).sort(
+const posts = (await getCollection('insights', ({ data }) => !data.draft).catch(() => [])).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 
+const blogSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  url: `${SITE_URL}/insights`,
+  publisher: { '@id': `${SITE_URL}/#business` },
+};
+
 const schemas = [
-  { '@context': 'https://schema.org', '@type': 'Blog', url: seo.canonical },
-  breadcrumb([{ name: 'Home', href: '/' }, { name: 'Insights' }]),
+  blogSchema,
+  breadcrumb([
+    { name: 'Home', href: '/' },
+    { name: 'Insights' },
+  ]),
 ];
 ---
 <Base seo={seo} schemas={schemas}>
-  <section class="section-y">
+  <section class="section-y bg-bg-base">
     <div class="container-default max-w-5xl">
-      <p class="text-xs uppercase tracking-wider text-ink-muted mb-3">Insights</p>
-      <h1 class="font-display text-ink">Reflections on the work.</h1>
+      <p class="text-xs uppercase tracking-wider text-ink-muted">Insights</p>
+      <h1 class="mt-2 font-display">Reflections on the work.</h1>
+      <p class="mt-4 max-w-prose text-lg text-ink-secondary">
+        Short, practical writing on QHHT — what a session looks like, how to prepare, what to think about when choosing a practitioner.
+      </p>
 
       {posts.length === 0 ? (
-        <p class="mt-12 text-ink-muted text-sm uppercase tracking-wider text-center">
-          [Posts render here — first cluster drafts per SEO-PLAN.md §7]
-        </p>
+        <p class="mt-16 text-ink-muted">Posts are being added — check back soon.</p>
       ) : (
-        <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <ul class="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3" role="list">
           {posts.map((post) => (
-            <article class="bg-bg-raised rounded-lg shadow-sm border border-border-subtle p-6 hover:shadow-md transition-shadow">
-              <h2 class="font-display text-2xl text-ink">
-                <a href={`/insights/${post.slug}`} class="hover:text-brand transition-colors">
+            <li>
+              <a
+                href={`/insights/${post.slug}/`}
+                class="group flex h-full flex-col rounded-lg border border-border-subtle bg-bg-raised p-6 shadow-sm transition-shadow hover:shadow-md focus-visible:shadow-md"
+              >
+                <p class="text-xs uppercase tracking-wider text-ink-muted">
+                  {post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </p>
+                <h2 class="mt-3 font-display text-2xl text-ink transition-colors group-hover:text-brand">
                   {post.data.title}
-                </a>
-              </h2>
-              <p class="mt-3 text-ink-secondary text-sm">{post.data.description}</p>
-              <p class="mt-4 text-xs text-ink-muted">
-                {post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-              </p>
-            </article>
+                </h2>
+                <p class="mt-3 flex-1 text-ink-secondary">{post.data.description}</p>
+                <p class="mt-5 text-sm text-brand">Read post →</p>
+              </a>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   </section>

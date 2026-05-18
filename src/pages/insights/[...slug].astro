@@ -5,12 +5,18 @@ import { blogPosting, breadcrumb } from '@lib/schema';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('insights', ({ data }) => !data.draft);
+  const posts = await getCollection('insights', ({ data }) => !data.draft).catch(() => []);
   return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
 }
 
 const { post } = Astro.props;
 const { Content } = await post.render();
+
+// Related: up to 2 most recent posts that aren't this one
+const all = (await getCollection('insights', ({ data }) => !data.draft).catch(() => [])).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const related = all.filter((p) => p.slug !== post.slug).slice(0, 2);
 
 const seo = getSeo({
   path: `/insights/${post.slug}`,
@@ -36,27 +42,139 @@ const schemas = [
 ];
 ---
 <Base seo={seo} schemas={schemas}>
-  <article class="section-y">
+  <article class="section-y bg-bg-base">
     <div class="container-prose">
-      <p class="text-xs uppercase tracking-wider text-ink-muted mb-3">Insights</p>
-      <h1 class="font-display text-ink">{post.data.title}</h1>
+      <p class="text-xs uppercase tracking-wider text-ink-muted">
+        <a href="/insights" class="hover:text-brand">Insights</a>
+      </p>
+      <h1 class="mt-2 font-display">{post.data.title}</h1>
       <p class="mt-4 text-sm text-ink-muted">
         {post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-        {' · by Dodie Kendall'}
+        {' · '}
+        by Dodie Kendall
       </p>
+
       {post.data.answerCapsule && (
-        <aside class="mt-8 bg-bg-raised border-l-4 border-brand p-6 rounded-md">
-          <p class="text-xs uppercase tracking-wider text-brand font-medium mb-2">Quick Answer</p>
+        <aside class="mt-8 rounded-lg border-l-4 border-brand bg-bg-raised p-6 shadow-sm">
+          <p class="mb-2 text-xs font-medium uppercase tracking-wider text-brand">Quick answer</p>
           <p class="text-ink leading-relaxed">{post.data.answerCapsule}</p>
         </aside>
       )}
-      <div class="prose prose-lg mt-8 max-w-none text-ink-secondary leading-relaxed">
+
+      <div class="prose-content mt-10 space-y-6 text-lg leading-relaxed text-ink-secondary">
         <Content />
       </div>
+
       <hr class="my-12 border-border-subtle" />
-      <p class="text-sm text-ink-muted italic">
+
+      <p class="text-sm italic text-ink-muted">
         The content of this article is for informational purposes only and does not constitute medical, psychological, or legal advice.
       </p>
     </div>
   </article>
+
+  {related.length > 0 && (
+    <section class="section-y bg-bg-sunken">
+      <div class="container-default max-w-5xl">
+        <header class="mb-10">
+          <p class="text-xs uppercase tracking-wider text-ink-muted">Keep reading</p>
+          <h2 class="mt-2 font-display text-3xl">Related posts</h2>
+        </header>
+        <ul class="grid gap-6 md:grid-cols-2" role="list">
+          {related.map((p) => (
+            <li>
+              <a
+                href={`/insights/${p.slug}/`}
+                class="group block h-full rounded-lg border border-border-subtle bg-bg-raised p-6 shadow-sm transition-shadow hover:shadow-md"
+              >
+                <p class="text-xs uppercase tracking-wider text-ink-muted">
+                  {p.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </p>
+                <h3 class="mt-3 font-display text-xl text-ink transition-colors group-hover:text-brand">{p.data.title}</h3>
+                <p class="mt-3 text-ink-secondary">{p.data.description}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <section class="section-y bg-sunrise">
+    <div class="container-default text-center">
+      <h2 class="font-display text-4xl md:text-5xl">Ready for a session?</h2>
+      <div class="mt-8">
+        <a
+          href="/book"
+          class="inline-flex items-center justify-center rounded-pill bg-brand px-8 py-4 text-lg font-medium text-ink-inverse shadow-md transition-all hover:bg-brand-hover hover:shadow-glow"
+        >
+          Book a Session
+        </a>
+      </div>
+    </div>
+  </section>
 </Base>
+
+<style is:global>
+  /* Prose styles for markdown content */
+  .prose-content h2 {
+    font-family: 'Cormorant Garamond', Cormorant, Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(1.875rem, 1.5vw + 1rem, 2.25rem);
+    color: oklch(var(--ink-primary));
+    line-height: 1.2;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+  }
+  .prose-content h3 {
+    font-family: 'Cormorant Garamond', Cormorant, Georgia, serif;
+    font-weight: 500;
+    font-size: 1.5rem;
+    color: oklch(var(--ink-primary));
+    line-height: 1.25;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .prose-content p {
+    margin-bottom: 1.25rem;
+  }
+  .prose-content ul,
+  .prose-content ol {
+    margin: 1.25rem 0 1.25rem 1.5rem;
+    padding-left: 0.25rem;
+  }
+  .prose-content ul { list-style: disc; }
+  .prose-content ol { list-style: decimal; }
+  .prose-content li { margin-bottom: 0.5rem; }
+  .prose-content a {
+    color: oklch(var(--brand-primary));
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-content a:hover {
+    color: oklch(var(--brand-primary-hover));
+  }
+  .prose-content strong {
+    color: oklch(var(--ink-primary));
+    font-weight: 600;
+  }
+  .prose-content em { font-style: italic; }
+  .prose-content blockquote {
+    border-left: 3px solid oklch(var(--brand-accent));
+    margin: 1.5rem 0;
+    padding: 0.25rem 0 0.25rem 1.25rem;
+    font-style: italic;
+    color: oklch(var(--ink-primary));
+  }
+  .prose-content code {
+    background: oklch(var(--bg-sunken));
+    padding: 0.1em 0.4em;
+    border-radius: 0.25rem;
+    font-size: 0.9em;
+  }
+  .prose-content hr {
+    border: 0;
+    border-top: 1px solid oklch(var(--border-subtle));
+    margin: 3rem 0;
+  }
+</style>

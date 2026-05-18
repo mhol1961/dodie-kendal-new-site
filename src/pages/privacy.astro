@@ -1,21 +1,122 @@
 ---
 import Base from '@layouts/Base.astro';
 import { getSeo } from '@lib/seo';
+import { breadcrumb } from '@lib/schema';
 
 const seo = getSeo({
   path: '/privacy',
   title: 'Privacy Policy',
   description: 'How Dodie Kendall QHHT collects, uses, and protects your information.',
 });
+
+const schemas = [breadcrumb([{ name: 'Home', href: '/' }, { name: 'Privacy' }])];
+const lastUpdated = '2026-05-17';
 ---
-<Base seo={seo}>
-  <section class="section-y">
+<Base seo={seo} schemas={schemas}>
+  <section class="section-y bg-bg-base">
     <div class="container-prose">
-      <h1 class="font-display text-ink">Privacy Policy</h1>
-      <!-- TODO Phase 8: full counsel-reviewed Privacy Policy text. Notes in PRIVACY-NOTES.md inform the draft. -->
-      <p class="mt-6 text-ink-secondary">
-        <em>Privacy Policy text is pending counsel/template review. See <code>PRIVACY-NOTES.md</code> for the data-flow notes that inform the final policy.</em>
-      </p>
+      <p class="text-xs uppercase tracking-wider text-ink-muted">Legal</p>
+      <h1 class="mt-2 font-display">Privacy Policy</h1>
+      <p class="mt-3 text-sm text-ink-muted">Last updated: {lastUpdated}</p>
+
+      <div class="mt-6 rounded-lg border border-warning/30 bg-warning/10 p-4 text-sm text-ink-secondary">
+        <strong class="font-medium text-ink">Draft notice:</strong> This policy is in draft form and is being finalized by counsel. The substance below describes our actual data practices accurately, but the legal language is subject to revision.
+      </div>
+
+      <div class="prose-content mt-10 space-y-8 text-ink-secondary leading-relaxed">
+        <section>
+          <h2 class="font-display text-2xl text-ink">1. Who we are</h2>
+          <p class="mt-3">Dodie Kendall QHHT ("we," "us," or "Dodie") is a sole practitioner Quantum Healing Hypnosis Technique practice based in Palm Beach County, Florida. We operate this website at dodiekendall.com to share information about the practice and accept session bookings.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">2. Information we collect</h2>
+          <p class="mt-3">We collect only what we need to respond to you and to coordinate sessions:</p>
+          <ul class="mt-3 list-disc space-y-2 pl-6">
+            <li><strong>Contact-form submissions.</strong> Your name, email, optional phone number, your message, and your communication consents.</li>
+            <li><strong>Lead-magnet opt-in.</strong> Your first name, email, and your consent to receive our pre-session prep guide.</li>
+            <li><strong>Booking details.</strong> Your name, email, phone, and deposit information are collected by our calendar partner (GoHighLevel) on the booking page.</li>
+            <li><strong>Analytics events.</strong> Anonymized page-view and click data through Plausible Analytics — no cookies, no cross-site tracking, no personal identifiers.</li>
+            <li><strong>Server logs.</strong> Standard request logs (IP, user agent, request path, timestamp) collected by our hosting provider for operational security.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">3. What we do not collect</h2>
+          <ul class="mt-3 list-disc space-y-2 pl-6">
+            <li>No advertising or retargeting pixels (no Facebook, Google Ads, etc.).</li>
+            <li>No session-replay or screen-recording tools.</li>
+            <li>No third-party tracking cookies.</li>
+            <li>No reverse-sync of contact data back to the website.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">4. How we use your information</h2>
+          <ul class="mt-3 list-disc space-y-2 pl-6">
+            <li>To respond to your inquiry and coordinate sessions.</li>
+            <li>To send the pre-session prep guide and follow-up materials when you opt in.</li>
+            <li>To send appointment confirmations, reminders, and aftercare communications.</li>
+            <li>Optional marketing communications only with your explicit opt-in.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">5. Third parties</h2>
+          <ul class="mt-3 list-disc space-y-2 pl-6">
+            <li><strong>GoHighLevel</strong> — our customer-relationship and booking platform. Acts as data processor; we are the data controller. Their privacy policy applies.</li>
+            <li><strong>Plausible Analytics</strong> — EU-hosted, privacy-first analytics. No cookies, no personal data.</li>
+            <li><strong>Cloudflare</strong> — hosting and DNS. Standard hosting agreement.</li>
+            <li><strong>Resend</strong> — transactional email fallback when our primary CRM is unavailable.</li>
+          </ul>
+          <p class="mt-3">We do not sell or rent your information.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">6. Session recordings</h2>
+          <p class="mt-3">QHHT sessions are recorded (audio only) with your explicit consent at the start of each session. Recordings are yours; we provide a private link for you to download. We do not share, excerpt, or use session recordings for any other purpose. Recordings are retained per Florida recordkeeping requirements unless you request earlier deletion.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">7. Cookies</h2>
+          <p class="mt-3">The site does not set tracking cookies. Cloudflare may set a security cookie (<code>__cf_bm</code>) for bot mitigation. Plausible analytics is cookie-free.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">8. Your rights</h2>
+          <p class="mt-3">You may request a copy of your data, request deletion, or opt out of marketing communications at any time by contacting Dodie at <a href="mailto:dodiekendall@gmail.com" class="text-brand underline">dodiekendall@gmail.com</a>. Every marketing email includes an unsubscribe link. California, Virginia, Colorado, and other state-law-protected residents have additional rights under their respective privacy laws.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">9. Retention</h2>
+          <ul class="mt-3 list-disc space-y-2 pl-6">
+            <li>Contact records: retained in our CRM until you request deletion.</li>
+            <li>Server logs: ~7 days (Cloudflare default).</li>
+            <li>Analytics data: 12 months (Plausible default).</li>
+            <li>Session recordings: retained per Florida professional-services recordkeeping guidance unless earlier deletion is requested.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">10. Security</h2>
+          <p class="mt-3">All form submissions travel over HTTPS. Sensitive credentials are stored server-side only, never exposed to the browser. Forms are rate-limited at the edge.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">11. Children</h2>
+          <p class="mt-3">This site is not directed at children under 18. We do not knowingly collect information from minors.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">12. Changes</h2>
+          <p class="mt-3">When this policy materially changes, the "Last updated" date above will be revised and material changes will be summarized at the top.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">13. Contact</h2>
+          <p class="mt-3">Questions about this policy? Reach Dodie at <a href="mailto:dodiekendall@gmail.com" class="text-brand underline">dodiekendall@gmail.com</a> or <a href="tel:+15612016918" class="text-brand underline">1-561-201-6918</a>.</p>
+        </section>
+      </div>
     </div>
   </section>
 </Base>

@@ -1,0 +1,126 @@
+---
+/**
+ * LeadMagnetGate — single-field email opt-in form posting to /api/lead-magnet.
+ * Progressive enhancement: works without JS (form action posts), uses JS for inline status.
+ */
+import Input from '@components/ui/Input.astro';
+
+interface Props {
+  heading?: string;
+  subhead?: string;
+  buttonLabel?: string;
+}
+
+const {
+  heading = 'Begin with a free pre-session prep guide.',
+  subhead = "Before you book, get my short guide to preparing for your first QHHT session — what to expect, how to think about your questions, and what makes a session deeply useful.",
+  buttonLabel = 'Send me the guide',
+} = Astro.props;
+---
+<section class="section-y bg-bg-base">
+  <div class="container-default">
+    <div class="mx-auto max-w-2xl rounded-lg border border-border-subtle bg-bg-raised p-8 shadow-md md:p-12">
+      <h2 class="font-display text-3xl">{heading}</h2>
+      <p class="mt-4 text-lg text-ink-secondary">{subhead}</p>
+
+      <form
+        id="lead-magnet-form"
+        action="/api/lead-magnet"
+        method="POST"
+        class="mt-8 flex flex-col gap-4 sm:flex-row"
+        novalidate
+      >
+        <div class="flex-1">
+          <Input
+            id="lead-email"
+            name="email"
+            type="email"
+            label="Email address"
+            visuallyHidden
+            required
+            placeholder="you@somewhere.com"
+            autocomplete="email"
+          />
+        </div>
+        <Input
+          id="lead-first-name"
+          name="firstName"
+          label="First name"
+          visuallyHidden
+          ariaHidden
+          tabIndex={-1}
+          inputClass="hidden"
+        />
+        <Input
+          id="lead-trap"
+          name="website"
+          label="Leave blank"
+          visuallyHidden
+          ariaHidden
+          tabIndex={-1}
+          inputClass="hidden"
+        />
+        <input type="hidden" name="consentMarketing" value="true" />
+        <button
+          type="submit"
+          class="inline-flex items-center justify-center rounded-pill bg-brand px-7 py-3 font-medium text-ink-inverse shadow-md transition-all hover:bg-brand-hover hover:shadow-glow"
+        >
+          {buttonLabel}
+        </button>
+      </form>
+      <p class="mt-3 text-xs text-ink-muted">
+        We'll never share your address. Unsubscribe any time.
+      </p>
+      <p id="lead-magnet-status" class="mt-4 text-sm" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    const form = document.getElementById('lead-magnet-form');
+    const status = document.getElementById('lead-magnet-status');
+    const firstName = document.getElementById('lead-first-name');
+    if (!form || !status || !firstName) return;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = form.querySelector('[name="email"]');
+      if (!email || !email.value) {
+        status.textContent = 'Please add your email.';
+        status.className = 'mt-4 text-sm text-error';
+        return;
+      }
+
+      // Default firstName to "Friend" so we don't lose the opt-in if it's empty
+      const fn = firstName.value && firstName.value.trim() ? firstName.value.trim() : 'Friend';
+
+      status.textContent = 'Sending…';
+      status.className = 'mt-4 text-sm text-ink-muted';
+
+      try {
+        const res = await fetch('/api/lead-magnet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            firstName: fn,
+            email: email.value,
+            consentMarketing: true,
+            website: '',
+          }),
+        });
+        if (res.ok || res.status === 202) {
+          status.textContent = 'Beautiful. Check your inbox — the prep guide is on its way.';
+          status.className = 'mt-4 text-sm text-success';
+          form.reset();
+        } else {
+          status.textContent = 'Something went wrong. You can also email dodiekendall@gmail.com directly — that always works.';
+          status.className = 'mt-4 text-sm text-error';
+        }
+      } catch (err) {
+        status.textContent = 'Network error. Try again, or email dodiekendall@gmail.com directly.';
+        status.className = 'mt-4 text-sm text-error';
+      }
+    });
+  })();
+</script>

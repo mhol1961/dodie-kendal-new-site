@@ -1,33 +1,54 @@
 ---
-// Wraps Dodie's existing GHL calendar iframe in our card styling.
-const calendarId = import.meta.env.GHL_CALENDAR_ID;
+/**
+ * BookingEmbed — wraps Dodie's GHL calendar iframe in our card styling.
+ *
+ * IMPORTANT: This component does NOT read import.meta.env. The parent page must
+ * be SSR (prerender = false) and pass `calendarId` and `fallbackUrl` from
+ * `Astro.locals.runtime.env`. This way Cloudflare runtime env swaps take effect
+ * without a rebuild (see ADR-004 Option A — applied to the /book surface only).
+ */
+interface Props {
+  calendarId?: string;
+  fallbackUrl?: string;
+}
+
+const { calendarId, fallbackUrl = '' } = Astro.props;
+
 const embedUrl = calendarId
   ? `https://api.leadconnectorhq.com/widget/booking/${calendarId}`
   : null;
-const fallbackUrl = import.meta.env.BOOKING_CALENDAR_FALLBACK_URL ?? '';
 ---
-<div class="bg-bg-raised rounded-lg shadow-lg overflow-hidden border border-border-subtle">
+<div class="overflow-hidden rounded-lg border border-border-subtle bg-bg-raised shadow-lg">
   {embedUrl ? (
     <iframe
       src={embedUrl}
       title="Book a QHHT session with Dodie Kendall"
       loading="lazy"
       referrerpolicy="strict-origin-when-cross-origin"
-      style="width: 100%; min-height: 700px; border: 0;"
+      style="width: 100%; min-height: 720px; border: 0;"
     />
   ) : (
-    <div class="p-8 text-center">
-      <p class="text-ink-secondary mb-4">
-        Booking calendar is configured per <code>ENV.md</code>. To book directly, please contact Dodie:
+    <div class="p-8 text-center md:p-12">
+      <p class="text-xs uppercase tracking-wider text-ink-muted">Calendar setup pending</p>
+      <h3 class="mt-3 font-display text-2xl">Booking calendar configuration is in progress.</h3>
+      <p class="mx-auto mt-4 max-w-lg text-ink-secondary">
+        To book directly while the calendar is being configured, please contact Dodie:
       </p>
-      <p>
-        <a href="tel:+15612016918" class="text-brand hover:underline">1-561-201-6918</a>
-        {' · '}
-        <a href="mailto:dodiekendall@gmail.com" class="text-brand hover:underline">dodiekendall@gmail.com</a>
+      <p class="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-lg">
+        <a href="tel:+15612016918" class="text-brand underline hover:text-brand-hover">1-561-201-6918</a>
+        <span class="text-ink-muted" aria-hidden="true">·</span>
+        <a href="mailto:dodiekendall@gmail.com" class="text-brand underline hover:text-brand-hover">dodiekendall@gmail.com</a>
       </p>
       {fallbackUrl && (
-        <p class="mt-4">
-          <a href={fallbackUrl} class="text-brand hover:underline">Open calendar in a new window →</a>
+        <p class="mt-6">
+          <a
+            href={fallbackUrl}
+            class="inline-flex items-center justify-center rounded-pill bg-brand px-7 py-3 font-medium text-ink-inverse shadow-md transition-all hover:bg-brand-hover hover:shadow-glow"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open calendar in a new window →
+          </a>
         </p>
       )}
     </div>

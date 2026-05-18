@@ -1,0 +1,35 @@
+---
+/**
+ * Card — neutral container with rounded-lg corners and earned elevation.
+ * Use for testimonials, service blocks, booking embed shell, and feature callouts.
+ */
+type Tone = 'raised' | 'sunken' | 'flat';
+
+interface Props {
+  tone?: Tone;
+  class?: string;
+  /** Render with the elevation-md shadow per DESIGN.md §Elevation. Default true for "raised". */
+  elevated?: boolean;
+  as?: 'article' | 'section' | 'div';
+}
+
+const {
+  tone = 'raised',
+  class: className = '',
+  elevated,
+  as = 'div',
+} = Astro.props as Props;
+
+const toneClass: string = {
+  raised: 'bg-bg-raised border border-border-subtle',
+  sunken: 'bg-bg-sunken border border-border-subtle',
+  flat: 'bg-transparent',
+}[tone];
+
+const shouldElevate = elevated ?? tone === 'raised';
+const elevationClass = shouldElevate ? 'shadow-md' : '';
+const Tag = as;
+---
+<Tag class={`rounded-lg p-6 md:p-8 ${toneClass} ${elevationClass} ${className}`.trim()}>
+  <slot />
+</Tag>

@@ -1,0 +1,128 @@
+---
+/**
+ * ContactForm — posts to /api/contact.
+ * Full Name + Email + Phone (optional) + Message + two consent checkboxes + honeypot.
+ * Progressive enhancement: works without JS (form action posts).
+ */
+import Input from '@components/ui/Input.astro';
+---
+<form
+  id="contact-form"
+  action="/api/contact"
+  method="POST"
+  class="space-y-5"
+  novalidate
+>
+  <Input id="contact-name" name="fullName" label="Full name" required autocomplete="name" placeholder="First Last" />
+  <Input id="contact-email" name="email" type="email" label="Email" required autocomplete="email" placeholder="you@somewhere.com" />
+  <Input id="contact-phone" name="phone" type="tel" label="Phone" optional autocomplete="tel" placeholder="(555) 555-5555" helper="Optional — only used to coordinate scheduling if needed." />
+  <Input id="contact-message" name="message" type="textarea" label="Your message" required rows={5} minLength={10} maxLength={2000} placeholder="What brought you here today?" />
+
+  <!-- Honeypot — not visible, not focusable, not announced -->
+  <Input
+    id="contact-trap"
+    name="website"
+    label="Website (leave blank)"
+    visuallyHidden
+    ariaHidden
+    tabIndex={-1}
+    inputClass="hidden"
+  />
+
+  <fieldset class="space-y-3 rounded-lg border border-border-subtle bg-bg-raised p-5">
+    <legend class="px-2 text-sm font-medium text-ink">Communication consent</legend>
+    <label class="flex items-start gap-3 text-sm text-ink-secondary">
+      <input
+        type="checkbox"
+        name="consentTransactional"
+        value="true"
+        required
+        class="mt-1 h-4 w-4 shrink-0 rounded border-border-strong text-brand focus:ring-brand"
+      />
+      <span>
+        <strong class="font-medium text-ink">Required:</strong>
+        I consent to receive non-marketing text messages and email from Dodie Kendall QHHT about my session preparation, notifications, appointments, and reminders.
+      </span>
+    </label>
+    <label class="flex items-start gap-3 text-sm text-ink-secondary">
+      <input
+        type="checkbox"
+        name="consentMarketing"
+        value="true"
+        class="mt-1 h-4 w-4 shrink-0 rounded border-border-strong text-brand focus:ring-brand"
+      />
+      <span>
+        <strong class="font-medium text-ink">Optional:</strong>
+        I consent to receive marketing text messages and email from Dodie Kendall QHHT about special offers, new updates, and Insights posts.
+      </span>
+    </label>
+  </fieldset>
+
+  <p class="text-xs text-ink-muted">
+    By submitting, you agree to our <a href="/privacy" class="text-brand underline">Privacy Policy</a> and <a href="/terms" class="text-brand underline">Terms</a>.
+  </p>
+
+  <button
+    type="submit"
+    class="inline-flex items-center justify-center rounded-pill bg-brand px-7 py-3 font-medium text-ink-inverse shadow-md transition-all hover:bg-brand-hover hover:shadow-glow"
+  >
+    Send
+  </button>
+
+  <p id="contact-status" class="text-sm" role="status" aria-live="polite"></p>
+</form>
+
+<script is:inline>
+  (function () {
+    const form = document.getElementById('contact-form');
+    const status = document.getElementById('contact-status');
+    if (!form || !status) return;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const payload = {
+        fullName: String(fd.get('fullName') ?? '').trim(),
+        email: String(fd.get('email') ?? '').trim(),
+        phone: String(fd.get('phone') ?? '').trim() || undefined,
+        message: String(fd.get('message') ?? '').trim(),
+        consentMarketing: fd.get('consentMarketing') === 'true',
+        consentTransactional: fd.get('consentTransactional') === 'true',
+        website: String(fd.get('website') ?? ''),
+      };
+
+      if (!payload.consentTransactional) {
+        status.textContent = 'Please confirm the required communication consent.';
+        status.className = 'text-sm text-error';
+        return;
+      }
+      if (payload.fullName.length < 2 || !payload.email || payload.message.length < 10) {
+        status.textContent = 'Please complete the required fields.';
+        status.className = 'text-sm text-error';
+        return;
+      }
+
+      status.textContent = 'Sending…';
+      status.className = 'text-sm text-ink-muted';
+
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok || res.status === 202) {
+          status.textContent = 'Thank you — your note is on its way. Dodie will write back personally within 24–48 hours.';
+          status.className = 'text-sm text-success';
+          form.reset();
+        } else {
+          status.textContent = 'Something went wrong on our end. You can also email dodiekendall@gmail.com directly — that always works.';
+          status.className = 'text-sm text-error';
+        }
+      } catch (err) {
+        status.textContent = 'Network error. You can also email dodiekendall@gmail.com directly — that always works.';
+        status.className = 'text-sm text-error';
+      }
+    });
+  })();
+</script>

@@ -1,21 +1,91 @@
 ---
 import Base from '@layouts/Base.astro';
 import { getSeo } from '@lib/seo';
+import { breadcrumb } from '@lib/schema';
 
 const seo = getSeo({
   path: '/terms',
   title: 'Terms & Conditions',
-  description: 'Terms and conditions for using the Dodie Kendall QHHT website and booking sessions.',
+  description: 'Terms and conditions for the Dodie Kendall QHHT website and booking sessions.',
 });
+
+const schemas = [breadcrumb([{ name: 'Home', href: '/' }, { name: 'Terms' }])];
+const lastUpdated = '2026-05-17';
 ---
-<Base seo={seo}>
-  <section class="section-y">
+<Base seo={seo} schemas={schemas}>
+  <section class="section-y bg-bg-base">
     <div class="container-prose">
-      <h1 class="font-display text-ink">Terms &amp; Conditions</h1>
-      <!-- TODO Phase 8: full counsel-reviewed Terms text. -->
-      <p class="mt-6 text-ink-secondary">
-        <em>Terms text is pending counsel/template review. See <code>LEGAL-DISCLAIMERS.md</code> for the disclaimer blocks that anchor the final document.</em>
-      </p>
+      <p class="text-xs uppercase tracking-wider text-ink-muted">Legal</p>
+      <h1 class="mt-2 font-display">Terms &amp; Conditions</h1>
+      <p class="mt-3 text-sm text-ink-muted">Last updated: {lastUpdated}</p>
+
+      <div class="mt-6 rounded-lg border border-warning/30 bg-warning/10 p-4 text-sm text-ink-secondary">
+        <strong class="font-medium text-ink">Draft notice:</strong> These terms are in draft form and are being finalized by counsel. The substance describes our actual practices accurately, but the legal language is subject to revision.
+      </div>
+
+      <div class="mt-10 space-y-8 text-ink-secondary leading-relaxed">
+        <section>
+          <h2 class="font-display text-2xl text-ink">1. Acceptance</h2>
+          <p class="mt-3">By using this website or booking a session with Dodie Kendall QHHT, you agree to these Terms and our <a href="/privacy" class="text-brand underline">Privacy Policy</a>.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">2. Nature of services</h2>
+          <p class="mt-3">Quantum Healing Hypnosis Technique (QHHT) is a hypnosis-based complementary modality for self-discovery and personal growth. It is not medical care, not psychological care, and not psychotherapy. Sessions are not intended to diagnose, treat, cure, or prevent any disease or psychological condition.</p>
+          <p class="mt-3">Dodie Kendall is a QHHT Practitioner trained in the Dolores Cannon lineage. She is not a licensed physician, psychologist, or psychotherapist. If you are receiving medical or mental-health care, please continue working with your licensed providers — QHHT is offered only as a complement, never a replacement.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">3. Eligibility</h2>
+          <p class="mt-3">You must be 18 or older to book a session. By booking, you confirm that participation is voluntary and that you are responsible for your own healthcare decisions.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">4. Booking, deposit, and cancellation</h2>
+          <ul class="mt-3 list-disc space-y-2 pl-6">
+            <li>Session fee: <strong class="text-ink">$300</strong> total. A <strong class="text-ink">$50 deposit</strong> is collected at booking; the remaining <strong class="text-ink">$250</strong> is paid on the day of your session.</li>
+            <li>Reschedule with at least 48 hours notice and your deposit transfers to your new date.</li>
+            <li>Cancellations within 48 hours forfeit the deposit.</li>
+            <li>No-shows forfeit the deposit and may be invoiced for the remaining session value at Dodie's discretion.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">5. Session recordings</h2>
+          <p class="mt-3">With your explicit consent, sessions are recorded (audio only). Recordings are provided to you via a private link. We do not share, excerpt, or use session recordings for any other purpose without your explicit written permission.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">6. Confidentiality</h2>
+          <p class="mt-3">What you share in a session is held confidentially. We may use anonymized themes for educational writing on the Insights blog only if every identifying detail is changed or generalized beyond recognition, and only with your prior consent for any specific identifying detail.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">7. Disclaimers and limitation of liability</h2>
+          <p class="mt-3">QHHT sessions are not a substitute for medical, psychiatric, psychological, or other licensed professional care. We make no guarantees about the outcomes or experiences of any session. To the maximum extent permitted by Florida law, Dodie Kendall QHHT's liability for any claim arising from your use of this site or a session is limited to the fees you paid for the specific session in question.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">8. Intellectual property</h2>
+          <p class="mt-3">All website content — text, images, blog posts, audio — is the property of Dodie Kendall QHHT unless otherwise noted. You may share short excerpts with attribution and a link back; reproduction of full pages or posts requires written permission.</p>
+          <p class="mt-3">"Quantum Healing Hypnosis Technique" and "QHHT" are recognized in connection with the work of Dolores Cannon. We use these names to describe the modality we practice; we are not affiliated with the QHHT Official organization beyond practitioner-level training.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">9. Governing law</h2>
+          <p class="mt-3">These Terms are governed by the laws of the State of Florida. Disputes will be resolved in the state or federal courts located in Palm Beach County, Florida.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">10. Changes</h2>
+          <p class="mt-3">We may update these Terms from time to time. The "Last updated" date above will reflect the most recent change. Continued use of the site after changes constitutes acceptance.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">11. Contact</h2>
+          <p class="mt-3">Questions? Reach Dodie at <a href="mailto:dodiekendall@gmail.com" class="text-brand underline">dodiekendall@gmail.com</a> or <a href="tel:+15612016918" class="text-brand underline">1-561-201-6918</a>.</p>
+        </section>
+      </div>
     </div>
   </section>
 </Base>

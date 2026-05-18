@@ -1,0 +1,71 @@
+---
+/**
+ * FounderSpotlight — image + role + h2 + bio + credentials + CTA.
+ * DESIGN.md §Layout: organic-masked photo; pill-shape mask used here.
+ */
+interface Props {
+  role: string;
+  headline: string;
+  body: string[];
+  credentials?: string[];
+  cta?: { label: string; href: string };
+  photoSrc: string;
+  photoAlt: string;
+  /** Flip photo to right on desktop. Default: photo left. */
+  reverse?: boolean;
+}
+
+const {
+  role,
+  headline,
+  body,
+  credentials = [],
+  cta,
+  photoSrc,
+  photoAlt,
+  reverse = false,
+} = Astro.props;
+---
+<section class="section-y bg-bg-base">
+  <div class="container-default">
+    <div class={`grid items-center gap-12 md:grid-cols-2 ${reverse ? 'md:[&>div:first-child]:order-2' : ''}`}>
+      <div class="flex justify-center">
+        <div class="relative aspect-square w-full max-w-md">
+          <img
+            src={photoSrc}
+            alt={photoAlt}
+            class="h-full w-full rounded-pill object-cover shadow-md"
+            loading="lazy"
+          />
+        </div>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-wider text-ink-muted">{role}</p>
+        <h2 class="mt-3 font-display">{headline}</h2>
+        <div class="mt-6 max-w-prose space-y-4 text-lg text-ink-secondary">
+          {body.map((p) => <p>{p}</p>)}
+        </div>
+        {credentials.length > 0 && (
+          <ul class="mt-6 space-y-2 text-sm text-ink-secondary">
+            {credentials.map((c) => (
+              <li class="flex items-start gap-2">
+                <span aria-hidden="true" class="mt-1.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-sage" />
+                <span>{c}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {cta && (
+          <div class="mt-8">
+            <a
+              href={cta.href}
+              class="inline-flex items-center justify-center rounded-pill border border-border-strong px-7 py-3 font-medium text-ink transition-colors hover:border-brand hover:text-brand"
+            >
+              {cta.label} →
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</section>

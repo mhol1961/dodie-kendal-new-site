@@ -1,0 +1,106 @@
+---
+/**
+ * Input — text / email / tel / textarea with built-in label and helper text.
+ * Renders an accessible, labeled form control. Use inside <form>.
+ */
+type InputType = 'text' | 'email' | 'tel' | 'url' | 'textarea';
+
+interface Props {
+  id: string;
+  name: string;
+  label: string;
+  type?: InputType;
+  required?: boolean;
+  optional?: boolean;
+  placeholder?: string;
+  autocomplete?: string;
+  value?: string;
+  helper?: string;
+  rows?: number;
+  /** Hide the visual label (still read by assistive tech). For honeypots. */
+  visuallyHidden?: boolean;
+  /** Honeypot fields: hide from screen readers + visually. */
+  tabIndex?: number;
+  ariaHidden?: boolean;
+  inputClass?: string;
+  pattern?: string;
+  minLength?: number;
+  maxLength?: number;
+}
+
+const {
+  id,
+  name,
+  label,
+  type = 'text',
+  required = false,
+  optional = false,
+  placeholder,
+  autocomplete,
+  value,
+  helper,
+  rows = 4,
+  visuallyHidden = false,
+  tabIndex,
+  ariaHidden = false,
+  inputClass = '',
+  pattern,
+  minLength,
+  maxLength,
+} = Astro.props;
+
+const labelClass = visuallyHidden
+  ? 'sr-only'
+  : 'block text-sm font-medium text-ink mb-1.5';
+
+const baseInputClass = `block w-full rounded-md border border-border-strong bg-bg-raised px-4 py-2.5 text-ink placeholder:text-ink-muted focus:border-brand focus:outline-none transition-colors duration-base ${inputClass}`.trim();
+
+const helperId = helper ? `${id}-helper` : undefined;
+---
+<div>
+  <label for={id} class={labelClass}>
+    {label}
+    {required && !visuallyHidden && (
+      <span aria-hidden="true" class="text-brand ml-0.5">*</span>
+    )}
+    {optional && !visuallyHidden && (
+      <span class="text-ink-muted text-xs font-normal ml-2">(optional)</span>
+    )}
+  </label>
+  {type === 'textarea' ? (
+    <textarea
+      id={id}
+      name={name}
+      rows={rows}
+      placeholder={placeholder}
+      required={required}
+      autocomplete={autocomplete}
+      class={baseInputClass}
+      tabindex={tabIndex}
+      aria-hidden={ariaHidden ? 'true' : undefined}
+      aria-describedby={helperId}
+      minlength={minLength}
+      maxlength={maxLength}
+    >{value}</textarea>
+  ) : (
+    <input
+      id={id}
+      name={name}
+      type={type}
+      value={value}
+      placeholder={placeholder}
+      required={required}
+      autocomplete={autocomplete}
+      class={baseInputClass}
+      tabindex={tabIndex}
+      aria-hidden={ariaHidden ? 'true' : undefined}
+      aria-describedby={helperId}
+      pattern={pattern}
+      minlength={minLength}
+      maxlength={maxLength}
+    />
+  )}
+  {helper && (
+    <p id={helperId} class="mt-1.5 text-xs text-ink-muted">{helper}</p>
+  )}
+</div>

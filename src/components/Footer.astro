@@ -1,14 +1,24 @@
 ---
+/**
+ * Footer — 4-column desktop, 1-column mobile, with the "not medical advice" disclaimer.
+ * DESIGN.md §Layout: sunken bg, brand/site/contact/legal columns.
+ */
 const year = new Date().getFullYear();
 ---
-<footer class="bg-bg-sunken border-t border-border-subtle mt-24">
-  <div class="container-default py-16 grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
-    <div>
+<footer class="mt-24 border-t border-border-subtle bg-bg-sunken">
+  <div class="container-default grid grid-cols-1 gap-10 py-16 text-sm md:grid-cols-4 md:gap-8">
+    <div class="md:col-span-1">
       <div class="font-display text-2xl text-brand">Dodie Kendall</div>
-      <p class="mt-2 text-ink-secondary">QHHT Practitioner · Palm Beach County, FL</p>
+      <p class="mt-2 text-ink-secondary">
+        QHHT Practitioner<br />Palm Beach County, FL
+      </p>
+      <p class="mt-3 text-xs uppercase tracking-wider text-ink-muted">
+        Quantum Healing Hypnosis Technique<br />in the Dolores Cannon lineage
+      </p>
     </div>
-    <nav aria-label="Footer site links">
-      <h2 class="font-medium text-ink mb-3 text-base">Site</h2>
+
+    <nav aria-label="Footer — Site links">
+      <h2 class="mb-3 text-base font-medium text-ink">Site</h2>
       <ul class="space-y-2 text-ink-secondary">
         <li><a href="/" class="hover:text-brand">Home</a></li>
         <li><a href="/about" class="hover:text-brand">About</a></li>
@@ -17,27 +27,35 @@ const year = new Date().getFullYear();
         <li><a href="/insights" class="hover:text-brand">Insights</a></li>
       </ul>
     </nav>
+
     <div>
-      <h2 class="font-medium text-ink mb-3 text-base">Contact</h2>
+      <h2 class="mb-3 text-base font-medium text-ink">Contact</h2>
       <ul class="space-y-2 text-ink-secondary">
         <li><a href="tel:+15612016918" class="hover:text-brand">1-561-201-6918</a></li>
         <li><a href="mailto:dodiekendall@gmail.com" class="hover:text-brand">dodiekendall@gmail.com</a></li>
-        <li class="pt-1"><a href="/book" class="inline-flex items-center rounded-pill bg-brand text-ink-inverse px-4 py-1.5 text-xs hover:bg-brand-hover transition-colors">Book a Session</a></li>
+        <li class="pt-1">
+          <a href="/book" class="inline-flex items-center rounded-pill bg-brand px-4 py-1.5 text-xs text-ink-inverse transition-colors hover:bg-brand-hover">
+            Book a Session
+          </a>
+        </li>
       </ul>
     </div>
+
     <div>
-      <h2 class="font-medium text-ink mb-3 text-base">Legal</h2>
+      <h2 class="mb-3 text-base font-medium text-ink">Legal</h2>
       <ul class="space-y-2 text-ink-secondary">
         <li><a href="/privacy" class="hover:text-brand">Privacy Policy</a></li>
-        <li><a href="/terms" class="hover:text-brand">Terms & Conditions</a></li>
+        <li><a href="/terms" class="hover:text-brand">Terms &amp; Conditions</a></li>
       </ul>
     </div>
   </div>
+
   <div class="border-t border-border-subtle">
-    <div class="container-default py-6 text-xs text-ink-muted flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="container-default flex flex-col gap-4 py-6 text-xs text-ink-muted md:flex-row md:items-center md:justify-between">
       <p>© {year} Dodie Kendall QHHT. All rights reserved.</p>
-      <p class="max-w-2xl">
-        This site does not provide medical, psychological, or therapeutic advice. QHHT is a complementary modality and is not a substitute for licensed care.
+      <p class="max-w-2xl md:text-right">
+        QHHT is a hypnosis modality intended for self-discovery and personal growth.
+        This site does not provide medical, psychological, or therapeutic advice and is not a substitute for licensed care.
       </p>
     </div>
   </div>

@@ -1,0 +1,163 @@
+---
+// /design — internal design-system reference.
+// Renders every primitive in every state so design-critique / brand-review can verify against DESIGN.md.
+
+import Base from '@layouts/Base.astro';
+import { getSeo } from '@lib/seo';
+import Button from '@components/ui/Button.astro';
+import Input from '@components/ui/Input.astro';
+import Card from '@components/ui/Card.astro';
+import Badge from '@components/ui/Badge.astro';
+import Accordion from '@components/ui/Accordion.astro';
+
+const seo = getSeo({
+  path: '/design',
+  title: 'Design System',
+  description: 'Internal design-system reference for dodiekendall.com primitives.',
+  noIndex: true,
+});
+
+const swatches = [
+  { name: 'bg-base',      cls: 'bg-bg-base text-ink',           sub: 'Body bg' },
+  { name: 'bg-raised',    cls: 'bg-bg-raised text-ink',         sub: 'Cards / inputs' },
+  { name: 'bg-sunken',    cls: 'bg-bg-sunken text-ink',         sub: 'Footer / quotes' },
+  { name: 'brand',        cls: 'bg-brand text-ink-inverse',     sub: 'Primary CTA' },
+  { name: 'brand-hover',  cls: 'bg-brand-hover text-ink-inverse', sub: 'Hover state' },
+  { name: 'accent',       cls: 'bg-accent text-ink',            sub: 'Honey-gold' },
+  { name: 'sage',         cls: 'bg-sage text-ink',              sub: 'Grounding' },
+  { name: 'bg-sunrise',   cls: 'bg-sunrise text-ink',           sub: 'Hero + closing' },
+];
+
+const faqItems = [
+  { question: 'What actually happens in a QHHT session?', answer: 'A session is about 5 hours total — pre-session conversation, guided Theta induction, and the session itself. We record audio with your consent.' },
+  { question: 'Will I remember the session?', answer: "Some of it. The Theta state is dreamlike — you'll wake feeling like you took a long nap. The recording captures the detail your conscious mind doesn't.", open: true },
+  { question: 'Is QHHT therapy?', answer: 'No. QHHT is not therapy or medical treatment. It is a hypnosis modality intended as a complement to — never a replacement for — licensed care.' },
+];
+---
+<Base seo={seo}>
+  <section class="container-default py-16 md:py-24 space-y-16">
+    <header>
+      <Badge tone="sage">Internal · noindex</Badge>
+      <h1 class="mt-3 text-5xl font-display tracking-tight">Design system</h1>
+      <p class="mt-4 max-w-prose text-lg text-ink-secondary">
+        Every primitive in every meaningful state. Update <code>DESIGN.md</code> first when a token shifts,
+        then sync <code>src/styles/global.css</code> and <code>tailwind.config.mjs</code>.
+      </p>
+    </header>
+
+    <section>
+      <h2 class="text-3xl font-display">Color tokens</h2>
+      <p class="mt-2 max-w-prose text-ink-secondary">
+        All text/background pairings meet WCAG 2.1 AA for body (4.5:1) per Phase 1 recalibration.
+      </p>
+      <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+        {swatches.map((s) => (
+          <div class={`flex aspect-square flex-col justify-end rounded-lg border border-border-subtle p-4 ${s.cls}`}>
+            <p class="font-display text-lg">{s.name}</p>
+            <p class="text-xs opacity-80">{s.sub}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-3xl font-display">Typography</h2>
+      <div class="mt-8 space-y-8">
+        <div>
+          <p class="mb-1 text-xs uppercase tracking-wider text-ink-muted">Display · Cormorant Garamond 500</p>
+          <h1 class="font-display">Access your higher wisdom.</h1>
+        </div>
+        <div>
+          <p class="mb-1 text-xs uppercase tracking-wider text-ink-muted">H2 display</p>
+          <h2 class="font-display">Guided by intuition, grounded in love.</h2>
+        </div>
+        <div>
+          <p class="mb-1 text-xs uppercase tracking-wider text-ink-muted">H3 display</p>
+          <h3 class="font-display">A 5-hour conversation</h3>
+        </div>
+        <div>
+          <p class="mb-1 text-xs uppercase tracking-wider text-ink-muted">Body · Inter Variable 400 · leading 1.65</p>
+          <p class="max-w-prose">
+            Think of your mind like a vast library. The conscious desk is busy — appointments, emails, what's for dinner.
+            The Subconscious is the archive behind those doors, and it holds everything your soul has ever experienced.
+          </p>
+        </div>
+        <div>
+          <p class="mb-1 text-xs uppercase tracking-wider text-ink-muted">Caption</p>
+          <p class="text-xs uppercase tracking-wider text-ink-muted">A 5-hour conversation with your Subconscious</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-3xl font-display">Buttons</h2>
+      <div class="mt-8 flex flex-wrap items-end gap-4">
+        <Button>Primary · md</Button>
+        <Button variant="secondary">Secondary</Button>
+        <Button variant="ghost">Ghost link →</Button>
+        <Button size="sm">Small</Button>
+        <Button size="lg">Large CTA</Button>
+        <Button disabled>Disabled</Button>
+        <Button href="/book">As link</Button>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-3xl font-display">Inputs</h2>
+      <div class="mt-8 max-w-md space-y-5">
+        <Input id="demo-name" name="demo-name" label="Full name" required placeholder="First Last" autocomplete="name" />
+        <Input id="demo-email" name="demo-email" type="email" label="Email" required placeholder="you@somewhere.com" autocomplete="email" />
+        <Input id="demo-phone" name="demo-phone" type="tel" label="Phone" optional helper="We only use this to confirm your booking." autocomplete="tel" />
+        <Input id="demo-msg" name="demo-msg" type="textarea" label="Your message" required rows={4} placeholder="What brought you here today?" />
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-3xl font-display">Badges</h2>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <Badge tone="brand">Featured</Badge>
+        <Badge tone="sage">Practice note</Badge>
+        <Badge tone="accent">New</Badge>
+        <Badge>Neutral</Badge>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-3xl font-display">Cards</h2>
+      <div class="mt-8 grid gap-6 md:grid-cols-3">
+        <Card>
+          <h3 class="font-display text-xl">Raised card</h3>
+          <p class="mt-2 text-ink-secondary">Default. Use for testimonials, service blocks, the booking embed shell.</p>
+        </Card>
+        <Card tone="sunken">
+          <h3 class="font-display text-xl">Sunken card</h3>
+          <p class="mt-2 text-ink-secondary">Lower in the page rhythm — quotes, footnotes, supporting context.</p>
+        </Card>
+        <Card tone="flat" elevated={false}>
+          <h3 class="font-display text-xl">Flat container</h3>
+          <p class="mt-2 text-ink-secondary">No shadow, no fill. For pure layout grouping.</p>
+        </Card>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-3xl font-display">Accordion</h2>
+      <div class="mt-8 max-w-2xl">
+        <Accordion items={faqItems} />
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-3xl font-display">Focus indicator</h2>
+      <p class="mt-2 max-w-prose text-ink-secondary">
+        Tab through these to verify the two-layer focus ring clears 3:1 on every surface.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <Button>Tab to me</Button>
+        <Button variant="secondary">Then me</Button>
+        <a href="#" class="rounded-pill bg-bg-raised border border-border-strong px-6 py-2.5">Plain link</a>
+        <a href="#" class="text-brand underline">Inline text link</a>
+      </div>
+    </section>
+  </section>
+</Base>

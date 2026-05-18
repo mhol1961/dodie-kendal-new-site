@@ -2,18 +2,42 @@
 import Base from '@layouts/Base.astro';
 import Hero from '@components/Hero.astro';
 import PullQuote from '@components/PullQuote.astro';
+import FounderSpotlight from '@components/FounderSpotlight.astro';
+import LeadMagnetGate from '@components/LeadMagnetGate.astro';
+import TestimonialGrid from '@components/TestimonialGrid.astro';
 import { getSeo } from '@lib/seo';
 import { qhhtService, breadcrumb } from '@lib/schema';
 
 const seo = getSeo({
   path: '/',
   description:
-    'A 5-hour, deeply respectful conversation with your Subconscious. Book a Quantum Healing Hypnosis Technique session with Dodie Kendall in Palm Beach County, FL or remote.',
+    "A 5-hour, deeply respectful conversation with your Subconscious. Book a Quantum Healing Hypnosis Technique session with Dodie Kendall in Palm Beach County, FL or remote.",
 });
 
 const schemas = [
   qhhtService(),
   breadcrumb([{ name: 'Home' }]),
+];
+
+const steps = [
+  {
+    eyebrow: 'Step 1',
+    title: 'Set intentions',
+    body:
+      "We start with a relaxed pre-session call. You bring the questions — about your body, your purpose, your relationships, your past. There are no wrong ones.",
+  },
+  {
+    eyebrow: 'Step 2',
+    title: 'Enter the Theta state',
+    body:
+      "On session day, we settle in a quiet room. You recline; I guide you into the Theta brainwave state — the threshold between waking and dreaming, where the Subconscious can speak clearly.",
+  },
+  {
+    eyebrow: 'Step 3',
+    title: 'Receive insight',
+    body:
+      "Your Higher Self responds — sometimes through past-life memory, sometimes through a felt sense, sometimes through a clarity you've been chasing for years. We record the session. You take it home.",
+  },
 ];
 ---
 <Base seo={seo} schemas={schemas}>
@@ -30,20 +54,69 @@ const schemas = [
 
   <PullQuote quote="I am the invitation, not the insistence." attribution="Dodie" />
 
-  <!--
-    TODO Phase 4 (per BUILD-PROMPTS.md):
-    - What is QHHT (3-step modular section)
-    - Founder Spotlight (Founder​Spotlight.astro)
-    - Lead Magnet Gate (LeadMagnetGate.astro)
-    - Testimonial Grid (TestimonialGrid.astro) — pulled from src/content/testimonials/
-    - Closing CTA section with sunrise gradient
-
-    Copy lives in COPY-DECK.md §Home.
-  -->
-
+  <!-- "What is QHHT" 3-step modular section -->
   <section class="section-y bg-bg-base">
+    <div class="container-default">
+      <header class="mb-12 max-w-2xl">
+        <p class="text-xs uppercase tracking-wider text-ink-muted">A 5-hour conversation with your Subconscious</p>
+        <h2 class="mt-3 font-display">What happens in a QHHT session.</h2>
+      </header>
+      <ol class="grid gap-8 md:grid-cols-3" role="list">
+        {steps.map((s) => (
+          <li class="flex flex-col">
+            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-pill bg-sage/20" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="oklch(var(--brand-sage))" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 8v4l3 2" />
+              </svg>
+            </div>
+            <p class="text-xs uppercase tracking-wider text-ink-muted">{s.eyebrow}</p>
+            <h3 class="mt-2 font-display text-2xl">{s.title}</h3>
+            <p class="mt-3 max-w-prose text-ink-secondary leading-relaxed">{s.body}</p>
+          </li>
+        ))}
+      </ol>
+      <div class="mt-12">
+        <a href="/qhht" class="inline-flex items-center text-brand hover:text-brand-hover">
+          Learn more about the modality →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <FounderSpotlight
+    role="Founder · Dodie Kendall QHHT"
+    headline="Guided by intuition, grounded in love."
+    body={[
+      "My name is Dodie Kendall. I'm a native Floridian, a former Catholic-school student, a one-time Pentecostal seeker, and — after a long walk through a lot of belief systems — someone who came home to the simple truth that only love exists.",
+      "I found Quantum Healing Hypnosis Technique through Dolores Cannon's work, and from the first session I knew: this was the bridge between my spiritual past and the healing work I was meant to do.",
+    ]}
+    credentials={[
+      'QHHT Practitioner trained in the Dolores Cannon lineage',
+      'South Florida-based · in-person and remote sessions',
+    ]}
+    cta={{ label: "Read my full story", href: '/about' }}
+    photoSrc="/dodie-portrait.jpg"
+    photoAlt="Portrait of Dodie Kendall"
+  />
+
+  <LeadMagnetGate />
+
+  <TestimonialGrid limit={3} heading="What clients say after a session." />
+
+  <!-- Closing CTA on sunrise gradient -->
+  <section class="section-y bg-sunrise">
     <div class="container-default text-center">
-      <p class="text-ink-muted text-sm uppercase tracking-wider">[Build placeholder — home page sections live in BUILD-PROMPTS.md Phase 4]</p>
+      <h2 class="font-display text-4xl md:text-5xl">Your Higher Self is already speaking.</h2>
+      <p class="mx-auto mt-4 max-w-xl text-lg text-ink-secondary">Are you ready to listen?</p>
+      <div class="mt-8">
+        <a
+          href="/book"
+          class="inline-flex items-center justify-center rounded-pill bg-brand px-8 py-4 text-lg font-medium text-ink-inverse shadow-md transition-all hover:bg-brand-hover hover:shadow-glow"
+        >
+          Book a Session
+        </a>
+      </div>
     </div>
   </section>
 </Base>

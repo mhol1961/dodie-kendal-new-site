@@ -28,7 +28,15 @@ function authHeaders(token: string) {
   };
 }
 
-async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
+/**
+ * Retry only operations that GHL documents as idempotent.
+ * - upsertContact: idempotent on email (GHL upserts on email/phone match)
+ * - applyTag: idempotent (tags are a set; reapplying is a no-op)
+ * - triggerWorkflow: NOT idempotent — replaying re-enrolls the contact in the workflow.
+ *
+ * See Codex finding "Automatic retry replays non-idempotent GHL writes" (2026-05-18).
+ */
+async function withIdempotentRetry<T>(fn: () => Promise<T>): Promise<T> {
   try {
     return await fn();
   } catch (err) {
@@ -44,7 +52,7 @@ export async function upsertContact(payload: ContactPayload, env: {
   GHL_PRIVATE_INTEGRATION_TOKEN: string;
   GHL_LOCATION_ID: string;
 }): Promise<{ id: string }> {
-  return withRetry(async () => {
+  return withIdempotentRetry(async () => {
     const res = await fetch(`${GHL_BASE}/contacts/`, {
       method: 'POST',
       headers: authHeaders(env.GHL_PRIVATE_INTEGRATION_TOKEN),
@@ -64,7 +72,7 @@ export async function applyTag(
   tag: string,
   env: { GHL_PRIVATE_INTEGRATION_TOKEN: string }
 ): Promise<void> {
-  await withRetry(async () => {
+  await withIdempotentRetry(async () => {
     const res = await fetch(`${GHL_BASE}/contacts/${contactId}/tags`, {
       method: 'POST',
       headers: authHeaders(env.GHL_PRIVATE_INTEGRATION_TOKEN),
@@ -81,16 +89,17 @@ export async function triggerWorkflow(
   workflowId: string,
   env: { GHL_PRIVATE_INTEGRATION_TOKEN: string }
 ): Promise<void> {
-  await withRetry(async () => {
-    const res = await fetch(
-      `${GHL_BASE}/contacts/${contactId}/workflow/${workflowId}`,
-      {
-        method: 'POST',
-        headers: authHeaders(env.GHL_PRIVATE_INTEGRATION_TOKEN),
-      }
-    );
-    if (!res.ok) {
-      throw new GhlError(res.status, `triggerWorkflow failed: ${await res.text()}`);
+  // No retry — workflow triggers are NOT idempotent. A replay double-enrolls
+  // the contact and fires duplicate automations. If this fails, the caller
+  // logs and surfaces; the lead is still safely captured by upsertContact.
+  const res = await fetch(
+    `${GHL_BASE}/contacts/${contactId}/workflow/${workflowId}`,
+    {
+      method: 'POST',
+      headers: authHeaders(env.GHL_PRIVATE_INTEGRATION_TOKEN),
     }
-  });
+  );
+  if (!res.ok) {
+    throw new GhlError(res.status, `triggerWorkflow failed: ${await res.text()}`);
+  }
 }

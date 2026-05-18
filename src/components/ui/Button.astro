@@ -1,0 +1,87 @@
+---
+/**
+ * Button — three variants per DESIGN.md §Components.
+ *   primary   — terracotta filled, white text. Default CTA.
+ *   secondary — sand-outlined, ink text. Lower-stakes action.
+ *   ghost     — text-only, brand-tinted on hover.
+ *
+ * Renders as <a> when `href` is provided, otherwise <button>.
+ */
+type Variant = 'primary' | 'secondary' | 'ghost';
+type Size = 'sm' | 'md' | 'lg';
+type ButtonType = 'button' | 'submit' | 'reset';
+
+interface Props {
+  variant?: Variant;
+  size?: Size;
+  href?: string;
+  type?: ButtonType;
+  class?: string;
+  disabled?: boolean;
+  ariaLabel?: string;
+  /** External link → opens in new tab with rel safety. */
+  external?: boolean;
+  /** Optional download attribute (only when href is set). */
+  download?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  class: className = '',
+  disabled = false,
+  ariaLabel,
+  external = false,
+  download,
+} = Astro.props;
+
+const sizeClass = {
+  sm: 'px-4 py-2 text-sm',
+  md: 'px-6 py-2.5 text-base',
+  lg: 'px-8 py-3.5 text-lg',
+}[size];
+
+const variantClass = {
+  primary:
+    'bg-brand text-ink-inverse shadow-md hover:bg-brand-hover hover:shadow-glow focus-visible:bg-brand-hover',
+  secondary:
+    'bg-bg-raised text-ink border border-border-strong hover:border-brand hover:text-brand',
+  ghost:
+    'text-brand hover:text-brand-hover underline-offset-4 hover:underline',
+}[variant];
+
+const base =
+  'inline-flex items-center justify-center rounded-pill font-medium transition-all duration-base ease-standard select-none';
+const disabledClass = disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : '';
+const fullClass = `${base} ${sizeClass} ${variantClass} ${disabledClass} ${className}`.trim();
+
+const externalAttrs = external
+  ? { target: '_blank', rel: 'noopener noreferrer' }
+  : {};
+---
+{href ? (
+  <a
+    href={href}
+    class={fullClass}
+    aria-label={ariaLabel}
+    aria-disabled={disabled ? 'true' : undefined}
+    download={download}
+    {...externalAttrs}
+  >
+    <slot />
+    {external && (
+      <span aria-hidden="true" class="ml-2">↗</span>
+    )}
+  </a>
+) : (
+  <button
+    type={type}
+    class={fullClass}
+    aria-label={ariaLabel}
+    disabled={disabled}
+  >
+    <slot />
+  </button>
+)}
