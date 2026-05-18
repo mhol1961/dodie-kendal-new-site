@@ -1,0 +1,68 @@
+---
+/**
+ * AboutChapter — scan-friendly chapter unit.
+ *
+ * Layout: oversized typographic numeral as visual anchor + era tag + display
+ * title + KEY-TAKEAWAY line in larger type (scanners read just this) + tight
+ * prose. Optional inline image for the densest chapters.
+ */
+interface Props {
+  num: string;
+  era: string;
+  title: string;
+  /** One short scan-friendly line lifted from the chapter. Coral accent, oversized. */
+  takeaway: string;
+  /** 1-2 short paragraphs. Use sparingly — readers will scroll past long blocks. */
+  body: string[];
+  /** Optional small inline image to break the prose visually. */
+  image?: { src: string; alt: string };
+  /** Mirror layout — image on the right (default left). */
+  imageRight?: boolean;
+}
+
+const { num, era, title, takeaway, body, image, imageRight = false } = Astro.props;
+---
+<article class="reveal-on-scroll">
+  <!-- Header row: massive numeral acts as scan anchor -->
+  <header class="grid items-end gap-4 md:grid-cols-[auto,1fr] md:gap-6">
+    <p
+      class="font-display leading-[0.8] tracking-tighter text-brand/25 text-[clamp(6rem,12vw,11rem)]"
+      style="font-variation-settings: 'opsz' 144, 'wght' 300;"
+      aria-hidden="true"
+    >
+      {num}
+    </p>
+    <div>
+      <p class="text-[10px] uppercase tracking-[0.24em] text-brand mb-1">Chapter · {era}</p>
+      <h2 class="font-display text-3xl md:text-4xl lg:text-5xl text-ink leading-[1.05]">
+        {title}
+      </h2>
+    </div>
+  </header>
+
+  <!-- Key-takeaway pull-out (scan-friendly: this is what scanners actually read) -->
+  <p class="mt-8 font-serif text-2xl md:text-3xl text-ink leading-snug max-w-3xl border-l-2 border-brand pl-5 md:pl-7">
+    <em class="italic-accent">{takeaway}</em>
+  </p>
+
+  {image ? (
+    <div class={`mt-10 grid gap-8 md:grid-cols-2 md:gap-12 items-start ${imageRight ? '' : 'md:[&>div:first-child]:order-2'}`}>
+      <div class="space-y-5 text-lg leading-relaxed text-ink-secondary">
+        {body.map((p) => <p>{p}</p>)}
+      </div>
+      <figure class="relative">
+        <span aria-hidden="true" class="absolute -inset-4 -z-10 rounded-lg bg-gradient-to-br from-teal/15 via-brand/15 to-transparent blur-2xl"></span>
+        <img
+          src={image.src}
+          alt={image.alt}
+          loading="lazy"
+          class="w-full h-auto rounded-lg shadow-md"
+        />
+      </figure>
+    </div>
+  ) : (
+    <div class="mt-10 space-y-5 text-lg leading-relaxed text-ink-secondary max-w-prose">
+      {body.map((p) => <p>{p}</p>)}
+    </div>
+  )}
+</article>
