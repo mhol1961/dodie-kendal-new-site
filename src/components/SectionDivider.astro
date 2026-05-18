@@ -1,0 +1,51 @@
+---
+/**
+ * SectionDivider — small symbolic SVG mark between chapters or sections.
+ * Three glyphs available, all hand-authored, no external assets.
+ */
+type Glyph = 'sun' | 'seed' | 'thread';
+interface Props {
+  glyph?: Glyph;
+  /** Color override. Defaults to brand-primary. */
+  color?: 'brand' | 'teal' | 'sage' | 'muted';
+  class?: string;
+}
+
+const { glyph = 'sun', color = 'brand', class: className = '' } = Astro.props;
+
+const colorClass = {
+  brand: 'text-brand',
+  teal:  'text-teal',
+  sage:  'text-sage',
+  muted: 'text-ink-muted',
+}[color];
+---
+<div class={`flex items-center justify-center gap-5 my-12 md:my-16 ${className}`} aria-hidden="true">
+  <span class={`h-px w-16 md:w-24 bg-current opacity-30 ${colorClass}`}></span>
+
+  {glyph === 'sun' && (
+    <svg viewBox="0 0 64 64" class={`h-10 w-10 ${colorClass}`} fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round">
+      <circle cx="32" cy="32" r="11"/>
+      <path d="M32 6v8 M32 50v8 M6 32h8 M50 32h8 M14 14l5.5 5.5 M44.5 44.5L50 50 M14 50l5.5-5.5 M44.5 19.5L50 14"/>
+    </svg>
+  )}
+
+  {glyph === 'seed' && (
+    <svg viewBox="0 0 64 64" class={`h-10 w-10 ${colorClass}`} fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round">
+      <circle cx="32" cy="32" r="18"/>
+      <circle cx="32" cy="20" r="9"/>
+      <circle cx="32" cy="44" r="9"/>
+      <circle cx="22" cy="32" r="9"/>
+      <circle cx="42" cy="32" r="9"/>
+    </svg>
+  )}
+
+  {glyph === 'thread' && (
+    <svg viewBox="0 0 96 24" class={`h-6 w-24 ${colorClass}`} fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round">
+      <path d="M2 12 C 18 4, 30 20, 48 12 S 78 4, 94 12"/>
+      <circle cx="48" cy="12" r="2" fill="currentColor"/>
+    </svg>
+  )}
+
+  <span class={`h-px w-16 md:w-24 bg-current opacity-30 ${colorClass}`}></span>
+</div>

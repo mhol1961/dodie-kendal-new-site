@@ -15,9 +15,8 @@ const {
   subhead = "A short guide to preparing for your first QHHT session — what to expect, how to shape your questions, and what makes a session deeply useful. Free, 12 pages, in your inbox in minutes.",
   buttonLabel = 'Send me the guide',
 } = Astro.props;
-// `heading` prop unused for now (we render a static split heading) — kept on the interface.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _heading = Astro.props.heading;
+// `heading` prop kept on the interface for future custom-headline use; not yet rendered.
+void Astro.props.heading;
 ---
 <section class="section-y bg-bg-sunken">
   <div class="container-default">

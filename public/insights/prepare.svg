@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="A vertical thread weaving through stones — preparation as inner work">
+  <defs>
+    <linearGradient id="bgC" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#101522"/>
+      <stop offset="100%" stop-color="#0a0e1a"/>
+    </linearGradient>
+    <radialGradient id="warm" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="oklch(0.72 0.08 95)" stop-opacity="0.45"/>
+      <stop offset="80%" stop-color="#0a0e1a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bgC)"/>
+  <rect width="800" height="500" fill="url(#warm)"/>
+  <!-- The thread -->
+  <path d="M400 60 C 350 130, 450 200, 400 270 S 350 380, 400 450" fill="none" stroke="oklch(0.62 0.16 22)" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+  <!-- Stones (questions) -->
+  <g fill="oklch(0.97 0.008 85)" stroke="oklch(0.78 0.13 195)" stroke-width="0.8" opacity="0.9">
+    <ellipse cx="400" cy="120" rx="22" ry="14"/>
+    <ellipse cx="400" cy="230" rx="22" ry="14"/>
+    <ellipse cx="400" cy="340" rx="22" ry="14"/>
+  </g>
+  <!-- Subtle glow on each stone -->
+  <g fill="oklch(0.78 0.13 195)" opacity="0.35">
+    <circle cx="400" cy="120" r="32"/>
+    <circle cx="400" cy="230" r="32"/>
+    <circle cx="400" cy="340" r="32"/>
+  </g>
+</svg>

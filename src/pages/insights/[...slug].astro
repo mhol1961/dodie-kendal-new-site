@@ -18,6 +18,14 @@ const all = (await getCollection('insights', ({ data }) => !data.draft).catch(()
 );
 const related = all.filter((p) => p.slug !== post.slug).slice(0, 2);
 
+const heroBySlug: Record<string, string> = {
+  'what-happens-in-a-qhht-session': '/insights/what-happens.svg',
+  'past-life-regression-vs-qhht': '/insights/regression-vs-qhht.svg',
+  'how-to-prepare-for-your-first-quantum-healing-session': '/insights/prepare.svg',
+  'choosing-a-qhht-practitioner': '/insights/practitioner.svg',
+};
+const postHero = heroBySlug[post.slug];
+
 const seo = getSeo({
   path: `/insights/${post.slug}`,
   title: post.data.title,
@@ -44,7 +52,7 @@ const schemas = [
 <Base seo={seo} schemas={schemas}>
   <article class="section-y bg-bg-base">
     <div class="container-prose">
-      <p class="text-xs uppercase tracking-wider text-ink-muted">
+      <p class="text-xs uppercase tracking-[0.22em] text-ink-muted">
         <a href="/insights" class="hover:text-brand">Insights</a>
       </p>
       <h1 class="mt-2 font-display">{post.data.title}</h1>
@@ -53,6 +61,23 @@ const schemas = [
         {' · '}
         by Dodie Kendall
       </p>
+
+      {postHero && (
+        <figure class="mt-8 -mx-4 sm:-mx-6 md:-mx-12">
+          <div class="relative overflow-hidden rounded-lg">
+            <span aria-hidden="true" class="absolute -inset-6 -z-10 bg-gradient-to-br from-teal/20 via-brand/15 to-transparent blur-3xl"></span>
+            <img
+              src={postHero}
+              alt=""
+              width="800"
+              height="500"
+              class="w-full h-auto aspect-[8/5] object-cover"
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
+        </figure>
+      )}
 
       {post.data.answerCapsule && (
         <aside class="mt-8 rounded-lg border-l-4 border-brand bg-bg-raised p-6 shadow-sm">

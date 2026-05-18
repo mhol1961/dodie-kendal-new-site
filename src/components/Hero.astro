@@ -54,13 +54,26 @@ const eyebrowClass = isDark ? 'text-teal-glow' : 'text-ink-muted';
 <section
   class={`relative isolate overflow-hidden ${isDark ? 'bg-aurora' : 'bg-sunrise'} ${isHome ? 'min-h-[88vh] flex items-center' : 'pt-20 pb-16 md:pt-28 md:pb-20'}`}
 >
-  <!-- Aurora particles (CSS-only, prefers-reduced-motion safe) -->
+  <!-- Aurora background composition (CSS gradients + starfield SVG + animated orbs) -->
   {isDark && (
-    <div aria-hidden="true" class="pointer-events-none absolute inset-0 z-0">
-      <span class="aurora-orb aurora-orb-1"></span>
-      <span class="aurora-orb aurora-orb-2"></span>
-      <span class="aurora-orb aurora-orb-3"></span>
-    </div>
+    <>
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 z-0 opacity-90 mix-blend-screen"
+        style="background-image:url('/hero-starfield.svg'); background-size:cover; background-position:center;"
+      ></div>
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0 z-0">
+        <span class="aurora-orb aurora-orb-1"></span>
+        <span class="aurora-orb aurora-orb-2"></span>
+        <span class="aurora-orb aurora-orb-3"></span>
+      </div>
+      <!-- Subtle horizon glow at the bottom edge -->
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 z-0"
+        style="background-image: radial-gradient(ellipse 80% 100% at 50% 100%, oklch(var(--brand-primary) / 0.20) 0%, transparent 60%);"
+      ></div>
+    </>
   )}
 
   <div class={`relative z-10 container-default w-full ${isHome ? 'py-20 md:py-28' : ''}`}>
