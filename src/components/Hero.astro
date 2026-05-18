@@ -1,32 +1,32 @@
 ---
 /**
- * Hero — cinematic editorial. Aurora-on-night background, real portrait,
- * oversized Fraunces display with italic accent, single primary CTA.
+ * Hero — cinematic editorial. Real photographic background, Fraunces display
+ * with italic accent, single primary CTA. Photo overlay tuned for legibility.
  *
  * Variants:
- *   home    — full-bleed aurora + portrait + trust line
- *   about   — dark gradient, text-only, oversized headline
- *   qhht    — dark gradient, text-only, asymmetric pull
+ *   home    — full-bleed aurora photo + portrait inset + trust line
+ *   about   — dark photographic background, text-led
+ *   qhht    — dark photographic background, text-led
+ *   insights — dark photographic background, text-led
  *   generic — light cream variant for utility pages
  */
 interface Props {
-  variant?: 'home' | 'about' | 'qhht' | 'generic';
+  variant?: 'home' | 'about' | 'qhht' | 'insights' | 'generic';
   eyebrow?: string;
-  /** Plain text before the italic accent. */
   headlineLead?: string;
-  /** Optional italic phrase rendered in serif italic. */
   headlineItalic?: string;
-  /** Optional plain text after the italic accent. */
   headlineTail?: string;
-  /** Fallback single-line headline (used if lead/italic/tail not provided). */
   headline?: string;
   subhead?: string;
   primaryCta?: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
-  /** Trust line below CTAs (no link). */
   trustLine?: string;
   portraitSrc?: string;
   portraitAlt?: string;
+  /** Background image URL. Defaults per variant. */
+  bgImage?: string;
+  /** Object position for the bg image. Default: "center". */
+  bgPosition?: string;
 }
 
 const {
@@ -42,36 +42,61 @@ const {
   trustLine,
   portraitSrc,
   portraitAlt = '',
+  bgImage,
+  bgPosition = 'center',
 } = Astro.props;
 
 const isHome = variant === 'home';
-const isDark = variant === 'home' || variant === 'about' || variant === 'qhht';
+const isDark = variant !== 'generic';
+
+// Variant defaults for background photography
+// (kept distinct from the in-page imagery so heros aren't repeating below)
+const defaultBg: Record<string, string> = {
+  home: '/photos/hero-aurora-real.jpg',
+  about: '/photos/hero-milky-way.jpg',
+  qhht: '/photos/hero-aurora-real.jpg',
+  insights: '/photos/hero-milky-way.jpg',
+};
+const finalBg = bgImage ?? (isDark ? defaultBg[variant] : undefined);
+
 const titleClass = isDark ? 'text-inverse' : 'text-ink';
 const subClass = isDark ? 'text-inverse-muted' : 'text-ink-secondary';
 const eyebrowClass = isDark ? 'text-teal-glow' : 'text-ink-muted';
 ---
 
 <section
-  class={`relative isolate overflow-hidden ${isDark ? 'bg-aurora' : 'bg-sunrise'} ${isHome ? 'min-h-[88vh] flex items-center' : 'pt-20 pb-16 md:pt-28 md:pb-20'}`}
+  class={`relative isolate overflow-hidden ${isDark ? 'bg-bg-inverse-deeper' : 'bg-sunrise'} ${isHome ? 'min-h-[90vh] flex items-center' : 'pt-24 pb-20 md:pt-32 md:pb-28'}`}
 >
-  <!-- Aurora background composition (CSS gradients + starfield SVG + animated orbs) -->
-  {isDark && (
+  <!-- Background photo -->
+  {finalBg && (
     <>
+      <img
+        src={finalBg}
+        alt=""
+        aria-hidden="true"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 z-0 h-full w-full object-cover"
+        style={`object-position: ${bgPosition};`}
+      />
+      <!-- Dark vignette + bottom fade for legibility -->
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute inset-0 z-0 opacity-90 mix-blend-screen"
-        style="background-image:url('/hero-starfield.svg'); background-size:cover; background-position:center;"
+        class="pointer-events-none absolute inset-0 z-0"
+        style={
+          isHome
+            ? `background-image:
+                linear-gradient(180deg, oklch(0.10 0.020 240 / 0.55) 0%, oklch(0.10 0.020 240 / 0.35) 40%, oklch(0.10 0.020 240 / 0.85) 100%),
+                radial-gradient(ellipse 60% 50% at 18% 35%, oklch(0.10 0.020 240 / 0) 0%, oklch(0.10 0.020 240 / 0.55) 75%);`
+            : `background-image:
+                linear-gradient(180deg, oklch(0.10 0.020 240 / 0.7) 0%, oklch(0.10 0.020 240 / 0.55) 40%, oklch(0.10 0.020 240 / 0.85) 100%);`
+        }
       ></div>
-      <div aria-hidden="true" class="pointer-events-none absolute inset-0 z-0">
-        <span class="aurora-orb aurora-orb-1"></span>
-        <span class="aurora-orb aurora-orb-2"></span>
-        <span class="aurora-orb aurora-orb-3"></span>
-      </div>
-      <!-- Subtle horizon glow at the bottom edge -->
+      <!-- Subtle horizon-glow tint at the bottom in brand color -->
       <div
         aria-hidden="true"
         class="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 z-0"
-        style="background-image: radial-gradient(ellipse 80% 100% at 50% 100%, oklch(var(--brand-primary) / 0.20) 0%, transparent 60%);"
+        style="background-image: radial-gradient(ellipse 80% 100% at 50% 100%, oklch(var(--brand-primary) / 0.22) 0%, transparent 65%);"
       ></div>
     </>
   )}
@@ -80,7 +105,7 @@ const eyebrowClass = isDark ? 'text-teal-glow' : 'text-ink-muted';
     <div class={isHome ? 'grid items-center gap-12 md:grid-cols-[1.1fr,0.9fr] lg:gap-16' : 'max-w-4xl'}>
       <div class={isHome ? 'order-2 md:order-1' : ''}>
         {eyebrow && (
-          <p class={`text-xs uppercase tracking-[0.22em] mb-6 font-medium ${eyebrowClass}`}>
+          <p class={`text-xs uppercase tracking-[0.24em] mb-6 font-medium ${eyebrowClass}`}>
             {eyebrow}
           </p>
         )}
@@ -137,7 +162,7 @@ const eyebrowClass = isDark ? 'text-teal-glow' : 'text-ink-muted';
         <div class="relative order-1 flex justify-center md:order-2 md:justify-end">
           <div class="relative">
             <!-- Soft halo behind portrait -->
-            <span aria-hidden="true" class="absolute -inset-6 -z-10 rounded-pill blur-3xl bg-gradient-to-br from-teal/40 via-brand/30 to-transparent"></span>
+            <span aria-hidden="true" class="absolute -inset-8 -z-10 rounded-full blur-3xl bg-gradient-to-br from-teal-glow/40 via-brand/30 to-transparent"></span>
             <img
               src={portraitSrc}
               alt={portraitAlt}
@@ -145,11 +170,11 @@ const eyebrowClass = isDark ? 'text-teal-glow' : 'text-ink-muted';
               height="675"
               loading="eager"
               fetchpriority="high"
-              class="relative h-auto w-[260px] sm:w-[320px] md:w-[380px] lg:w-[440px] aspect-[4/5] object-cover rounded-[42% 58% 38% 62% / 38% 42% 58% 62%] shadow-[0_30px_60px_-20px_oklch(0.05_0.02_240_/_0.7)]"
+              class="hero-portrait relative h-auto w-[260px] sm:w-[320px] md:w-[380px] lg:w-[440px] aspect-[4/5] object-cover object-top shadow-[0_30px_60px_-20px_oklch(0.05_0.02_240_/_0.8)]"
             />
             <!-- Floating credential chip -->
-            <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 md:left-auto md:right-4 md:translate-x-0 rounded-pill bg-bg-base/95 backdrop-blur px-4 py-2 shadow-md border border-border-subtle">
-              <p class="text-[10px] uppercase tracking-[0.22em] text-ink-muted">QHHT · Dolores Cannon lineage</p>
+            <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 md:left-auto md:right-4 md:translate-x-0 rounded-pill bg-bg-inverse/85 backdrop-blur-md px-4 py-2 shadow-md border border-teal-glow/30">
+              <p class="text-[10px] uppercase tracking-[0.22em] text-inverse-muted">QHHT · Dolores Cannon lineage</p>
             </div>
           </div>
         </div>
@@ -157,53 +182,15 @@ const eyebrowClass = isDark ? 'text-teal-glow' : 'text-ink-muted';
     </div>
   </div>
 
-  <!-- Optional bottom fade so the hero blends into the section below -->
+  <!-- Bottom-edge fade into the next section -->
   {isDark && (
-    <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-bg-base"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-20 z-10 bg-gradient-to-b from-transparent to-bg-inverse-deeper"></div>
   )}
 </section>
 
 <style>
-  /* Custom organic mask — Tailwind arbitrary border-radius struggles with multi-corner.
-     Apply here with the right syntax. */
-  img[class*="rounded-["] {
-    border-radius: 42% 58% 38% 62% / 38% 42% 58% 62%;
-  }
-
-  .aurora-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    opacity: 0.55;
-    will-change: transform;
-    animation: drift 18s ease-in-out infinite alternate;
-  }
-  .aurora-orb-1 {
-    width: 520px; height: 520px;
-    top: 8%; left: -6%;
-    background: oklch(var(--brand-teal) / 0.6);
-    animation-delay: 0s;
-  }
-  .aurora-orb-2 {
-    width: 460px; height: 460px;
-    bottom: -10%; right: -8%;
-    background: oklch(var(--brand-primary) / 0.45);
-    animation-delay: -6s;
-    animation-duration: 24s;
-  }
-  .aurora-orb-3 {
-    width: 320px; height: 320px;
-    top: 38%; right: 22%;
-    background: oklch(var(--brand-teal-glow) / 0.25);
-    animation-delay: -12s;
-    animation-duration: 30s;
-  }
-  @keyframes drift {
-    0%   { transform: translate3d(0, 0, 0) scale(1); }
-    50%  { transform: translate3d(20px, -18px, 0) scale(1.05); }
-    100% { transform: translate3d(-12px, 22px, 0) scale(0.97); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .aurora-orb { animation: none; }
+  /* Organic blob mask for hero portrait */
+  .hero-portrait {
+    border-radius: 48% 52% 38% 62% / 40% 44% 56% 60%;
   }
 </style>

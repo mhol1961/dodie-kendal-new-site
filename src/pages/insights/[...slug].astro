@@ -19,10 +19,10 @@ const all = (await getCollection('insights', ({ data }) => !data.draft).catch(()
 const related = all.filter((p) => p.slug !== post.slug).slice(0, 2);
 
 const heroBySlug: Record<string, string> = {
-  'what-happens-in-a-qhht-session': '/insights/what-happens.svg',
-  'past-life-regression-vs-qhht': '/insights/regression-vs-qhht.svg',
-  'how-to-prepare-for-your-first-quantum-healing-session': '/insights/prepare.svg',
-  'choosing-a-qhht-practitioner': '/insights/practitioner.svg',
+  'what-happens-in-a-qhht-session': '/photos/insight-hourglass.jpg',
+  'past-life-regression-vs-qhht': '/photos/hero-milky-way.jpg',
+  'how-to-prepare-for-your-first-quantum-healing-session': '/photos/insight-notebook.jpg',
+  'choosing-a-qhht-practitioner': '/photos/insight-compass.jpg',
 };
 const postHero = heroBySlug[post.slug];
 

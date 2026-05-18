@@ -8,19 +8,20 @@ interface Props {
   variant?: 'light' | 'dark';
 }
 
-const { items, variant = 'light' } = Astro.props;
+const { items, variant = 'dark' } = Astro.props;
 
 const wrapperClass = variant === 'dark'
-  ? 'bg-bg-inverse-deeper text-inverse-muted'
-  : 'bg-bg-base text-ink-secondary';
+  ? 'bg-bg-inverse-deeper text-inverse-muted border-y border-teal-glow/15'
+  : 'bg-bg-base text-ink-secondary border-y border-border-subtle/40';
+const sepClass = variant === 'dark' ? 'text-teal-glow opacity-60' : 'text-brand opacity-60';
 ---
-<section class={`${wrapperClass} border-y border-border-subtle/40`}>
-  <div class="container-default flex flex-wrap items-center justify-center gap-x-6 gap-y-2 py-5 text-[11px] uppercase tracking-[0.2em]">
+<section class={wrapperClass}>
+  <div class="container-default flex flex-wrap items-center justify-center gap-x-6 gap-y-2 py-5 text-[11px] uppercase tracking-[0.24em]">
     {items.map((item, idx) => (
       <Fragment>
         <span>{item}</span>
         {idx < items.length - 1 && (
-          <span aria-hidden="true" class="hidden sm:inline text-brand opacity-60">·</span>
+          <span aria-hidden="true" class={`hidden sm:inline ${sepClass}`}>·</span>
         )}
       </Fragment>
     ))}

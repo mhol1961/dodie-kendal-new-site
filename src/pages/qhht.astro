@@ -52,85 +52,53 @@ const timeline = [
     subhead="A 5-hour, deeply respectful conversation with the deepest part of you. Developed by the late Dolores Cannon, refined over four decades, and at the heart of every session I offer."
   />
 
-  <!-- Origin band -->
-  <section class="bg-bg-sunken py-10">
+  <!-- Origin band — dark, Dolores Cannon attribution -->
+  <section class="bg-bg-inverse-deeper py-12 text-inverse">
     <div class="container-default grid items-center gap-6 md:grid-cols-[1fr,2fr] md:gap-12">
-      <div>
-        <p class="text-[10px] uppercase tracking-[0.22em] text-ink-muted">Originator</p>
-        <p class="mt-2 font-display text-3xl text-ink">Dolores Cannon</p>
-        <p class="mt-1 text-sm text-ink-muted">1931 – 2014 · Hypnotist · Researcher · Author</p>
+      <div class="border-l-2 border-brand pl-5">
+        <p class="text-[10px] uppercase tracking-[0.24em] text-teal-glow">Originator</p>
+        <p class="mt-2 font-display text-3xl text-inverse">Dolores Cannon</p>
+        <p class="mt-1 text-sm text-inverse-muted">1931 – 2014 · Hypnotist · Researcher · Author</p>
       </div>
-      <p class="text-ink-secondary leading-relaxed md:text-lg">
+      <p class="text-inverse-muted leading-relaxed md:text-lg">
         Dolores Cannon developed QHHT over more than four decades, working with thousands of clients across the U.S. and abroad. The method is taught and certified directly through her organization. I trained in this lineage and continue to study within the QHHT community.
       </p>
     </div>
   </section>
 
-  <!-- The library metaphor — Dodie's actual analogy -->
-  <section class="section-y bg-bg-base">
-    <div class="container-default grid items-start gap-12 md:grid-cols-12 md:gap-16">
-      <!-- Symbolic art column -->
-      <div class="md:col-span-5 lg:col-span-5">
-        <div class="sticky top-28 relative">
-          <span aria-hidden="true" class="absolute -inset-6 -z-10 rounded-lg bg-gradient-to-br from-teal/20 via-brand/15 to-transparent blur-2xl"></span>
-          <!-- Inline "archive doorway" symbolic SVG -->
-          <svg viewBox="0 0 480 600" class="w-full h-auto rounded-lg bg-bg-inverse text-inverse" aria-hidden="true">
-            <defs>
-              <linearGradient id="doorGlow" x1="50%" y1="0%" x2="50%" y2="100%">
-                <stop offset="0%" stop-color="oklch(0.78 0.13 195)" stop-opacity="0.85"/>
-                <stop offset="100%" stop-color="oklch(0.42 0.10 195)" stop-opacity="0"/>
-              </linearGradient>
-              <linearGradient id="floor" x1="50%" y1="0%" x2="50%" y2="100%">
-                <stop offset="0%" stop-color="oklch(0.18 0.018 240)"/>
-                <stop offset="100%" stop-color="oklch(0.10 0.020 240)"/>
-              </linearGradient>
-              <radialGradient id="bloom" cx="50%" cy="35%" r="35%">
-                <stop offset="0%" stop-color="oklch(0.78 0.13 195)" stop-opacity="0.45"/>
-                <stop offset="60%" stop-color="oklch(0.18 0.018 240)" stop-opacity="0"/>
-              </radialGradient>
-            </defs>
-            <!-- Backdrop -->
-            <rect width="480" height="600" fill="url(#floor)"/>
-            <rect width="480" height="600" fill="url(#bloom)"/>
-            <!-- Doorway -->
-            <path d="M180 540 L180 230 Q180 130 240 130 Q300 130 300 230 L300 540 Z" fill="url(#doorGlow)" opacity="0.7"/>
-            <path d="M180 540 L180 230 Q180 130 240 130 Q300 130 300 230 L300 540" stroke="oklch(0.78 0.13 195)" stroke-width="1.2" fill="none" opacity="0.9"/>
-            <!-- Inner threshold light -->
-            <path d="M220 540 L220 250 Q220 165 240 165 Q260 165 260 250 L260 540 Z" fill="oklch(0.97 0.008 85)" opacity="0.12"/>
-            <!-- Floor line -->
-            <line x1="40" y1="540" x2="440" y2="540" stroke="oklch(0.97 0.008 85 / 0.18)" stroke-width="1"/>
-            <!-- Stars / motes -->
-            <g fill="oklch(0.97 0.008 85)" opacity="0.85">
-              <circle cx="120" cy="120" r="1.3"/>
-              <circle cx="380" cy="80" r="1.6"/>
-              <circle cx="80" cy="280" r="1"/>
-              <circle cx="400" cy="240" r="1.3"/>
-              <circle cx="160" cy="80" r="0.9"/>
-              <circle cx="330" cy="180" r="0.9"/>
-              <circle cx="60"  cy="420" r="1"/>
-              <circle cx="420" cy="380" r="1.2"/>
-              <circle cx="240" cy="80"  r="0.8"/>
-            </g>
-            <!-- Footprint -->
-            <ellipse cx="240" cy="555" rx="32" ry="6" fill="oklch(0.78 0.13 195)" opacity="0.55"/>
-          </svg>
-          <p class="mt-4 text-center text-xs uppercase tracking-[0.22em] text-ink-muted">The threshold to the archive</p>
-        </div>
-      </div>
+  <!-- The library metaphor — now with real photography -->
+  <section class="relative isolate overflow-hidden bg-bg-inverse-deeper py-24 md:py-32">
+    <!-- Full-width library photo background, fading to dark on left for text legibility -->
+    <img
+      src="/photos/qhht-library.jpg"
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      class="absolute inset-0 z-0 h-full w-full object-cover"
+      style="object-position: right center;"
+    />
+    <div
+      aria-hidden="true"
+      class="absolute inset-0 z-0"
+      style="background-image: linear-gradient(90deg, oklch(0.10 0.020 240 / 0.95) 0%, oklch(0.10 0.020 240 / 0.85) 35%, oklch(0.10 0.020 240 / 0.4) 70%, oklch(0.10 0.020 240 / 0.2) 100%);"
+    ></div>
 
-      <!-- Copy column -->
-      <div class="md:col-span-7 lg:col-span-7">
-        <p class="text-xs uppercase tracking-[0.22em] text-brand">What is QHHT</p>
-        <h2 class="mt-3 font-display text-ink">
+    <div class="relative z-10 container-default">
+      <div class="max-w-2xl">
+        <p class="text-xs uppercase tracking-[0.24em] text-teal-glow">What is QHHT</p>
+        <h2 class="mt-4 font-display text-inverse">
           <span class="block">A library you have</span>
-          <span class="italic-accent block text-brand">always carried.</span>
+          <span class="italic-accent block text-teal-glow">always carried.</span>
         </h2>
 
-        <div class="mt-7 space-y-5 text-lg leading-relaxed text-ink-secondary">
+        <div class="mt-8 space-y-6 text-lg leading-relaxed text-inverse-muted">
           <p>Think of your mind like a vast library. Your conscious mind is the front desk — busy, logical, handling the daily tasks. But behind those doors is the Subconscious: a deep archive that holds the records of everything your soul has ever experienced.</p>
           <p>QHHT is a gentle, guided way into that archive. We use the Theta brainwave state — the threshold between waking and dreaming — so the conscious noise quiets and the Subconscious can speak clearly. You stay in the driver's seat the whole time. You set the questions. Your Higher Self answers.</p>
-          <p class="font-serif text-2xl text-ink leading-snug">This is what Dolores Cannon called a <em class="italic-accent">Sacred Technology</em> — and that's a fair description.</p>
         </div>
+
+        <p class="mt-10 font-serif text-2xl md:text-3xl text-inverse leading-snug max-w-xl">
+          This is what Dolores Cannon called a <em class="italic-accent text-brand">Sacred Technology</em> — and that's a fair description.
+        </p>
       </div>
     </div>
   </section>
