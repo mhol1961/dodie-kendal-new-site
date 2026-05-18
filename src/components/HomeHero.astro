@@ -1,0 +1,154 @@
+---
+/**
+ * HomeHero — three-layer cinematic composition, home page only.
+ *
+ *   Layer 1: atmospheric backdrop video (tropical light, dimmed)
+ *   Layer 2: Dodie cinemagraph (image-to-video, anchored right)
+ *   Layer 3: kinetic typographic reveal (text + CTA cascade in over ~2.5s)
+ *
+ * Posters + prefers-reduced-motion fallbacks built in.
+ */
+interface Props {
+  eyebrow?: string;
+  primaryCta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+  trustLine?: string;
+}
+
+const {
+  eyebrow = 'Quantum Healing Hypnosis Technique · Palm Beach County, FL',
+  primaryCta = { label: 'Book a Session', href: '/book' },
+  secondaryCta = { label: "Read Dodie's story", href: '/about' },
+  trustLine = '$300 · 5 hours · In person in Palm Beach County or remote via Zoom',
+} = Astro.props;
+---
+<section class="relative isolate overflow-hidden bg-bg-inverse-deeper text-inverse min-h-[100vh] flex items-center">
+  <!-- LAYER 1 — atmospheric backdrop -->
+  <img
+    src="/video/about-tropical-light-poster.jpg"
+    alt=""
+    aria-hidden="true"
+    class="absolute inset-0 z-0 h-full w-full object-cover motion-safe:opacity-0"
+  />
+  <video
+    src="/video/about-tropical-light.mp4"
+    poster="/video/about-tropical-light-poster.jpg"
+    autoplay muted loop playsinline preload="metadata"
+    aria-hidden="true"
+    class="absolute inset-0 z-0 h-full w-full object-cover motion-reduce:hidden"
+  />
+  <!-- Dark veil — pulls the backdrop down so it doesn't compete with the portrait -->
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 z-[1]"
+    style="background-image:
+      linear-gradient(180deg, oklch(0.08 0.020 240 / 0.62) 0%, oklch(0.08 0.020 240 / 0.50) 40%, oklch(0.08 0.020 240 / 0.85) 100%),
+      radial-gradient(ellipse 70% 55% at 18% 38%, oklch(0.08 0.020 240 / 0) 0%, oklch(0.08 0.020 240 / 0.40) 70%);"
+  ></div>
+  <!-- Coral horizon glow at bottom -->
+  <div
+    aria-hidden="true"
+    class="absolute inset-x-0 bottom-0 z-[1] h-1/2"
+    style="background-image: radial-gradient(ellipse 80% 100% at 50% 100%, oklch(var(--brand-primary) / 0.28) 0%, transparent 65%);"
+  ></div>
+
+  <!-- LAYER 2 — Dodie cinemagraph, anchored right, large -->
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-y-0 right-0 z-[2] w-full md:w-[58%] lg:w-[55%] flex items-end justify-end"
+  >
+    <!-- Soft halo behind the portrait -->
+    <span class="pointer-events-none absolute top-1/2 right-[8%] -translate-y-1/2 w-[80%] aspect-square rounded-full bg-gradient-to-br from-teal-glow/25 via-brand/20 to-transparent blur-3xl"></span>
+    <img
+      src="/video/dodie-cinemagraph-poster.jpg"
+      alt="Dodie Kendall, QHHT Practitioner"
+      width="900"
+      height="1125"
+      loading="eager"
+      fetchpriority="high"
+      class="relative h-full w-auto max-h-[92vh] object-cover object-bottom motion-safe:opacity-0"
+    />
+    <video
+      src="/video/dodie-cinemagraph.mp4"
+      poster="/video/dodie-cinemagraph-poster.jpg"
+      autoplay muted loop playsinline preload="metadata"
+      aria-hidden="true"
+      class="absolute right-0 bottom-0 h-full w-auto max-h-[92vh] object-cover object-bottom motion-reduce:hidden"
+    />
+  </div>
+
+  <!-- LAYER 3 — kinetic text -->
+  <div class="relative z-10 container-default w-full">
+    <div class="max-w-2xl md:max-w-[52%]">
+      <p class="hero-line eyebrow text-xs md:text-sm uppercase tracking-[0.28em] font-medium text-brand">
+        {eyebrow}
+      </p>
+      <h1 class="mt-8 font-display text-inverse">
+        <span class="hero-line line-a block">Get direct answers</span>
+        <span class="hero-line line-b italic-accent block text-brand">and deep healing.</span>
+      </h1>
+      <p class="hero-line line-c mt-7 max-w-xl text-lg md:text-xl leading-relaxed text-inverse-muted">
+        You already hold the answers. Through Quantum Healing Hypnosis Technique,
+        I guide you to the part of you that's been waiting to speak — your Higher
+        Self, your Subconscious, the deepest part of you that's been there all along.
+      </p>
+      <div class="hero-line line-d mt-10 flex flex-wrap items-center gap-5">
+        <a
+          href={primaryCta.href}
+          class="cta-glow inline-flex items-center justify-center rounded-pill px-8 py-3.5 font-medium text-base"
+        >
+          {primaryCta.label}
+          <svg class="ml-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+        <a
+          href={secondaryCta.href}
+          class="inline-flex items-center gap-2 text-sm font-medium text-inverse underline-offset-8 transition-colors hover:text-brand"
+        >
+          <span class="underline decoration-1 underline-offset-[6px]">{secondaryCta.label}</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+      <p class="hero-line line-e mt-8 text-xs uppercase tracking-[0.22em] text-inverse-muted">
+        {trustLine}
+      </p>
+    </div>
+  </div>
+
+  <!-- Bottom edge fade into next section -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-20 z-[5] bg-gradient-to-b from-transparent to-bg-inverse-deeper"></div>
+</section>
+
+<style>
+  /* Kinetic text cascade — each line fades + lifts in on its own timing.
+     Total choreography ≈ 2.4s. Background and cinemagraph play immediately. */
+  .hero-line {
+    opacity: 0;
+    transform: translateY(14px);
+    animation: hero-reveal 900ms cubic-bezier(0.2, 0.0, 0.0, 1.0) forwards;
+  }
+  .hero-line.eyebrow { animation-delay: 200ms; }
+  .hero-line.line-a  { animation-delay: 500ms; }
+  .hero-line.line-b  { animation-delay: 950ms; }
+  .hero-line.line-c  { animation-delay: 1400ms; }
+  .hero-line.line-d  { animation-delay: 1800ms; }
+  .hero-line.line-e  { animation-delay: 2200ms; }
+
+  @keyframes hero-reveal {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-line {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+  }
+
+  /* Make sure the portrait sits naturally on mobile — wider columns let it spill in */
+  @media (max-width: 767px) {
+    section { padding-bottom: 0; }
+  }
+</style>
