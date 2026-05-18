@@ -1,6 +1,8 @@
 ---
 import Base from '@layouts/Base.astro';
+import Hero from '@components/Hero.astro';
 import Accordion from '@components/ui/Accordion.astro';
+import ClosingCTA from '@components/ClosingCTA.astro';
 import { getSeo } from '@lib/seo';
 import { faqPage, breadcrumb } from '@lib/schema';
 import { getCollection } from 'astro:content';
@@ -16,65 +18,213 @@ const faqs = (await getCollection('faq').catch(() => [])).sort((a, b) => a.data.
 
 const schemas = [
   faqPage(faqs.map((f) => ({ question: f.data.question, answer: f.data.answer }))),
-  breadcrumb([
-    { name: 'Home', href: '/' },
-    { name: 'FAQ' },
-  ]),
+  breadcrumb([{ name: 'Home', href: '/' }, { name: 'FAQ' }]),
 ];
 
-const categories = [
-  { key: 'sessions',  label: 'Sessions',  description: 'What a QHHT session looks like.' },
-  { key: 'logistics', label: 'Logistics', description: 'Booking, location, pricing, prep.' },
-  { key: 'practice',  label: 'Practice',  description: 'Scope, training, and what QHHT is not.' },
-  { key: 'aftercare', label: 'Aftercare', description: 'What unfolds in the days after.' },
-] as const;
+type CategoryKey = 'sessions' | 'logistics' | 'practice' | 'aftercare';
 
-function groupItems(category: typeof categories[number]['key']) {
+interface CategoryMeta {
+  key: CategoryKey;
+  label: string;
+  description: string;
+  hook: string;
+  image: string;
+  imageAlt: string;
+  dark: boolean;
+}
+
+const categories: CategoryMeta[] = [
+  {
+    key: 'sessions',
+    label: 'Sessions',
+    description: 'What actually happens in those 5 hours.',
+    hook: 'The shape of the conversation.',
+    image: '/video/hourglass-time-poster.jpg',
+    imageAlt: 'A wooden hourglass with golden sand on warm river stones',
+    dark: false,
+  },
+  {
+    key: 'logistics',
+    label: 'Logistics',
+    description: 'Booking, location, pricing, prep.',
+    hook: 'The practical pieces.',
+    image: '/video/compass-needle-poster.jpg',
+    imageAlt: 'An ornate brass compass on warm wood',
+    dark: true,
+  },
+  {
+    key: 'practice',
+    label: 'Practice',
+    description: 'Scope, training, and what QHHT is not.',
+    hook: 'The honest boundaries.',
+    image: '/video/qhht-archive-poster.jpg',
+    imageAlt: 'A curved library archive with warm hanging Edison bulbs',
+    dark: false,
+  },
+  {
+    key: 'aftercare',
+    label: 'Aftercare',
+    description: 'What unfolds in the days that follow.',
+    hook: 'The integration window.',
+    image: '/video/linen-light-poster.jpg',
+    imageAlt: 'Sheer cream curtains over a window with warm golden light',
+    dark: true,
+  },
+];
+
+function groupItems(category: CategoryKey) {
   return faqs
     .filter((f) => f.data.category === category)
     .map((f) => ({ question: f.data.question, answer: f.data.answer }));
 }
+
+function slugify(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
 ---
 <Base seo={seo} schemas={schemas}>
-  <section class="section-y bg-bg-base">
-    <div class="container-default max-w-4xl">
-      <p class="text-xs uppercase tracking-wider text-ink-muted">FAQ</p>
-      <h1 class="mt-2 font-display">Common questions, answered.</h1>
-      <p class="mt-4 max-w-prose text-lg text-ink-secondary">
-        Don't see your question here? Reach me via <a href="/contact" class="text-brand underline">the contact form</a>.
-      </p>
+  <!-- HERO — short, distinct from QHHT/Insights -->
+  <Hero
+    variant="qhht"
+    eyebrow="FAQ"
+    headlineLead="Common questions,"
+    headlineItalic="honest answers."
+    subhead="Twenty answers to the things people ask before they book. Pick a category, or scroll all four — they're short."
+    bgImage="/photos/hero-aurora-real.jpg"
+  />
 
-      {faqs.length === 0 ? (
-        <p class="mt-12 text-ink-muted">FAQ entries are being added — check back soon.</p>
-      ) : (
-        <div class="mt-12 space-y-14">
-          {categories.map((cat) => {
-            const items = groupItems(cat.key);
-            return items.length > 0 ? (
-              <section>
-                <header class="mb-6">
-                  <h2 class="font-display text-2xl md:text-3xl">{cat.label}</h2>
-                  <p class="mt-1 text-ink-muted">{cat.description}</p>
-                </header>
-                <Accordion items={items} idPrefix={`faq-${cat.key}`} />
-              </section>
-            ) : null;
-          })}
-        </div>
-      )}
-    </div>
-  </section>
-
-  <section class="section-y bg-sunrise">
-    <div class="container-default text-center">
-      <h2 class="font-display text-4xl md:text-5xl">Got a question I haven't covered?</h2>
-      <p class="mx-auto mt-4 max-w-xl text-lg text-ink-secondary">
-        I read every note personally. Most replies go out within 24–48 hours.
-      </p>
-      <div class="mt-8 flex flex-wrap justify-center gap-4">
-        <a href="/contact" class="inline-flex items-center justify-center rounded-pill bg-brand px-7 py-3 font-medium text-ink-inverse shadow-md transition-all hover:bg-brand-hover hover:shadow-glow">Send a note</a>
-        <a href="/book" class="inline-flex items-center justify-center rounded-pill border border-border-strong px-7 py-3 font-medium text-ink transition-colors hover:border-brand hover:text-brand">Book a Session</a>
+  {faqs.length === 0 ? (
+    <section class="section-y bg-bg-base">
+      <div class="container-default">
+        <p class="text-ink-muted">FAQ entries are being added — check back soon.</p>
       </div>
-    </div>
-  </section>
+    </section>
+  ) : (
+    <>
+      <!-- SCANNABLE CATEGORY INDEX — anchor jumps -->
+      <section class="bg-bg-inverse-deeper py-14 md:py-16 border-y border-brand/20">
+        <div class="container-default">
+          <p class="text-[10px] uppercase tracking-[0.24em] text-brand mb-6">Browse by category</p>
+          <ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-4" role="list">
+            {categories.map((cat) => {
+              const count = groupItems(cat.key).length;
+              return (
+                <li>
+                  <a
+                    href={`#cat-${cat.key}`}
+                    class="group flex h-full flex-col rounded-lg border border-brand/20 bg-bg-inverse/60 backdrop-blur-sm p-5 transition-all hover:border-brand hover:-translate-y-0.5"
+                  >
+                    <div class="flex items-center justify-between">
+                      <p class="text-[10px] uppercase tracking-[0.24em] text-brand">{cat.label}</p>
+                      <span class="rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-medium text-brand">{count}</span>
+                    </div>
+                    <p class="mt-3 font-display text-xl text-inverse leading-snug">{cat.hook}</p>
+                    <p class="mt-2 text-sm text-inverse-muted leading-relaxed">{cat.description}</p>
+                    <span class="mt-4 text-xs text-brand transition-transform group-hover:translate-x-1">Read →</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+
+      <!-- CATEGORY SECTIONS — alternating cream / dark, each with chapter image -->
+      {categories.map((cat) => {
+        const items = groupItems(cat.key);
+        if (items.length === 0) return null;
+        const isDark = cat.dark;
+        const wrapClass = isDark
+          ? 'bg-bg-inverse-deeper text-inverse'
+          : 'bg-bg-base text-ink';
+        const eyebrowColor = 'text-brand';
+        const titleColor = isDark ? 'text-inverse' : 'text-ink';
+        const bodyColor = isDark ? 'text-inverse-muted' : 'text-ink-secondary';
+        return (
+          <section id={`cat-${cat.key}`} class={`${wrapClass} py-20 md:py-28 scroll-mt-20`}>
+            <div class="container-default">
+              <!-- Category header — image + intro side-by-side on desktop -->
+              <header class="mb-12 grid items-center gap-8 md:grid-cols-[280px,1fr] md:gap-12 lg:grid-cols-[360px,1fr]">
+                <figure class="relative overflow-hidden rounded-lg shadow-md">
+                  <img
+                    src={cat.image}
+                    alt={cat.imageAlt}
+                    width="720"
+                    height="450"
+                    loading="lazy"
+                    class="w-full h-auto aspect-[8/5] object-cover"
+                  />
+                </figure>
+                <div>
+                  <p class={`text-[10px] uppercase tracking-[0.24em] ${eyebrowColor}`}>Category · {String(items.length).padStart(2, '0')} questions</p>
+                  <h2 class={`mt-3 font-display ${titleColor}`}>
+                    <span class="block">{cat.label}.</span>
+                    <span class="italic-accent block text-brand">{cat.hook}</span>
+                  </h2>
+                  <p class={`mt-5 max-w-prose text-lg leading-relaxed ${bodyColor}`}>
+                    {cat.description}
+                  </p>
+                </div>
+              </header>
+
+              <!-- Question accordion — dark variant for dark sections -->
+              {isDark ? (
+                <ul class="max-w-3xl space-y-3" role="list">
+                  {items.map((item, idx) => {
+                    const id = `faq-${cat.key}-${slugify(item.question).slice(0, 60) || 'q-' + idx}`;
+                    return (
+                      <li>
+                        <details id={id} class="group rounded-lg border border-brand/20 bg-bg-inverse/60 backdrop-blur-sm transition-colors duration-base ease-standard">
+                          <summary class="flex cursor-pointer items-start justify-between gap-4 list-none px-5 py-4 font-medium text-inverse hover:text-brand">
+                            <span class="flex-1">{item.question}</span>
+                            <span aria-hidden="true" class="mt-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-brand/40 text-brand transition-transform duration-base ease-standard group-open:rotate-45">+</span>
+                          </summary>
+                          <div class="px-5 pb-5 pt-1 text-inverse-muted leading-relaxed">
+                            {item.answer.split('\n').map((para) => <p class="mb-3 last:mb-0">{para}</p>)}
+                          </div>
+                        </details>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <div class="max-w-3xl">
+                  <Accordion items={items} idPrefix={`faq-${cat.key}`} />
+                </div>
+              )}
+            </div>
+          </section>
+        );
+      })}
+
+      <!-- "STILL HAVE A QUESTION" CALLOUT — between categories + closing CTA -->
+      <section class="bg-bg-sunken py-16 md:py-20 border-y border-border-subtle">
+        <div class="container-default text-center">
+          <p class="text-xs uppercase tracking-[0.24em] text-brand">Didn't find it?</p>
+          <h2 class="mt-3 font-display text-ink">
+            <span class="block">Send me a note.</span>
+            <span class="italic-accent block text-brand">I read every one.</span>
+          </h2>
+          <p class="mx-auto mt-5 max-w-xl text-lg text-ink-secondary leading-relaxed">
+            If your question isn't here, it's a fair one to ask. Most replies go out within 24–48 hours, Monday through Saturday.
+          </p>
+          <div class="mt-8 flex flex-wrap justify-center gap-4">
+            <a href="/contact" class="inline-flex items-center justify-center rounded-pill bg-brand px-7 py-3 font-medium text-ink-inverse shadow-md transition-all hover:bg-brand-hover hover:shadow-glow">
+              Send a note
+            </a>
+            <a href="/book" class="inline-flex items-center justify-center rounded-pill border border-border-strong px-7 py-3 font-medium text-ink transition-colors hover:border-brand hover:text-brand">
+              Book a Session
+            </a>
+          </div>
+        </div>
+      </section>
+    </>
+  )}
+
+  <ClosingCTA
+    headlineLead="Twenty answers down."
+    headlineItalic="One door left."
+    cta={{ label: 'Book a Session', href: '/book' }}
+    trustLine="$300 · 5 hours · Palm Beach FL or remote via Zoom"
+  />
 </Base>

@@ -12,7 +12,7 @@ const { quote, attribution, variant = 'light' } = Astro.props;
 
 const wrap = variant === 'dark' ? 'bg-bg-inverse text-inverse' : 'bg-bg-base text-ink';
 const muted = variant === 'dark' ? 'text-inverse-muted' : 'text-ink-muted';
-const accent = variant === 'dark' ? 'bg-teal-glow' : 'bg-brand';
+const accent = 'bg-brand';
 ---
 <section class={`${wrap} py-24 md:py-32`}>
   <div class="container-default max-w-5xl text-center">

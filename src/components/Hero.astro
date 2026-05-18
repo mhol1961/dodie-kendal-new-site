@@ -68,7 +68,7 @@ const finalVideo = bgVideo ?? defaultVideo[variant];
 
 const titleClass = isDark ? 'text-inverse' : 'text-ink';
 const subClass = isDark ? 'text-inverse-muted' : 'text-ink-secondary';
-const eyebrowClass = isDark ? 'text-teal-glow' : 'text-ink-muted';
+const eyebrowClass = isDark ? 'text-brand' : 'text-ink-muted';
 ---
 
 <section
@@ -134,7 +134,7 @@ const eyebrowClass = isDark ? 'text-teal-glow' : 'text-ink-muted';
           <h1 class={`font-display ${titleClass}`}>
             {headlineLead && <span class="block">{headlineLead}</span>}
             {headlineItalic && (
-              <span class="italic-accent block text-teal-glow">{headlineItalic}</span>
+              <span class="italic-accent block text-brand">{headlineItalic}</span>
             )}
             {headlineTail && <span class="block">{headlineTail}</span>}
           </h1>
@@ -162,7 +162,7 @@ const eyebrowClass = isDark ? 'text-teal-glow' : 'text-ink-muted';
             {secondaryCta && (
               <a
                 href={secondaryCta.href}
-                class={`inline-flex items-center gap-2 text-sm font-medium underline-offset-8 transition-colors ${isDark ? 'text-inverse hover:text-teal-glow' : 'text-ink hover:text-brand'}`}
+                class={`inline-flex items-center gap-2 text-sm font-medium underline-offset-8 transition-colors text-inverse hover:text-brand ${isDark ? '' : 'text-ink'}`}
               >
                 <span class="underline decoration-1 underline-offset-[6px]">{secondaryCta.label}</span>
                 <span aria-hidden="true">↗</span>
