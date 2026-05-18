@@ -23,17 +23,17 @@ const {
 } = Astro.props;
 ---
 <section class="relative isolate overflow-hidden bg-bg-inverse-deeper text-inverse min-h-[100vh] flex items-center">
-  <!-- LAYER 1 — aurora backdrop (cool teal/indigo against Dodie's warm portrait = striking color contrast).
-       Distinct from About hero (which uses tropical-light) and every other page hero. -->
+  <!-- LAYER 1 — backlit palm tapestry. Warm tropical family as About hero but distinct composition:
+       dense backlit fronds (no visible sun), dreamy and impressionistic vs About's sunburst-through-palms. -->
   <img
-    src="/video/hero-aurora-poster.jpg"
+    src="/video/home-backdrop-poster.jpg"
     alt=""
     aria-hidden="true"
     class="absolute inset-0 z-0 h-full w-full object-cover motion-safe:opacity-0"
   />
   <video
-    src="/video/hero-aurora.mp4"
-    poster="/video/hero-aurora-poster.jpg"
+    src="/video/home-backdrop.mp4"
+    poster="/video/home-backdrop-poster.jpg"
     autoplay muted loop playsinline preload="metadata"
     aria-hidden="true"
     class="absolute inset-0 z-0 h-full w-full object-cover motion-reduce:hidden"
