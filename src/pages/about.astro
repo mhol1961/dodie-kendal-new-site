@@ -27,192 +27,250 @@ const schemas = [
   aboutPageSchema,
   breadcrumb([{ name: 'Home', href: '/' }, { name: 'About' }]),
 ];
-
-interface BodyChapter {
-  kind: 'body';
-  num: string;
-  era: string;
-  title: string;
-  body: string[];
-  glyph?: 'sun' | 'seed' | 'thread';
-}
-interface QuoteChapter {
-  kind: 'quote';
-  text: string;
-}
-type Item = BodyChapter | QuoteChapter;
-
-const chapters: Item[] = [
-  {
-    kind: 'body',
-    num: '01',
-    era: 'Childhood — South Florida',
-    title: 'The early years: ritual and questioning.',
-    body: [
-      "I am a native Floridian, raised in the tradition of the Catholic Church. From baptism and CCD to Catholic High School, the structure of religion was always around me. Yet, inside, I felt a disconnect. The ceremonies often felt intimidating rather than comforting, and as a young woman, I struggled to find the spiritual side of the actions I was performing.",
-      "By my teens, I felt that church was simply for \"old people,\" and I stepped away to find my own way.",
-    ],
-    glyph: 'sun',
-  },
-  {
-    kind: 'body',
-    num: '02',
-    era: 'Young adulthood — A new question',
-    title: 'The search for something more.',
-    body: [
-      "While teaching aerobics and navigating the typical unwise choices of youth, I met a young woman whose vibrant faith challenged my perceptions. She didn't fit my \"old person\" mold of religion. Following her lead, I found myself in a non-denominational Pentecostal church, witnessing things that both perplexed and intrigued me — tongues, dancing, and a raw, supernatural energy I hadn't seen before.",
-      "When asked the pivotal question — \"Dodie, do you know where you will go if you died tonight?\" — I realized I didn't have an answer. Motivated by a mix of curiosity and the fear of eternal damnation, I invited Jesus into my heart. It was a time of high energy and \"Whooo hooo!\" moments, but it also brought my first real lesson in the complexity of healing.",
-    ],
-    glyph: 'seed',
-  },
-  {
-    kind: 'quote',
-    text:
-      "The promise was that the prayer of faith shall heal the sick. My friend and I went to lay hands on him. His physical body did not heal; he passed on to the next dimension.",
-  },
-  {
-    kind: 'body',
-    num: '03',
-    era: 'The questioning years',
-    title: 'A lesson in healing and transition.',
-    body: [
-      "I remember vividly when my brother's friend was in the ICU with acute leukemia. Armed with the promise of scripture, I prayed. He did not heal. I was told he was in heaven because of our prayers, but this was a seed of doubt. A lot of things began to feel out of alignment.",
-      "I eventually left that church, but for years I carried the heavy belief that there was only \"one way\" to God.",
-    ],
-    glyph: 'thread',
-  },
-  {
-    kind: 'body',
-    num: '04',
-    era: 'The widening',
-    title: 'The shift: from fear to universal love.',
-    body: [
-      "Life happened. Through the ups and downs, I met beautiful, compassionate people from all walks of life — Buddhists, Muslims, Hindus, and many others. The idea that a loving God would send these souls to eternal damnation no longer resonated with my own soul.",
-      "I chose to abandon that belief system for a new perspective: God is Energy. A loving, universal energy that encompasses all humans. In this space, only love exists, and free will is the greatest gift we have been given.",
-    ],
-    glyph: 'sun',
-  },
-  { kind: 'quote', text: "Only love exists." },
-  {
-    kind: 'body',
-    num: '05',
-    era: 'The arrival',
-    title: 'Discovering the Sacred Technology.',
-    body: [
-      "I always held onto the scripture that we would do \"greater things\" than those who came before us. I knew we were incredible, sacred, and intelligent beings — but I didn't know how to tap into that potential until I was divinely introduced to Dolores Cannon's QHHT.",
-      "The moment I discovered it, I had an inner knowing. This was the modality that explained everything. It was the bridge between my spiritual past and the healing future I was meant to facilitate.",
-    ],
-    glyph: 'seed',
-  },
-  {
-    kind: 'body',
-    num: '06',
-    era: 'Today',
-    title: 'The invitation.',
-    body: [
-      "Today, I am here to help you experience the Creator's gift: the connection to your Higher Self, the Subconscious, the Holy Spirit. Whatever name you choose to give it, it is the voice that guides us.",
-      "I am the invitation, not the insistence. I speak from love, not urgency. Healing flows through me, not from me.",
-      "My life has changed in beautiful ways because I have learned to trust this path and receive the insights needed to live life to the fullest. This Sacred Technology is a gift from the Creator of the Universe that cares about every detail of your current lifetime — and every other lifetime you have ever lived.",
-      "Only love exists. I invite you to allow me to guide you today, so you can finally receive the messages your Higher Self has been waiting for you to hear.",
-    ],
-    glyph: 'thread',
-  },
-];
-
-// Mid-page photo break point — render the portrait between chapter 04 and chapter 05
-function shouldBreakAfter(idx: number): boolean {
-  // After the "Only love exists" pull quote
-  const item = chapters[idx];
-  return item?.kind === 'quote' && item.text === 'Only love exists.';
-}
 ---
 <Base seo={seo} schemas={schemas}>
+  <!-- HERO — tropical morning light video (replaces milky-way photo). -->
   <Hero
     variant="about"
     eyebrow="About Dodie"
     headlineLead="The path to purpose —"
     headlineItalic="from tradition"
     headlineTail="to transcendence."
-    subhead="A native Floridian raised Catholic, who walked through Pentecostal Christianity, then exposure to Buddhists, Muslims, and Hindus, and arrived at the simple truth that only love exists."
-    portraitSrc=""
+    subhead="A native Floridian raised Catholic, who walked through Pentecostal Christianity, then opened to Buddhists, Muslims, and Hindus, and arrived at the simple truth that only love exists."
+    bgImage="/video/about-tropical-light-poster.jpg"
+    bgVideo="/video/about-tropical-light.mp4"
   />
 
-  <!-- Identity strip — credentials in a clean band -->
-  <section class="bg-bg-sunken py-8">
-    <div class="container-default grid grid-cols-2 gap-4 md:grid-cols-4">
+  <!-- IDENTITY STRIP — DARK band -->
+  <section class="bg-bg-inverse-deeper py-10 text-inverse border-y border-teal-glow/15">
+    <div class="container-default grid grid-cols-2 gap-6 md:grid-cols-4">
       <div>
-        <p class="text-[10px] uppercase tracking-[0.22em] text-ink-muted">Lineage</p>
-        <p class="mt-1 font-display text-xl text-ink">Dolores Cannon</p>
+        <p class="text-[10px] uppercase tracking-[0.24em] text-teal-glow">Lineage</p>
+        <p class="mt-2 font-display text-xl text-inverse">Dolores Cannon</p>
       </div>
       <div>
-        <p class="text-[10px] uppercase tracking-[0.22em] text-ink-muted">Based in</p>
-        <p class="mt-1 font-display text-xl text-ink">Palm Beach FL</p>
+        <p class="text-[10px] uppercase tracking-[0.24em] text-teal-glow">Based in</p>
+        <p class="mt-2 font-display text-xl text-inverse">Palm Beach FL</p>
       </div>
       <div>
-        <p class="text-[10px] uppercase tracking-[0.22em] text-ink-muted">Sessions</p>
-        <p class="mt-1 font-display text-xl text-ink">5 hours · $300</p>
+        <p class="text-[10px] uppercase tracking-[0.24em] text-teal-glow">Sessions</p>
+        <p class="mt-2 font-display text-xl text-inverse">5 hrs · $300</p>
       </div>
       <div>
-        <p class="text-[10px] uppercase tracking-[0.22em] text-ink-muted">Format</p>
-        <p class="mt-1 font-display text-xl text-ink">In-person · Remote</p>
+        <p class="text-[10px] uppercase tracking-[0.24em] text-teal-glow">Format</p>
+        <p class="mt-2 font-display text-xl text-inverse">In-person · Remote</p>
       </div>
     </div>
   </section>
 
-  <!-- Story prose with chapter dividers + mid-page photo break -->
-  <section class="section-y bg-bg-base">
+  <!-- CHAPTER 01 — cream prose -->
+  <section class="bg-bg-base py-20 md:py-24">
     <div class="container-prose">
-      {chapters.map((item, idx) => (
-        <>
-          {item.kind === 'quote' ? (
-            <PullQuote quote={item.text} />
-          ) : (
-            <article class="reveal-on-scroll mb-12">
-              <div class="mb-5 flex flex-wrap items-baseline gap-4">
-                <span class="font-display text-5xl text-brand/40 leading-none">{item.num}</span>
-                <p class="text-[10px] uppercase tracking-[0.22em] text-ink-muted">{item.era}</p>
-              </div>
-              <h2 class="font-display text-3xl md:text-4xl text-ink">{item.title}</h2>
-              <div class="mt-6 space-y-5 text-lg leading-relaxed text-ink-secondary">
-                {item.body.map((p) => <p>{p}</p>)}
-              </div>
-              {item.glyph && idx < chapters.length - 1 && (
-                <SectionDivider glyph={item.glyph} color="muted" />
-              )}
-            </article>
-          )}
-          {shouldBreakAfter(idx) && (
-            <figure class="my-16 -mx-4 sm:-mx-6 md:-mx-12">
-              <div class="relative overflow-hidden rounded-lg shadow-[0_30px_60px_-20px_oklch(0.18_0.018_240_/_0.4)]">
-                <span aria-hidden="true" class="absolute -inset-4 -z-10 rounded-lg bg-gradient-to-br from-teal/15 via-brand/15 to-transparent blur-3xl"></span>
-                <img
-                  src="/video/florida-sunrise-poster.jpg"
-                  alt="Florida coast at sunrise — palm fronds framing the horizon"
-                  loading="lazy"
-                  class="w-full aspect-[16/10] object-cover motion-safe:opacity-0"
-                />
-                <video
-                  src="/video/florida-sunrise.mp4"
-                  poster="/video/florida-sunrise-poster.jpg"
-                  autoplay
-                  muted
-                  loop
-                  playsinline
-                  preload="metadata"
-                  aria-hidden="true"
-                  class="absolute inset-0 w-full h-full object-cover motion-reduce:hidden"
-                />
-              </div>
-              <figcaption class="mt-3 text-center text-xs uppercase tracking-[0.22em] text-ink-muted">
-                South Florida sunrise — where the practice was born
-              </figcaption>
-            </figure>
-          )}
-        </>
-      ))}
+      <article class="reveal-on-scroll">
+        <div class="mb-5 flex flex-wrap items-baseline gap-4">
+          <span class="font-display text-5xl text-brand/40 leading-none">01</span>
+          <p class="text-[10px] uppercase tracking-[0.24em] text-ink-muted">Childhood · South Florida</p>
+        </div>
+        <h2 class="font-display text-3xl md:text-4xl text-ink">The early years: ritual and questioning.</h2>
+        <div class="mt-6 space-y-5 text-lg leading-relaxed text-ink-secondary">
+          <p>I am a native Floridian, raised in the tradition of the Catholic Church. From baptism and CCD to Catholic High School, the structure of religion was always around me. Yet, inside, I felt a disconnect. The ceremonies often felt intimidating rather than comforting, and as a young woman, I struggled to find the spiritual side of the actions I was performing.</p>
+          <p>By my teens, I felt that church was simply for "old people," and I stepped away to find my own way.</p>
+        </div>
+        <SectionDivider glyph="sun" color="muted" />
+      </article>
+
+      <!-- CHAPTER 02 — cream prose continues -->
+      <article class="reveal-on-scroll mt-12">
+        <div class="mb-5 flex flex-wrap items-baseline gap-4">
+          <span class="font-display text-5xl text-brand/40 leading-none">02</span>
+          <p class="text-[10px] uppercase tracking-[0.24em] text-ink-muted">Young adulthood · A new question</p>
+        </div>
+        <h2 class="font-display text-3xl md:text-4xl text-ink">The search for something more.</h2>
+        <div class="mt-6 space-y-5 text-lg leading-relaxed text-ink-secondary">
+          <p>While teaching aerobics and navigating the typical unwise choices of youth, I met a young woman whose vibrant faith challenged my perceptions. She didn't fit my "old person" mold of religion. Following her lead, I found myself in a non-denominational Pentecostal church, witnessing things that both perplexed and intrigued me — tongues, dancing, and a raw, supernatural energy I hadn't seen before.</p>
+          <p>When asked the pivotal question — "Dodie, do you know where you will go if you died tonight?" — I realized I didn't have an answer. Motivated by a mix of curiosity and the fear of eternal damnation, I invited Jesus into my heart. It was a time of high energy and "Whooo hooo!" moments, but it also brought my first real lesson in the complexity of healing.</p>
+        </div>
+      </article>
     </div>
   </section>
 
+  <!-- DARK PULL QUOTE — "the prayer of faith" -->
+  <PullQuote
+    variant="dark"
+    quote="The promise was that the prayer of faith shall heal the sick. My friend and I went to lay hands on him. His physical body did not heal; he passed on to the next dimension."
+  />
+
+  <!-- CHAPTER 03 — cream prose -->
+  <section class="bg-bg-base py-20 md:py-24">
+    <div class="container-prose">
+      <article class="reveal-on-scroll">
+        <div class="mb-5 flex flex-wrap items-baseline gap-4">
+          <span class="font-display text-5xl text-brand/40 leading-none">03</span>
+          <p class="text-[10px] uppercase tracking-[0.24em] text-ink-muted">The questioning years</p>
+        </div>
+        <h2 class="font-display text-3xl md:text-4xl text-ink">A lesson in healing and transition.</h2>
+        <div class="mt-6 space-y-5 text-lg leading-relaxed text-ink-secondary">
+          <p>I remember vividly when my brother's friend was in the ICU with acute leukemia. Armed with the promise of scripture, I prayed. He did not heal. I was told he was in heaven because of our prayers, but this was a seed of doubt. A lot of things began to feel out of alignment.</p>
+          <p>I eventually left that church, but for years I carried the heavy belief that there was only "one way" to God.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- IMAGE BREAK — Santa Teresa sunset (Florida real life) -->
+  <section class="bg-bg-inverse-deeper">
+    <div class="relative">
+      <img
+        src="/dodie/santa-teresa-sunset.jpg"
+        alt="A Florida sunset glowing through tropical foliage — from Dodie's view"
+        class="w-full h-auto aspect-[16/9] object-cover"
+        loading="lazy"
+      />
+      <!-- Quote overlay on the right side of the image -->
+      <div class="absolute inset-0 flex items-center justify-end">
+        <div class="container-default flex justify-end">
+          <div class="max-w-sm rounded-lg bg-bg-inverse/70 backdrop-blur-sm p-6 md:p-8 border border-teal-glow/20">
+            <p class="text-[10px] uppercase tracking-[0.24em] text-teal-glow mb-3">Home</p>
+            <p class="font-serif text-xl md:text-2xl text-inverse leading-snug">
+              South Florida light.<br/>
+              <em class="italic-accent text-teal-glow">My whole story unfolds here.</em>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 04 — cream prose -->
+  <section class="bg-bg-base py-20 md:py-24">
+    <div class="container-prose">
+      <article class="reveal-on-scroll">
+        <div class="mb-5 flex flex-wrap items-baseline gap-4">
+          <span class="font-display text-5xl text-brand/40 leading-none">04</span>
+          <p class="text-[10px] uppercase tracking-[0.24em] text-ink-muted">The widening</p>
+        </div>
+        <h2 class="font-display text-3xl md:text-4xl text-ink">The shift: from fear to universal love.</h2>
+        <div class="mt-6 space-y-5 text-lg leading-relaxed text-ink-secondary">
+          <p>Life happened. Through the ups and downs, I met beautiful, compassionate people from all walks of life — Buddhists, Muslims, Hindus, and many others. The idea that a loving God would send these souls to eternal damnation no longer resonated with my own soul.</p>
+          <p>I chose to abandon that belief system for a new perspective: God is Energy. A loving, universal energy that encompasses all humans. In this space, only love exists, and free will is the greatest gift we have been given.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- DARK PULL QUOTE — "Only love exists" -->
+  <PullQuote variant="dark" quote="Only love exists." />
+
+  <!-- RUMI LAMPS — the thesis image. Full-width treatment, no text overlay because the photo already has the quote -->
+  <section class="bg-bg-inverse-deeper">
+    <div class="container-default py-16 md:py-20">
+      <header class="mb-10 max-w-2xl">
+        <p class="text-xs uppercase tracking-[0.24em] text-teal-glow">A line that opened the door</p>
+        <h2 class="mt-3 font-display text-inverse">
+          <span class="block">Different lamps.</span>
+          <span class="italic-accent block text-teal-glow">Same light.</span>
+        </h2>
+        <p class="mt-5 text-lg text-inverse-muted leading-relaxed">
+          A quote that captured what I was already finding inside myself — that the divisions between traditions are surface, and the light underneath is one.
+        </p>
+      </header>
+      <figure class="relative mx-auto max-w-4xl overflow-hidden rounded-lg shadow-[0_30px_60px_-20px_oklch(0.05_0.02_240_/_0.7)]">
+        <img
+          src="/dodie/rumi-lamps.jpg"
+          alt="Colorful paper lanterns with Rumi's quote: 'The lamps are different, but the light is the same.'"
+          class="w-full h-auto object-cover"
+          loading="lazy"
+        />
+      </figure>
+    </div>
+  </section>
+
+  <!-- CHAPTER 05 — cream prose -->
+  <section class="bg-bg-base py-20 md:py-24">
+    <div class="container-prose">
+      <article class="reveal-on-scroll">
+        <div class="mb-5 flex flex-wrap items-baseline gap-4">
+          <span class="font-display text-5xl text-brand/40 leading-none">05</span>
+          <p class="text-[10px] uppercase tracking-[0.24em] text-ink-muted">The arrival</p>
+        </div>
+        <h2 class="font-display text-3xl md:text-4xl text-ink">Discovering the Sacred Technology.</h2>
+        <div class="mt-6 space-y-5 text-lg leading-relaxed text-ink-secondary">
+          <p>I always held onto the scripture that we would do "greater things" than those who came before us. I knew we were incredible, sacred, and intelligent beings — but I didn't know <em>how</em> to tap into that potential until I was divinely introduced to Dolores Cannon's QHHT.</p>
+          <p>The moment I discovered it, I had an inner knowing. This was the modality that explained everything. It was the bridge between my spiritual past and the healing future I was meant to facilitate.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- DARK MID-BREAK — Florida sunrise video (moved here, between Ch 05 and 06) -->
+  <section class="bg-bg-inverse-deeper">
+    <div class="relative overflow-hidden">
+      <img
+        src="/video/florida-sunrise-poster.jpg"
+        alt="Florida coast at sunrise — palm fronds framing the horizon"
+        loading="lazy"
+        class="w-full h-auto aspect-[21/9] object-cover motion-safe:opacity-0"
+      />
+      <video
+        src="/video/florida-sunrise.mp4"
+        poster="/video/florida-sunrise-poster.jpg"
+        autoplay muted loop playsinline preload="metadata"
+        aria-hidden="true"
+        class="absolute inset-0 w-full h-full object-cover motion-reduce:hidden"
+      />
+      <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-bg-inverse-deeper/80 via-transparent to-transparent"></div>
+      <div class="absolute inset-x-0 bottom-0">
+        <div class="container-default pb-8 md:pb-12">
+          <p class="text-xs uppercase tracking-[0.24em] text-teal-glow">Where the practice was born</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 06 — cream prose -->
+  <section class="bg-bg-base py-20 md:py-24">
+    <div class="container-prose">
+      <article class="reveal-on-scroll">
+        <div class="mb-5 flex flex-wrap items-baseline gap-4">
+          <span class="font-display text-5xl text-brand/40 leading-none">06</span>
+          <p class="text-[10px] uppercase tracking-[0.24em] text-ink-muted">Today</p>
+        </div>
+        <h2 class="font-display text-3xl md:text-4xl text-ink">The invitation.</h2>
+        <div class="mt-6 space-y-5 text-lg leading-relaxed text-ink-secondary">
+          <p>Today, I am here to help you experience the Creator's gift: the connection to your Higher Self, the Subconscious, the Holy Spirit. Whatever name you choose to give it, it is the voice that guides us.</p>
+          <p>I am the invitation, not the insistence. I speak from love, not urgency. Healing flows through me, not from me.</p>
+          <p>My life has changed in beautiful ways because I have learned to trust this path and receive the insights needed to live life to the fullest. This Sacred Technology is a gift from the Creator of the Universe that cares about every detail of your current lifetime — and every other lifetime you have ever lived.</p>
+          <p>Only love exists. I invite you to allow me to guide you today, so you can finally receive the messages your Higher Self has been waiting for you to hear.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- HEALING-TREE PROMISE — sits as the closing meditation before the CTA -->
+  <section class="bg-bg-sunken py-20 md:py-24">
+    <div class="container-default grid items-center gap-10 md:grid-cols-[1fr,1.1fr] lg:gap-16">
+      <figure class="mx-auto max-w-md md:max-w-none">
+        <img
+          src="/dodie/healing-tree.jpg"
+          alt="Watercolor tree of life with the words: Your body's ability to heal is greater than anyone has permitted you to believe."
+          class="w-full h-auto rounded-lg shadow-md"
+          loading="lazy"
+        />
+      </figure>
+      <div>
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">The promise</p>
+        <h2 class="mt-3 font-display text-ink">
+          <span class="block">You are not broken.</span>
+          <span class="italic-accent block text-brand">You are remembering.</span>
+        </h2>
+        <p class="mt-5 max-w-prose text-lg text-ink-secondary leading-relaxed">
+          QHHT doesn't add anything to you. It quiets the noise long enough for what you already are to come back into focus. The body remembers. The Higher Self has been waiting. The work is yours; the conversation is the door.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSING — doorway video CTA -->
   <ClosingCTA
     headlineLead="Your Higher Self"
     headlineItalic="is already speaking."
