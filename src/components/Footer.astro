@@ -1,0 +1,44 @@
+---
+const year = new Date().getFullYear();
+---
+<footer class="bg-bg-sunken border-t border-border-subtle mt-24">
+  <div class="container-default py-16 grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
+    <div>
+      <div class="font-display text-2xl text-brand">Dodie Kendall</div>
+      <p class="mt-2 text-ink-secondary">QHHT Practitioner · Palm Beach County, FL</p>
+    </div>
+    <nav aria-label="Footer site links">
+      <h2 class="font-medium text-ink mb-3 text-base">Site</h2>
+      <ul class="space-y-2 text-ink-secondary">
+        <li><a href="/" class="hover:text-brand">Home</a></li>
+        <li><a href="/about" class="hover:text-brand">About</a></li>
+        <li><a href="/qhht" class="hover:text-brand">QHHT</a></li>
+        <li><a href="/faq" class="hover:text-brand">FAQ</a></li>
+        <li><a href="/insights" class="hover:text-brand">Insights</a></li>
+      </ul>
+    </nav>
+    <div>
+      <h2 class="font-medium text-ink mb-3 text-base">Contact</h2>
+      <ul class="space-y-2 text-ink-secondary">
+        <li><a href="tel:+15612016918" class="hover:text-brand">1-561-201-6918</a></li>
+        <li><a href="mailto:dodiekendall@gmail.com" class="hover:text-brand">dodiekendall@gmail.com</a></li>
+        <li class="pt-1"><a href="/book" class="inline-flex items-center rounded-pill bg-brand text-ink-inverse px-4 py-1.5 text-xs hover:bg-brand-hover transition-colors">Book a Session</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="font-medium text-ink mb-3 text-base">Legal</h2>
+      <ul class="space-y-2 text-ink-secondary">
+        <li><a href="/privacy" class="hover:text-brand">Privacy Policy</a></li>
+        <li><a href="/terms" class="hover:text-brand">Terms & Conditions</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-border-subtle">
+    <div class="container-default py-6 text-xs text-ink-muted flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <p>© {year} Dodie Kendall QHHT. All rights reserved.</p>
+      <p class="max-w-2xl">
+        This site does not provide medical, psychological, or therapeutic advice. QHHT is a complementary modality and is not a substitute for licensed care.
+      </p>
+    </div>
+  </div>
+</footer>

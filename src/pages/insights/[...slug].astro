@@ -1,0 +1,62 @@
+---
+import Base from '@layouts/Base.astro';
+import { getSeo } from '@lib/seo';
+import { blogPosting, breadcrumb } from '@lib/schema';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('insights', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const seo = getSeo({
+  path: `/insights/${post.slug}`,
+  title: post.data.title,
+  description: post.data.description,
+  ogType: 'article',
+});
+
+const schemas = [
+  blogPosting({
+    title: post.data.title,
+    description: post.data.description,
+    image: seo.ogImage,
+    datePublished: post.data.pubDate.toISOString(),
+    dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(),
+    canonical: seo.canonical,
+  }),
+  breadcrumb([
+    { name: 'Home', href: '/' },
+    { name: 'Insights', href: '/insights' },
+    { name: post.data.title },
+  ]),
+];
+---
+<Base seo={seo} schemas={schemas}>
+  <article class="section-y">
+    <div class="container-prose">
+      <p class="text-xs uppercase tracking-wider text-ink-muted mb-3">Insights</p>
+      <h1 class="font-display text-ink">{post.data.title}</h1>
+      <p class="mt-4 text-sm text-ink-muted">
+        {post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+        {' · by Dodie Kendall'}
+      </p>
+      {post.data.answerCapsule && (
+        <aside class="mt-8 bg-bg-raised border-l-4 border-brand p-6 rounded-md">
+          <p class="text-xs uppercase tracking-wider text-brand font-medium mb-2">Quick Answer</p>
+          <p class="text-ink leading-relaxed">{post.data.answerCapsule}</p>
+        </aside>
+      )}
+      <div class="prose prose-lg mt-8 max-w-none text-ink-secondary leading-relaxed">
+        <Content />
+      </div>
+      <hr class="my-12 border-border-subtle" />
+      <p class="text-sm text-ink-muted italic">
+        The content of this article is for informational purposes only and does not constitute medical, psychological, or legal advice.
+      </p>
+    </div>
+  </article>
+</Base>

@@ -1,0 +1,71 @@
+---
+// Hero component — variants for home, about, qhht, generic.
+// Per DESIGN.md Layout §1: home is split-asymmetric with portrait inside a pill-shaped mask.
+interface Props {
+  variant?: 'home' | 'about' | 'qhht' | 'generic';
+  eyebrow?: string;
+  headline: string;
+  subhead?: string;
+  primaryCta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+  portraitSrc?: string;
+  portraitAlt?: string;
+}
+
+const {
+  variant = 'generic',
+  eyebrow,
+  headline,
+  subhead,
+  primaryCta,
+  secondaryCta,
+  portraitSrc,
+  portraitAlt = '',
+} = Astro.props;
+---
+<section class={`bg-sunrise ${variant === 'home' ? 'section-y' : 'pt-16 pb-12 md:pt-24 md:pb-16'}`}>
+  <div class="container-default">
+    <div class={variant === 'home' ? 'grid grid-cols-1 md:grid-cols-2 gap-12 items-center' : 'max-w-3xl mx-auto text-center'}>
+      <div>
+        {eyebrow && (
+          <p class="text-xs uppercase tracking-wider text-ink-muted mb-4 font-medium">{eyebrow}</p>
+        )}
+        <h1 class="font-display text-ink leading-tight">{headline}</h1>
+        {subhead && (
+          <p class="mt-6 text-lg text-ink-secondary max-w-prose">{subhead}</p>
+        )}
+        {(primaryCta || secondaryCta) && (
+          <div class="mt-8 flex flex-wrap gap-4">
+            {primaryCta && (
+              <a
+                href={primaryCta.href}
+                class="inline-flex items-center justify-center rounded-pill bg-brand text-ink-inverse px-7 py-3 font-medium shadow-md hover:bg-brand-hover hover:shadow-glow transition-all"
+              >
+                {primaryCta.label}
+              </a>
+            )}
+            {secondaryCta && (
+              <a
+                href={secondaryCta.href}
+                class="inline-flex items-center justify-center rounded-pill border border-border-strong text-ink px-7 py-3 font-medium hover:border-brand hover:text-brand transition-colors"
+              >
+                {secondaryCta.label}
+              </a>
+            )}
+          </div>
+        )}
+      </div>
+      {variant === 'home' && portraitSrc && (
+        <div class="flex justify-center md:justify-end">
+          <img
+            src={portraitSrc}
+            alt={portraitAlt}
+            class="rounded-pill shadow-lg max-w-md w-full object-cover"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </div>
+      )}
+    </div>
+  </div>
+</section>

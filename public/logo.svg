@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Placeholder logo mark — replace with Dodie's actual coral-pink wordmark before launch. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <circle cx="32" cy="32" r="30" fill="oklch(0.62 0.13 35)"/>
+  <text x="32" y="42" font-family="Georgia, serif" font-size="32" font-weight="500" fill="oklch(0.99 0.005 85)" text-anchor="middle">D</text>
+</svg>

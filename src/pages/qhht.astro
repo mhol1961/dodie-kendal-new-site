@@ -1,0 +1,26 @@
+---
+import Base from '@layouts/Base.astro';
+import Hero from '@components/Hero.astro';
+import { getSeo } from '@lib/seo';
+import { qhhtService, breadcrumb } from '@lib/schema';
+
+const seo = getSeo({
+  path: '/qhht',
+  title: 'What is QHHT?',
+  description: 'A clear, grounded explanation of Quantum Healing Hypnosis Technique — what happens, what to expect, who it is for.',
+});
+const schemas = [qhhtService(), breadcrumb([{ name: 'Home', href: '/' }, { name: 'QHHT' }])];
+---
+<Base seo={seo} schemas={schemas}>
+  <Hero
+    eyebrow="The Modality"
+    headline="Quantum Healing Hypnosis Technique, explained."
+    subhead="QHHT is a guided journey into the part of you that already knows. Developed by the late Dolores Cannon, it's a 5-hour, deeply respectful conversation with your Subconscious — and it's at the heart of every session I offer."
+  />
+  <!-- TODO Phase 6: deep explainer, 4-step timeline, FAQ accordion subset, closing CTA. Copy in COPY-DECK.md §QHHT. -->
+  <section class="section-y">
+    <div class="container-prose">
+      <p class="text-ink-muted text-sm uppercase tracking-wider text-center">[QHHT explainer renders here — copy in COPY-DECK.md §QHHT]</p>
+    </div>
+  </section>
+</Base>

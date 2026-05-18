@@ -1,0 +1,51 @@
+---
+import Base from '@layouts/Base.astro';
+import { getSeo } from '@lib/seo';
+import { breadcrumb } from '@lib/schema';
+import { getCollection } from 'astro:content';
+
+const seo = getSeo({
+  path: '/insights',
+  title: 'Insights',
+  description: 'Articles on QHHT, the Subconscious, and the work of Quantum Healing Hypnosis.',
+});
+
+const posts = (await getCollection('insights', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const schemas = [
+  { '@context': 'https://schema.org', '@type': 'Blog', url: seo.canonical },
+  breadcrumb([{ name: 'Home', href: '/' }, { name: 'Insights' }]),
+];
+---
+<Base seo={seo} schemas={schemas}>
+  <section class="section-y">
+    <div class="container-default max-w-5xl">
+      <p class="text-xs uppercase tracking-wider text-ink-muted mb-3">Insights</p>
+      <h1 class="font-display text-ink">Reflections on the work.</h1>
+
+      {posts.length === 0 ? (
+        <p class="mt-12 text-ink-muted text-sm uppercase tracking-wider text-center">
+          [Posts render here — first cluster drafts per SEO-PLAN.md §7]
+        </p>
+      ) : (
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {posts.map((post) => (
+            <article class="bg-bg-raised rounded-lg shadow-sm border border-border-subtle p-6 hover:shadow-md transition-shadow">
+              <h2 class="font-display text-2xl text-ink">
+                <a href={`/insights/${post.slug}`} class="hover:text-brand transition-colors">
+                  {post.data.title}
+                </a>
+              </h2>
+              <p class="mt-3 text-ink-secondary text-sm">{post.data.description}</p>
+              <p class="mt-4 text-xs text-ink-muted">
+                {post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </p>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</Base>

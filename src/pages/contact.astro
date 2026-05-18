@@ -1,0 +1,36 @@
+---
+import Base from '@layouts/Base.astro';
+import { getSeo } from '@lib/seo';
+import { breadcrumb } from '@lib/schema';
+
+const seo = getSeo({
+  path: '/contact',
+  title: 'Contact',
+  description: 'Have a question before booking? Reach Dodie directly — typical response within 24–48 hours.',
+});
+const schemas = [
+  { '@context': 'https://schema.org', '@type': 'ContactPage', url: seo.canonical, mainEntity: { '@id': `${import.meta.env.SITE_URL}/#business` } },
+  breadcrumb([{ name: 'Home', href: '/' }, { name: 'Contact' }]),
+];
+---
+<Base seo={seo} schemas={schemas}>
+  <section class="section-y">
+    <div class="container-default max-w-2xl">
+      <p class="text-xs uppercase tracking-wider text-ink-muted mb-3">Contact</p>
+      <h1 class="font-display text-ink">Reach out — I'll write back personally.</h1>
+      <p class="mt-6 text-lg text-ink-secondary max-w-prose">
+        Have a question before you book? Want to know if QHHT is right for what you're working through? Send me a note. I usually respond within 24–48 hours, Monday through Saturday.
+      </p>
+      <!-- TODO Phase 8: ContactForm.astro with full validation + GHL POST. Form spec in TECH-SPEC.md §5 + COPY-DECK.md §Contact. -->
+      <div class="mt-10 bg-bg-raised border border-border-subtle rounded-lg p-8">
+        <p class="text-ink-muted text-sm uppercase tracking-wider text-center">[Form renders here]</p>
+      </div>
+
+      <div class="mt-12 text-ink-secondary text-sm space-y-1">
+        <p><strong class="text-ink">Phone:</strong> <a class="hover:text-brand" href="tel:+15612016918">1-561-201-6918</a></p>
+        <p><strong class="text-ink">Email:</strong> <a class="hover:text-brand" href="mailto:dodiekendall@gmail.com">dodiekendall@gmail.com</a></p>
+        <p><strong class="text-ink">Hours:</strong> Monday–Saturday, 9am–6pm ET</p>
+      </div>
+    </div>
+  </section>
+</Base>

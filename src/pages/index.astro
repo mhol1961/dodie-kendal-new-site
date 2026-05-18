@@ -1,0 +1,49 @@
+---
+import Base from '@layouts/Base.astro';
+import Hero from '@components/Hero.astro';
+import PullQuote from '@components/PullQuote.astro';
+import { getSeo } from '@lib/seo';
+import { qhhtService, breadcrumb } from '@lib/schema';
+
+const seo = getSeo({
+  path: '/',
+  description:
+    'A 5-hour, deeply respectful conversation with your Subconscious. Book a Quantum Healing Hypnosis Technique session with Dodie Kendall in Palm Beach County, FL or remote.',
+});
+
+const schemas = [
+  qhhtService(),
+  breadcrumb([{ name: 'Home' }]),
+];
+---
+<Base seo={seo} schemas={schemas}>
+  <Hero
+    variant="home"
+    eyebrow="Quantum Healing Hypnosis Technique · Palm Beach County, FL"
+    headline="Access your higher wisdom."
+    subhead="You already hold the answers. Through Quantum Healing Hypnosis Technique, I guide you to the part of you that's been waiting to speak — your Higher Self, your Subconscious, the deepest part of you that's been there all along."
+    primaryCta={{ label: 'Book a Session', href: '/book' }}
+    secondaryCta={{ label: "Read Dodie's story", href: '/about' }}
+    portraitSrc="/dodie-portrait.jpg"
+    portraitAlt="Dodie Kendall, QHHT Practitioner"
+  />
+
+  <PullQuote quote="I am the invitation, not the insistence." attribution="Dodie" />
+
+  <!--
+    TODO Phase 4 (per BUILD-PROMPTS.md):
+    - What is QHHT (3-step modular section)
+    - Founder Spotlight (Founder​Spotlight.astro)
+    - Lead Magnet Gate (LeadMagnetGate.astro)
+    - Testimonial Grid (TestimonialGrid.astro) — pulled from src/content/testimonials/
+    - Closing CTA section with sunrise gradient
+
+    Copy lives in COPY-DECK.md §Home.
+  -->
+
+  <section class="section-y bg-bg-base">
+    <div class="container-default text-center">
+      <p class="text-ink-muted text-sm uppercase tracking-wider">[Build placeholder — home page sections live in BUILD-PROMPTS.md Phase 4]</p>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,32 @@
+---
+import Base from '@layouts/Base.astro';
+import Hero from '@components/Hero.astro';
+import { getSeo } from '@lib/seo';
+import { breadcrumb } from '@lib/schema';
+
+const seo = getSeo({
+  path: '/about',
+  title: 'About Dodie Kendall',
+  description: "From Catholic upbringing to Dolores Cannon's QHHT. Read Dodie Kendall's story and approach to Quantum Healing Hypnosis.",
+});
+const schemas = [
+  { '@context': 'https://schema.org', '@type': 'AboutPage', url: seo.canonical },
+  breadcrumb([{ name: 'Home', href: '/' }, { name: 'About' }]),
+];
+---
+<Base seo={seo} schemas={schemas}>
+  <Hero
+    eyebrow="About"
+    headline="The path to purpose — from tradition to transcendence."
+    subhead="How I came to QHHT, and why I believe I was born to do this work."
+  />
+  <!--
+    TODO Phase 5: render the 6 chapters from COPY-DECK.md §About in vertical scroll-triggered cards
+    with pull quotes between every 2 chapters.
+  -->
+  <section class="section-y">
+    <div class="container-prose">
+      <p class="text-ink-muted text-sm uppercase tracking-wider text-center">[Chapters render here — copy lives in COPY-DECK.md §About]</p>
+    </div>
+  </section>
+</Base>

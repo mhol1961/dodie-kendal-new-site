@@ -1,0 +1,21 @@
+---
+import Base from '@layouts/Base.astro';
+import { getSeo } from '@lib/seo';
+
+const seo = getSeo({
+  path: '/privacy',
+  title: 'Privacy Policy',
+  description: 'How Dodie Kendall QHHT collects, uses, and protects your information.',
+});
+---
+<Base seo={seo}>
+  <section class="section-y">
+    <div class="container-prose">
+      <h1 class="font-display text-ink">Privacy Policy</h1>
+      <!-- TODO Phase 8: full counsel-reviewed Privacy Policy text. Notes in PRIVACY-NOTES.md inform the draft. -->
+      <p class="mt-6 text-ink-secondary">
+        <em>Privacy Policy text is pending counsel/template review. See <code>PRIVACY-NOTES.md</code> for the data-flow notes that inform the final policy.</em>
+      </p>
+    </div>
+  </section>
+</Base>

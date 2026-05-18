@@ -1,0 +1,21 @@
+---
+import Base from '@layouts/Base.astro';
+import { getSeo } from '@lib/seo';
+
+const seo = getSeo({
+  path: '/terms',
+  title: 'Terms & Conditions',
+  description: 'Terms and conditions for using the Dodie Kendall QHHT website and booking sessions.',
+});
+---
+<Base seo={seo}>
+  <section class="section-y">
+    <div class="container-prose">
+      <h1 class="font-display text-ink">Terms &amp; Conditions</h1>
+      <!-- TODO Phase 8: full counsel-reviewed Terms text. -->
+      <p class="mt-6 text-ink-secondary">
+        <em>Terms text is pending counsel/template review. See <code>LEGAL-DISCLAIMERS.md</code> for the disclaimer blocks that anchor the final document.</em>
+      </p>
+    </div>
+  </section>
+</Base>

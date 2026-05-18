@@ -1,0 +1,58 @@
+---
+import Base from '@layouts/Base.astro';
+import { getSeo } from '@lib/seo';
+import { faqPage, breadcrumb } from '@lib/schema';
+import { getCollection } from 'astro:content';
+
+const seo = getSeo({
+  path: '/faq',
+  title: 'FAQ',
+  description: 'Common questions about Quantum Healing Hypnosis Technique sessions, logistics, and aftercare.',
+});
+
+const faqs = await getCollection('faq');
+const sorted = faqs.sort((a, b) => a.data.order - b.data.order);
+
+const schemas = [
+  faqPage(sorted.map((f) => ({ question: f.data.question, answer: f.data.answer }))),
+  breadcrumb([{ name: 'Home', href: '/' }, { name: 'FAQ' }]),
+];
+
+const grouped = {
+  sessions: sorted.filter((f) => f.data.category === 'sessions'),
+  logistics: sorted.filter((f) => f.data.category === 'logistics'),
+  practice: sorted.filter((f) => f.data.category === 'practice'),
+  aftercare: sorted.filter((f) => f.data.category === 'aftercare'),
+};
+---
+<Base seo={seo} schemas={schemas}>
+  <section class="section-y">
+    <div class="container-default max-w-3xl">
+      <p class="text-xs uppercase tracking-wider text-ink-muted mb-3">FAQ</p>
+      <h1 class="font-display text-ink">Common questions, answered.</h1>
+
+      {Object.entries(grouped).map(([category, items]) => items.length > 0 && (
+        <div class="mt-12">
+          <h2 class="font-display capitalize">{category}</h2>
+          <div class="mt-4 divide-y divide-border-subtle border-y border-border-subtle">
+            {items.map((item) => (
+              <details class="group py-4">
+                <summary class="cursor-pointer flex justify-between items-center text-ink font-medium list-none">
+                  <span>{item.data.question}</span>
+                  <span class="text-brand transition-transform group-open:rotate-45 text-2xl leading-none">+</span>
+                </summary>
+                <div class="mt-3 text-ink-secondary leading-relaxed">{item.data.answer}</div>
+              </details>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {sorted.length === 0 && (
+        <p class="mt-12 text-ink-muted text-sm uppercase tracking-wider text-center">
+          [FAQ entries to be added under src/content/faq/]
+        </p>
+      )}
+    </div>
+  </section>
+</Base>

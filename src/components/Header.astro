@@ -1,0 +1,29 @@
+---
+// Sticky header with logo, nav, and primary CTA.
+// Backdrop blur engages once scrollY > 12px (handled by a small island).
+---
+<header class="sticky top-0 z-40 bg-bg-base/80 backdrop-blur-md border-b border-border-subtle">
+  <div class="container-default flex items-center justify-between h-16">
+    <a href="/" class="flex items-center gap-3 group" aria-label="Dodie Kendall QHHT, home">
+      <img src="/logo.svg" alt="" width="40" height="40" class="rounded-full" />
+      <span class="font-display text-xl tracking-wide text-brand group-hover:text-brand-hover transition-colors">
+        Dodie Kendall
+      </span>
+    </a>
+    <nav aria-label="Primary" class="hidden md:flex items-center gap-8 text-sm">
+      <a href="/" class="hover:text-brand transition-colors">Home</a>
+      <a href="/about" class="hover:text-brand transition-colors">About</a>
+      <a href="/qhht" class="hover:text-brand transition-colors">QHHT</a>
+      <a href="/faq" class="hover:text-brand transition-colors">FAQ</a>
+      <a href="/insights" class="hover:text-brand transition-colors">Insights</a>
+      <a href="/contact" class="hover:text-brand transition-colors">Contact</a>
+    </nav>
+    <a
+      href="/book"
+      class="inline-flex items-center justify-center rounded-pill bg-brand text-ink-inverse px-5 py-2 text-sm font-medium shadow-sm hover:bg-brand-hover hover:shadow-md transition-all"
+    >
+      Book a Session
+    </a>
+    <!-- TODO Phase 3: hamburger menu for <md -->
+  </div>
+</header>

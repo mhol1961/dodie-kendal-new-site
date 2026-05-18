@@ -1,0 +1,18 @@
+---
+interface Props {
+  quote: string;
+  attribution?: string;
+}
+const { quote, attribution } = Astro.props;
+---
+<section class="section-y">
+  <div class="container-prose text-center">
+    <span aria-hidden="true" class="text-accent font-display text-7xl leading-none block mb-2">&ldquo;</span>
+    <blockquote class="font-display text-2xl md:text-3xl text-ink leading-snug italic">
+      {quote}
+    </blockquote>
+    {attribution && (
+      <cite class="not-italic block mt-4 text-sm text-ink-muted">— {attribution}</cite>
+    )}
+  </div>
+</section>

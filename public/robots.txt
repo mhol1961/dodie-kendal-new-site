@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dodiekendall.com/sitemap-index.xml

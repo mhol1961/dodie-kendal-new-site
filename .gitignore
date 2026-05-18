@@ -1,0 +1,52 @@
+# build
+dist/
+.output/
+.vercel/
+.netlify/
+.wrangler/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Astro
+.astro/
+
+# tests
+playwright-report/
+test-results/
+coverage/
+
+# misc
+*.log
+
+# claude-mem auto-injected context stubs under src/
+# (root CLAUDE.md is the real project doc — keep that one tracked)
+src/**/CLAUDE.md
+
+# Generated Lighthouse audits + stray Chrome user-data dirs
+lighthouse-*.html
+lighthouse-*.json
+C:\\Users\\*

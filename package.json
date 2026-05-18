@@ -1,0 +1,42 @@
+{
+  "name": "dodiekendall-com",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "dodiekendall.com — Dodie Kendall QHHT practice site. Astro + Tailwind + shadcn-ported primitives.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "typecheck": "astro check",
+    "lint": "eslint . --ext .js,.ts,.astro",
+    "format": "prettier --write \"**/*.{js,ts,astro,md,json}\"",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^11.0.0",
+    "@astrojs/rss": "^4.0.0",
+    "@astrojs/sitemap": "~3.4.2",
+    "@astrojs/tailwind": "^5.1.0",
+    "astro": "^4.16.0",
+    "tailwindcss": "^3.4.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.0",
+    "@types/node": "^20.14.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-astro": "^1.2.0",
+    "prettier": "^3.3.0",
+    "prettier-plugin-astro": "^0.14.0",
+    "prettier-plugin-tailwindcss": "^0.6.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

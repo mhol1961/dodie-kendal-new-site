@@ -1,0 +1,35 @@
+---
+// Wraps Dodie's existing GHL calendar iframe in our card styling.
+const calendarId = import.meta.env.GHL_CALENDAR_ID;
+const embedUrl = calendarId
+  ? `https://api.leadconnectorhq.com/widget/booking/${calendarId}`
+  : null;
+const fallbackUrl = import.meta.env.BOOKING_CALENDAR_FALLBACK_URL ?? '';
+---
+<div class="bg-bg-raised rounded-lg shadow-lg overflow-hidden border border-border-subtle">
+  {embedUrl ? (
+    <iframe
+      src={embedUrl}
+      title="Book a QHHT session with Dodie Kendall"
+      loading="lazy"
+      referrerpolicy="strict-origin-when-cross-origin"
+      style="width: 100%; min-height: 700px; border: 0;"
+    />
+  ) : (
+    <div class="p-8 text-center">
+      <p class="text-ink-secondary mb-4">
+        Booking calendar is configured per <code>ENV.md</code>. To book directly, please contact Dodie:
+      </p>
+      <p>
+        <a href="tel:+15612016918" class="text-brand hover:underline">1-561-201-6918</a>
+        {' · '}
+        <a href="mailto:dodiekendall@gmail.com" class="text-brand hover:underline">dodiekendall@gmail.com</a>
+      </p>
+      {fallbackUrl && (
+        <p class="mt-4">
+          <a href={fallbackUrl} class="text-brand hover:underline">Open calendar in a new window →</a>
+        </p>
+      )}
+    </div>
+  )}
+</div>
