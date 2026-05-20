@@ -1,6 +1,6 @@
 # dodiekendall.com
 
-Marketing + booking site for **Dodie Kendall** — Quantum Healing Hypnosis Technique (QHHT) practitioner based in Palm Beach County, Florida.
+Marketing + booking site for **Dodie Kendall** — Quantum Healing Hypnosis Technique (QHHT) practitioner based in Stuart, Florida.
 
 This is a rebuild of an existing GoHighLevel-hosted site. The new build lives on a modern static stack and uses GoHighLevel purely as a CRM/booking backend via its public API.
 

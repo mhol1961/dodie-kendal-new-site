@@ -7,7 +7,7 @@
 
 ## 1. Background
 
-Dodie Kendall is an active QHHT (Quantum Healing Hypnosis Technique) practitioner based in Palm Beach County, Florida. Her current site (`dodiekendall.com`) is hosted on GoHighLevel and reads as a templated brochure: hero text, single portrait, three testimonials, a GHL calendar embed, and a contact form. It does not build the level of trust required to convert a cold visitor into a $300 / 5-hour session client.
+Dodie Kendall is an active QHHT (Quantum Healing Hypnosis Technique) practitioner based in Stuart, Florida. Her current site (`dodiekendall.com`) is hosted on GoHighLevel and reads as a templated brochure: hero text, single portrait, three testimonials, a GHL calendar embed, and a contact form. It does not build the level of trust required to convert a cold visitor into a $300 / 5-hour session client.
 
 This rebuild is the **first of two sister-site rebuilds** for the same client. The other site, guidingwinds-unplug.com (sailing/adventure brand), is a separate engagement in a separate repo. Visual identity is intentionally distinct between the two; they share only an agency operating standard.
 
@@ -42,7 +42,7 @@ This rebuild is the **first of two sister-site rebuilds** for the same client. T
 | Avg. time on About page | unknown | ≥ 1:30 (vs. assumed sub-30s for current wall-of-text) | Plausible |
 | Lead-magnet email opt-in rate | n/a (no opt-in today) | ≥ 4% of homepage sessions | GHL contact created with `source=lead_magnet` |
 | Organic clicks (Google + Bing) | low (no SEO baseline) | +200% by Day 90 from launch | Search Console |
-| Indexed AI mentions for "QHHT Palm Beach" / "QHHT Florida" | unknown | brand surfaces in ≥ 2 of ChatGPT/Perplexity/Gemini answers | manual AI-visibility audit |
+| Indexed AI mentions for "QHHT Stuart" / "QHHT Florida" | unknown | brand surfaces in ≥ 2 of ChatGPT/Perplexity/Gemini answers | manual AI-visibility audit |
 | Lighthouse: Performance / SEO / A11y / Best Practices | n/a | ≥ 95 / 100 / 100 / 100 | Lighthouse mobile run |
 
 ## 4. Audience

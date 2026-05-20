@@ -9,7 +9,7 @@
 
 | Keyword | Intent | Target page | Notes |
 | --- | --- | --- | --- |
-| QHHT Palm Beach | local/transactional | `/` | Tight local search; small competition. |
+| QHHT Stuart | local/transactional | `/` | Tight local search; small competition. |
 | QHHT Florida | local/transactional | `/`, `/book` | Broader state-level; mid competition. |
 | Quantum Healing Hypnosis Technique | informational | `/qhht` | Full modality name; head term; mid competition. |
 | Dodie Kendall QHHT | branded | `/`, `/about` | Branded; should own page 1. |
@@ -111,7 +111,7 @@ Direct search competition (from `WebSearch` 2026-05-17):
 
 **Differentiation angles for Dodie:**
 - *Voice* — most competitor sites are generic-spiritual; Dodie's faith-fluent / universalist voice is distinctive.
-- *Location* — Palm Beach County is underclaimed vs. Miami / Fort Lauderdale.
+- *Location* — Stuart, FL is underclaimed vs. Miami / Fort Lauderdale.
 - *Trust signals* — Dolores Cannon-lineage emphasis; transparent pricing; clear "what to expect" content.
 - *Lead magnet* — competitor sites mostly lack one.
 

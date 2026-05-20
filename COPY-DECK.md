@@ -10,7 +10,7 @@
 
 ### Hero
 
-**Eyebrow:** Quantum Healing Hypnosis Technique · Palm Beach County, FL
+**Eyebrow:** Quantum Healing Hypnosis Technique · Stuart, FL
 
 **Headline (h1):**
 Access your higher wisdom.
@@ -247,7 +247,7 @@ The week after a session often unfolds quietly. Old patterns sometimes loosen. N
 **Headline (h1):** Select a time that feels right.
 
 **Reassurance copy:**
-Each session is 5 hours, in person at my Palm Beach County studio or remotely via Zoom. The total investment is $300, with a $50 deposit to secure your time. All sessions are completely confidential. The remaining $250 is paid on the day of your session.
+Each session is 5 hours, in person at my Stuart, FL studio or remotely via Zoom. The total investment is $300, with a $50 deposit to secure your time. All sessions are completely confidential. The remaining $250 is paid on the day of your session.
 
 If you've never done a QHHT session, that's exactly the right starting point — most clients haven't. Before we meet, I'll send you a short prep guide and we'll have a quick call so you arrive ready.
 

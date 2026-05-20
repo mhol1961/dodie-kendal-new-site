@@ -17,13 +17,15 @@ export function localBusiness() {
     priceRange: '$$',
     founder: { '@id': `${SITE_URL}/#person` },
     areaServed: [
-      { '@type': 'AdministrativeArea', name: 'Palm Beach County, Florida' },
+      { '@type': 'City', name: 'Stuart, Florida' },
+      { '@type': 'AdministrativeArea', name: 'Martin County, Florida' },
+      { '@type': 'AdministrativeArea', name: 'Treasure Coast, Florida' },
       { '@type': 'State', name: 'Florida' },
       { '@type': 'Country', name: 'United States' },
     ],
     address: {
       '@type': 'PostalAddress',
-      addressLocality: 'Palm Beach County',
+      addressLocality: 'Stuart',
       addressRegion: 'FL',
       addressCountry: 'US',
     },
@@ -48,7 +50,7 @@ export function person() {
     familyName: 'Kendall',
     jobTitle: 'QHHT Practitioner',
     description:
-      'Dodie Kendall is a Quantum Healing Hypnosis Technique (QHHT) practitioner based in Palm Beach County, Florida, trained in the Dolores Cannon lineage. She offers 5-hour in-person and remote QHHT sessions.',
+      'Dodie Kendall is a Quantum Healing Hypnosis Technique (QHHT) practitioner based in Stuart, Florida, trained in the Dolores Cannon lineage. She offers 5-hour in-person and remote QHHT sessions.',
     url: `${SITE_URL}/about`,
     image: `${SITE_URL}/dodie-portrait.jpg`,
     telephone: '+1-561-201-6918',
@@ -70,10 +72,13 @@ export function qhhtService() {
     '@id': `${SITE_URL}/#service-qhht`,
     name: 'Quantum Healing Hypnosis Technique (QHHT) Session',
     description:
-      'A 5-hour Quantum Healing Hypnosis Technique session with Dodie Kendall, conducted in person in Palm Beach County, Florida, or remotely via Zoom.',
+      'A 5-hour Quantum Healing Hypnosis Technique session with Dodie Kendall, conducted in person in Stuart, Florida, or remotely via Zoom.',
     provider: { '@id': `${SITE_URL}/#person` },
     serviceType: 'Quantum Healing Hypnosis',
     areaServed: [
+      { '@type': 'City', name: 'Stuart, Florida' },
+      { '@type': 'AdministrativeArea', name: 'Martin County, Florida' },
+      { '@type': 'AdministrativeArea', name: 'Treasure Coast, Florida' },
       { '@type': 'State', name: 'Florida' },
       { '@type': 'Country', name: 'United States' },
     ],

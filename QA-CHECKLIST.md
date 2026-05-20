@@ -15,7 +15,7 @@
 - [ ] Phone number is correct on every page: **1-561-201-6918**.
 - [ ] Email is correct on every page: **dodiekendall@gmail.com**.
 - [ ] Pricing is correct on every page: **$300 total, $50 deposit, 5-hour session**.
-- [ ] Studio location is correct on every page: **Palm Beach County, FL**.
+- [ ] Studio location is correct on every page: **Stuart, FL**.
 - [ ] All testimonials have explicit client permission to publish with name/city.
 - [ ] All blog posts pass `ultimate-seo-writer` final check.
 

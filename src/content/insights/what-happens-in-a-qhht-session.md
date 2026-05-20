@@ -14,7 +14,7 @@ Most of what you read about QHHT online sounds either flat-clinical or floaty-my
 
 The session unfolds in three parts:
 
-1. **The pre-session conversation** (60–90 minutes). You arrive at my Palm Beach County studio — or settle into a quiet room at home if we're meeting over Zoom. We talk about your life, your questions, and what's been calling for attention. This is not therapy; it's not analysis. It's the soft-edge introduction that lets the deeper part of the session work the way it's supposed to.
+1. **The pre-session conversation** (60–90 minutes). You arrive at my Stuart studio — or settle into a quiet room at home if we're meeting over Zoom. We talk about your life, your questions, and what's been calling for attention. This is not therapy; it's not analysis. It's the soft-edge introduction that lets the deeper part of the session work the way it's supposed to.
 2. **The session itself** (about 3 hours). You recline somewhere comfortable. I guide you, slowly, into the Theta brainwave state — the threshold between waking and dreaming, where the conscious mind quiets and the Subconscious can speak clearly. From there, your Higher Self responds to the questions you brought. We record audio.
 3. **The integration window** (30 minutes, plus the days that follow). When we close the session, we sit and talk again briefly — what came up, how you feel, what to do with the recording. Most clients describe a contemplative week afterward as the insights settle.
 

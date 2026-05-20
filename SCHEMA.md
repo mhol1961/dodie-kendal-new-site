@@ -25,13 +25,13 @@ Injected in `Base.astro`. Single `LocalBusiness` graph reused across pages.
   "priceRange": "$$",
   "founder": { "@id": "https://dodiekendall.com/#person" },
   "areaServed": [
-    { "@type": "AdministrativeArea", "name": "Palm Beach County, Florida" },
+    { "@type": "AdministrativeArea", "name": "Stuart, Florida" },
     { "@type": "State", "name": "Florida" },
     { "@type": "Country", "name": "United States" }
   ],
   "address": {
     "@type": "PostalAddress",
-    "addressLocality": "Palm Beach County",
+    "addressLocality": "Stuart, FL",
     "addressRegion": "FL",
     "addressCountry": "US"
   },
@@ -62,7 +62,7 @@ Injected on Home and About pages.
   "givenName": "Dodie",
   "familyName": "Kendall",
   "jobTitle": "QHHT Practitioner",
-  "description": "Dodie Kendall is a Quantum Healing Hypnosis Technique (QHHT) practitioner based in Palm Beach County, Florida, trained in the Dolores Cannon lineage. She offers 5-hour in-person and remote QHHT sessions.",
+  "description": "Dodie Kendall is a Quantum Healing Hypnosis Technique (QHHT) practitioner based in Stuart, Florida, trained in the Dolores Cannon lineage. She offers 5-hour in-person and remote QHHT sessions.",
   "url": "https://dodiekendall.com/about",
   "image": "https://dodiekendall.com/dodie-portrait.jpg",
   "telephone": "+1-561-201-6918",
@@ -87,7 +87,7 @@ Injected on `/qhht` and `/book`.
   "@type": "Service",
   "@id": "https://dodiekendall.com/#service-qhht",
   "name": "Quantum Healing Hypnosis Technique (QHHT) Session",
-  "description": "A 5-hour Quantum Healing Hypnosis Technique session with Dodie Kendall, conducted in person in Palm Beach County, Florida, or remotely via Zoom. Sessions include a pre-session call, the session itself, and a complimentary follow-up call within 30 days.",
+  "description": "A 5-hour Quantum Healing Hypnosis Technique session with Dodie Kendall, conducted in person in Stuart, Florida, or remotely via Zoom. Sessions include a pre-session call, the session itself, and a complimentary follow-up call within 30 days.",
   "provider": { "@id": "https://dodiekendall.com/#person" },
   "serviceType": "Quantum Healing Hypnosis",
   "areaServed": [
@@ -95,7 +95,7 @@ Injected on `/qhht` and `/book`.
     { "@type": "Country", "name": "United States" }
   ],
   "availableChannel": [
-    { "@type": "ServiceChannel", "name": "In-person", "serviceLocation": { "@type": "Place", "name": "Palm Beach County, FL" } },
+    { "@type": "ServiceChannel", "name": "In-person", "serviceLocation": { "@type": "Place", "name": "Stuart, FL" } },
     { "@type": "ServiceChannel", "name": "Remote", "serviceLocation": { "@type": "VirtualLocation", "url": "https://zoom.us" } }
   ],
   "offers": {

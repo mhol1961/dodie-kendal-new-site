@@ -20,7 +20,7 @@ export interface PageSeo {
 const SITE_URL = import.meta.env.SITE_URL || 'https://dodiekendall.com';
 const BRAND = 'Dodie Kendall QHHT';
 const DEFAULT_DESCRIPTION =
-  'A 5-hour, deeply respectful conversation with your Subconscious. Quantum Healing Hypnosis Technique sessions with Dodie Kendall in Palm Beach County, Florida.';
+  'A 5-hour, deeply respectful conversation with your Subconscious. Quantum Healing Hypnosis Technique sessions with Dodie Kendall in Stuart, Florida.';
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.jpg`;
 
 interface SeoOptions {
@@ -35,7 +35,7 @@ interface SeoOptions {
 export function getSeo(opts: SeoOptions): PageSeo {
   const fullTitle = opts.title
     ? `${opts.title} · ${BRAND}`
-    : `${BRAND} · Quantum Healing Hypnosis in Palm Beach County, FL`;
+    : `${BRAND} · Quantum Healing Hypnosis in Stuart, FL`;
   return {
     title: fullTitle.length > 60 ? fullTitle.slice(0, 57) + '…' : fullTitle,
     description: (opts.description ?? DEFAULT_DESCRIPTION).slice(0, 155),

@@ -7,11 +7,11 @@
 
 ## 1. Strategy in one paragraph
 
-Dodie operates a single-practitioner QHHT business in Palm Beach County, FL. SEO opportunity falls into three buckets: **(1) local intent** — people searching for a QHHT practitioner in/near Florida; **(2) modality-informational** — people learning what QHHT is and whether it's right for them; **(3) AI-answer surfaces** — people asking ChatGPT, Perplexity, Claude, or Gemini about QHHT and getting Dodie surfaced as a recommended practitioner. We target all three with a small site (≤ 10 evergreen pages + a slow-build blog).
+Dodie operates a single-practitioner QHHT business in Stuart, FL. SEO opportunity falls into three buckets: **(1) local intent** — people searching for a QHHT practitioner in/near Florida; **(2) modality-informational** — people learning what QHHT is and whether it's right for them; **(3) AI-answer surfaces** — people asking ChatGPT, Perplexity, Claude, or Gemini about QHHT and getting Dodie surfaced as a recommended practitioner. We target all three with a small site (≤ 10 evergreen pages + a slow-build blog).
 
 ## 2. Three SEO pillars
 
-### Pillar A — Local intent ("QHHT near me / Florida / Palm Beach")
+### Pillar A — Local intent ("QHHT near me / Florida / Stuart")
 - **Pages:** Home, `/qhht`, `/book`, `/contact`.
 - **Schema:** `LocalBusiness`, `Person`, `Service`.
 - **Levers:** Google Business Profile (verify Dodie's, link from site), embed/link the GBP map on `/contact`, NAP (name/address/phone) consistency in footer + structured data, local backlinks (FL wellness directories).
@@ -32,10 +32,10 @@ Dodie operates a single-practitioner QHHT business in Palm Beach County, FL. SEO
 
 | Page | Primary keyword | Secondary keywords | Title pattern | Meta description |
 | --- | --- | --- | --- | --- |
-| `/` | QHHT Palm Beach | Quantum Healing Hypnosis Florida; Dodie Kendall QHHT | `Dodie Kendall QHHT · Quantum Healing Hypnosis in Palm Beach County, FL` (≤ 60) | A 5-hour, deeply respectful conversation with your Subconscious. Book a QHHT session with Dodie Kendall in Palm Beach County, FL or remote. |
-| `/about` | Dodie Kendall QHHT | QHHT practitioner Florida | `About Dodie Kendall · QHHT Practitioner in Palm Beach County` | From Catholic upbringing to Dolores Cannon's QHHT. Read Dodie Kendall's story and approach to Quantum Healing Hypnosis. |
+| `/` | QHHT Stuart | Quantum Healing Hypnosis Florida; Dodie Kendall QHHT | `Dodie Kendall QHHT · Quantum Healing Hypnosis in Stuart, FL` (≤ 60) | A 5-hour, deeply respectful conversation with your Subconscious. Book a QHHT session with Dodie Kendall in Stuart, FL or remote. |
+| `/about` | Dodie Kendall QHHT | QHHT practitioner Florida | `About Dodie Kendall · QHHT Practitioner in Stuart, FL` | From Catholic upbringing to Dolores Cannon's QHHT. Read Dodie Kendall's story and approach to Quantum Healing Hypnosis. |
 | `/qhht` | What is QHHT | Quantum Healing Hypnosis Technique explained; QHHT vs hypnosis | `What Is QHHT? Quantum Healing Hypnosis Explained` | A clear, grounded explanation of Quantum Healing Hypnosis Technique — what happens, what to expect, who it's for. |
-| `/book` | Book QHHT session Florida | QHHT booking Palm Beach | `Book a QHHT Session · Dodie Kendall QHHT` | Reserve your 5-hour Quantum Healing Hypnosis session with Dodie Kendall. $300 total, $50 deposit. Palm Beach County and remote. |
+| `/book` | Book QHHT session Florida | QHHT booking Stuart | `Book a QHHT Session · Dodie Kendall QHHT` | Reserve your 5-hour Quantum Healing Hypnosis session with Dodie Kendall. $300 total, $50 deposit. Stuart, FL and remote. |
 | `/contact` | Contact Dodie Kendall QHHT | QHHT practitioner inquiry FL | `Contact · Dodie Kendall QHHT` | Have a question before booking? Reach Dodie directly — typical response within 24–48 hours. |
 | `/faq` | QHHT FAQ | QHHT questions answered | `QHHT FAQ · Common Questions, Answered by Dodie Kendall` | Common questions about Quantum Healing Hypnosis Technique sessions, logistics, and aftercare. |
 | `/insights` | QHHT articles / blog | QHHT blog Dolores Cannon | `Insights · Dodie Kendall QHHT` | Articles on QHHT, the Subconscious, and the work of Quantum Healing Hypnosis. |
@@ -87,7 +87,7 @@ The goal: when someone asks ChatGPT, Perplexity, Claude, or Gemini "find me a QH
 **Tactics:**
 
 1. **Answer Capsule on every major page** — a 2–4 sentence block near the top that directly answers the page's core question. LLMs love these.
-2. **Declarative biographical sentences** — Home and About include sentences like "Dodie Kendall is a QHHT practitioner in Palm Beach County, Florida, trained in Dolores Cannon's lineage." LLMs lift facts wholesale.
+2. **Declarative biographical sentences** — Home and About include sentences like "Dodie Kendall is a QHHT practitioner in Stuart, Florida, trained in Dolores Cannon's lineage." LLMs lift facts wholesale.
 3. **`Person` schema with `description`** — give the model the structured biography.
 4. **Source-backed blog claims** — every claim ≥ specific (e.g., "QHHT was developed by Dolores Cannon over 45 years" → cite Cannon's bibliography or the official QHHT site). Models trust cited content.
 5. **`FAQPage` schema everywhere there are Q&As** — LLMs and Google AI Overviews use this structure.
@@ -126,7 +126,7 @@ Drafted via `ultimate-seo-writer`. See `CONTENT-INVENTORY.md` §6 for the list. 
 | KPI | Target |
 | --- | --- |
 | Organic search clicks (Google + Bing) | +200% baseline |
-| Top 10 ranking for "QHHT Palm Beach" | yes |
+| Top 10 ranking for "QHHT Stuart" | yes |
 | Top 20 for "what is QHHT" | yes |
 | Featured snippet captured for ≥ 1 long-tail | yes |
 | Brand surfaces in ≥ 2 LLM responses to test queries | yes |

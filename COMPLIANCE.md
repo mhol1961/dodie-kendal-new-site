@@ -24,7 +24,7 @@ Florida regulates the use of hypnosis under certain conditions. Key items to val
 - [ ] Florida Department of Business and Professional Regulation (DBPR) — registration requirements for hypnotists?
 - [ ] Federal Trade Commission — claim restrictions for alternative practitioners.
 - [ ] Florida unlicensed-practice-of-medicine statutes — language to avoid (treatment, diagnosis, cure).
-- [ ] Local Palm Beach County / municipality business licensing requirements.
+- [ ] Local Stuart, FL / municipality business licensing requirements.
 
 **Action:** schedule a 60-minute call with a Florida-licensed attorney experienced in wellness/alternative-practice compliance before launch. Document findings here and update `LEGAL-DISCLAIMERS.md` and `INTAKE-FORMS.md` accordingly.
 
