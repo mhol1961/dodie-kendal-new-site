@@ -13,7 +13,7 @@ export function localBusiness() {
     telephone: '+1-561-201-6918',
     email: 'dodiekendall@gmail.com',
     image: `${SITE_URL}/og-image.jpg`,
-    logo: `${SITE_URL}/dodie-kendall-five-clear-stars-transparent.png`,
+    logo: `${SITE_URL}/dodie-kendall-five-tattoo-reference-stars-v2-transparent.png`,
     priceRange: '$$',
     founder: { '@id': `${SITE_URL}/#person` },
     areaServed: [
