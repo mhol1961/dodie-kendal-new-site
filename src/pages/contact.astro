@@ -1,7 +1,6 @@
 ---
 import Base from '@layouts/Base.astro';
 import Hero from '@components/Hero.astro';
-import ContactForm from '@components/ContactForm.astro';
 import ClosingCTA from '@components/ClosingCTA.astro';
 import { getSeo } from '@lib/seo';
 import { breadcrumb } from '@lib/schema';
@@ -90,8 +89,33 @@ const next = [
           to have answers about this work.
         </p>
 
-        <div class="mt-10">
-          <ContactForm />
+        <!--
+          QHHT Quiz — GHL embed.
+          Iframe content is cross-origin (links.guidingwinds-unplug.com), so the
+          form's *internal* HTML can't be restyled from here. We control the
+          wrapper styling; the form theme itself is configured inside GHL.
+          form_embed.js auto-resizes the iframe height via postMessage.
+        -->
+        <div class="mt-10 overflow-hidden rounded-lg border border-border-subtle bg-bg-raised p-2 shadow-sm">
+          <iframe
+            src="https://links.guidingwinds-unplug.com/widget/form/Sv6wLoRU5khzSvRlNYWf"
+            id="inline-Sv6wLoRU5khzSvRlNYWf"
+            data-layout="{'id':'INLINE'}"
+            data-trigger-type="alwaysShow"
+            data-trigger-value=""
+            data-activation-type="alwaysActivated"
+            data-activation-value=""
+            data-deactivation-type="neverDeactivate"
+            data-deactivation-value=""
+            data-form-name="QHHT Quiz"
+            data-height="832"
+            data-layout-iframe-id="inline-Sv6wLoRU5khzSvRlNYWf"
+            data-form-id="Sv6wLoRU5khzSvRlNYWf"
+            title="QHHT Quiz"
+            loading="lazy"
+            class="block w-full rounded-md"
+            style="border:none;min-height:832px"
+          ></iframe>
         </div>
       </div>
 
@@ -194,4 +218,13 @@ const next = [
     cta={{ label: '📞 1-561-201-6918', href: 'tel:+15612016918' }}
     trustLine="Monday – Saturday · 9 am – 6 pm ET"
   />
+
+  <!--
+    GHL form embed runtime — auto-resizes the iframe to fit content.
+    SRI intentionally omitted: form_embed.js is a mutable vendor script with no
+    pinned version URL. Pinning a hash would cause silent breakage every time
+    GHL re-deploys. Trust boundary is the same as the iframe origin
+    (links.guidingwinds-unplug.com, Dodie's GHL subdomain).
+  -->
+  <script src="https://links.guidingwinds-unplug.com/js/form_embed.js" is:inline defer></script>
 </Base>
