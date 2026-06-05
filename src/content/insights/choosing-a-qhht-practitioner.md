@@ -68,15 +68,15 @@ When you ask a question they don't have a confident answer to, do they say *"I d
 
 QHHT works because of the relationship in the room. Trust the relationship cue.
 
-## A note on remote sessions
+## A note on remote vs. in-person
 
-Several of my clients are remote — we work over Zoom. If you're considering remote, here's what to ask:
+I work in person only — sessions happen at my Stuart, FL studio. If you're evaluating a practitioner who offers remote sessions over video, here's what to ask:
 
 - Has the practitioner done remote sessions before? (Most have by now.)
 - What's their tech setup, and what do you need on your end? (Wired headphones, quiet room, stable internet, reclining chair.)
 - What happens if the connection drops? (A good practitioner has a plan.)
 
-Remote QHHT works as well as in-person for the right client. The right client is someone who can create a private, quiet space for the duration without worrying about interruptions.
+Remote QHHT can work as well as in-person for the right client — someone who can create a private, quiet space for the duration without worrying about interruptions. For me, in person is what I offer, and the studio is set up for it.
 
 ## If you're considering me
 

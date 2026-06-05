@@ -46,6 +46,6 @@ Worth saying clearly: neither modality is a substitute for medical or psychologi
 
 ## If you're curious
 
-I offer 5-hour QHHT sessions in Stuart, FL and remotely via Zoom. If a session feels right, you can [book here](/book). If you want to talk through whether it's a good fit for what you're working on, [send me a note](/contact).
+I offer QHHT sessions in person at my Stuart, FL studio — plan for about five hours together. If a session feels right, you can [book here](/book). If you want to talk through whether it's a good fit for what you're working on, [send me a note](/contact).
 
 — Dodie

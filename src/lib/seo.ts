@@ -20,7 +20,7 @@ export interface PageSeo {
 const SITE_URL = import.meta.env.SITE_URL || 'https://dodiekendall.com';
 const BRAND = 'Dodie Kendall QHHT';
 const DEFAULT_DESCRIPTION =
-  'A 5-hour, deeply respectful conversation with your Subconscious. Quantum Healing Hypnosis Technique sessions with Dodie Kendall in Stuart, Florida.';
+  'A deeply respectful conversation with your Subconscious. Quantum Healing Hypnosis Technique sessions with Dodie Kendall — in-person in Stuart, Florida.';
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.jpg`;
 
 interface SeoOptions {

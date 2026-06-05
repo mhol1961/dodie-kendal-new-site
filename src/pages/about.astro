@@ -9,11 +9,19 @@ import { breadcrumb } from '@lib/schema';
 
 const SITE_URL = import.meta.env.SITE_URL || 'https://dodiekendall.com';
 
+// [NEEDS COPY] Per 2026-06-02 call: Dodie is rewriting her bio. She asked
+// for all religion references removed across the site. The heavy chapter
+// content below (Catholic upbringing, Pentecostal years, Buddhist/Muslim/
+// Hindu openings, "only love exists" resolution) is left intact for now —
+// gutting it without her replacement leaves the page hollow. The hero
+// subhead, SEO description, identity strip, and closing CTA below have
+// been softened to remove religion-line specifics while we wait for her
+// new draft.
 const seo = getSeo({
   path: '/about',
   title: 'About Dodie Kendall',
   description:
-    "How Dodie Kendall — Florida-raised, Catholic-Pentecostal-then-universalist — came to QHHT and the simple truth that only love exists.",
+    "Dodie Kendall — a native Floridian QHHT practitioner who came home to the simple truth that only love exists.",
 });
 
 const aboutPageSchema = {
@@ -35,7 +43,7 @@ const schemas = [
     headlineLead="The path to purpose —"
     headlineItalic="from tradition"
     headlineTail="to transcendence."
-    subhead="A native Floridian raised Catholic, who walked through Pentecostal Christianity, opened to Buddhists, Muslims, and Hindus, and arrived at the simple truth that only love exists."
+    subhead="A native Floridian who walked a long path through many traditions and arrived at the simple truth that only love exists."
     bgImage="/video/about-tropical-light-poster.jpg"
     bgVideo="/video/about-tropical-light.mp4"
   />
@@ -53,11 +61,11 @@ const schemas = [
       </div>
       <div>
         <p class="text-[10px] uppercase tracking-[0.24em] text-brand">Sessions</p>
-        <p class="mt-2 font-display text-xl text-inverse">5 hrs · $300</p>
+        <p class="mt-2 font-display text-xl text-inverse">About 5 hrs</p>
       </div>
       <div>
         <p class="text-[10px] uppercase tracking-[0.24em] text-brand">Format</p>
-        <p class="mt-2 font-display text-xl text-inverse">In-person · Remote</p>
+        <p class="mt-2 font-display text-xl text-inverse">In-person</p>
       </div>
     </div>
   </section>
@@ -268,9 +276,9 @@ const schemas = [
     headlineLead="Your Higher Self"
     headlineItalic="is already speaking."
     headlineTail="Are you ready to listen?"
-    subhead="One 5-hour conversation with the deepest part of you. Held with confidentiality, recorded for you to keep."
+    subhead="A conversation with the deepest part of you. Held with confidentiality, recorded for you to keep."
     cta={{ label: 'Book a Session', href: '/book' }}
-    trustLine="$300 · 5 hours · Stuart, FL or remote via Zoom"
+    trustLine="In-person sessions · Stuart, FL"
   />
 </Base>
 

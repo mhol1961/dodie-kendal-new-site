@@ -14,7 +14,7 @@ import { qhhtService, breadcrumb } from '@lib/schema';
 const seo = getSeo({
   path: '/',
   description:
-    "A 5-hour, deeply respectful conversation with your Subconscious. Quantum Healing Hypnosis Technique with Dodie Kendall — Stuart, FL, or remote via Zoom.",
+    "A deeply respectful conversation with your Subconscious. Quantum Healing Hypnosis Technique with Dodie Kendall — in-person sessions in Stuart, FL.",
 });
 
 const schemas = [
@@ -33,7 +33,7 @@ const sessionActs = [
     number: '02',
     eyebrow: 'During — Enter the Theta state',
     title: 'I guide you to the doorway. You walk through.',
-    body: "On session day we settle in a quiet room. You recline, headphones on. Over about twenty minutes I guide you into the Theta brainwave state — the threshold between waking and dreaming, where the Subconscious can speak clearly. You stay aware. You stay in charge.",
+    body: "On session day we settle in a quiet room. You recline, headphones on. I guide you into the Theta brainwave state — the threshold between waking and dreaming, where the Subconscious can speak clearly. You stay aware. You stay in charge.",
   },
   {
     number: '03',
@@ -49,8 +49,7 @@ const sessionActs = [
   <TrustStrip
     items={[
       'Trained in the Dolores Cannon lineage',
-      '5-hour deep-dive format',
-      'Sessions worldwide via Zoom',
+      'In-person sessions in Stuart, FL',
       'Audio recording included',
       'Complimentary 30-day follow-up',
     ]}
@@ -61,28 +60,43 @@ const sessionActs = [
     attribution="Dodie"
   />
 
+  <!--
+    Subhead: "Not therapy. Not regression hypnosis." removed per 2026-06-02 call
+    notes (Dodie doesn't want to frame by what it is or isn't here).
+    Eyebrow softened from "A 5-hour conversation with your Subconscious" — the
+    five-hour-conversation framing is wrong; the session is ~5 hours total with
+    ~2-3 hours of hypnosis. See sessionActs body below for fuller framing.
+  -->
   <ThreeAct
-    eyebrow="A 5-hour conversation with your Subconscious"
+    eyebrow="A conversation with your Subconscious"
     heading="How a QHHT session"
     headingItalic="unfolds."
-    subhead="Not therapy. Not regression hypnosis. A guided, deeply respectful conversation with the part of you that has all of your answers and has been waiting for you to ask."
+    subhead="A guided, deeply respectful conversation with the part of you that has all of your answers and has been waiting for you to ask."
     acts={sessionActs}
     ctaLabel="Read more about the modality"
     ctaHref="/qhht"
   />
 
+  <!--
+    [NEEDS COPY] First body paragraph is a placeholder.
+    Original referenced Catholic-school / Pentecostal / belief-systems — Dodie
+    asked for the religion line removed across the site; she is rewriting her
+    bio and will send the new story. Working copy below preserves her closing
+    line ("only love exists") but drops the religious specifics. Replace once
+    her draft arrives.
+  -->
   <FounderSpotlight
     role="Founder · Dodie Kendall QHHT"
     headlineLead="Guided by intuition,"
     headlineItalic="grounded in love."
     body={[
-      "I'm a native Floridian, a former Catholic-school student, a one-time Pentecostal seeker, and — after a long walk through a lot of belief systems — someone who came home to the simple truth that only love exists.",
-      "I found Quantum Healing Hypnosis Technique through Dolores Cannon's work. From my first session as a client, I knew: this was the bridge between my spiritual past and the work I was meant to do.",
+      "I'm a native Floridian who walked a long path through many traditions and arrived at the simple truth that only love exists.",
+      "I found Quantum Healing Hypnosis Technique through Dolores Cannon's work. From my first session as a client, I knew: this was the work I was meant to do.",
     ]}
     credentials={[
       'Dolores Cannon lineage',
       'Stuart, FL',
-      'In-person & remote sessions',
+      'In-person sessions',
     ]}
     cta={{ label: "Read my full story", href: '/about' }}
     photoSrc="/dodie-portrait-portrait.jpg"
@@ -101,8 +115,8 @@ const sessionActs = [
     headlineLead="Your Higher Self"
     headlineItalic="is already speaking."
     headlineTail="Are you ready to listen?"
-    subhead="One 5-hour session. One audio recording. One complimentary follow-up. $300 total, $50 to reserve your time."
+    subhead="One session. One audio recording. One complimentary follow-up. Reserve your time with a small deposit."
     cta={{ label: 'Book a Session', href: '/book' }}
-    trustLine="Stuart · Remote via Zoom · Booking confirmed within 24 hours"
+    trustLine="Stuart, FL · Booking confirmed within 24 hours"
   />
 </Base>

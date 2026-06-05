@@ -14,7 +14,7 @@ This is the single most important thing.
 
 QHHT is a conversation with the deepest part of you. The conversation works because *you* set the agenda. The questions you bring are the doorways through which the Subconscious will speak.
 
-Three days before our pre-session call, I'll send you a prep guide with a short prompt: write down every question you'd ask if you knew you had a five-hour conversation with the part of yourself that has all the answers. Don't filter. Let it be messy. Then put the list down for a day. Come back. Edit. Cross some off. Add others.
+Three days before our pre-session call, I'll send you a prep guide with a short prompt: write down every question you'd ask if you knew you had a long, uninterrupted conversation with the part of yourself that has all the answers. Don't filter. Let it be messy. Then put the list down for a day. Come back. Edit. Cross some off. Add others.
 
 By the time we talk, you'll have a list of 5–10 questions that *feel* right. We'll narrow them together to the three or four that matter most.
 
@@ -49,13 +49,6 @@ For an in-person session at the studio:
 - A water bottle.
 - A light snack for after — your blood sugar may want it.
 - Anything that grounds you: a small stone, a photo, a journal. Optional.
-
-For a remote session over Zoom:
-- A quiet, private room where no one will interrupt for 5+ hours.
-- A reclining chair or couch with pillow support for your head.
-- Wired headphones (Bluetooth can disconnect mid-session and is not ideal).
-- Your laptop or phone propped on a stable surface where the camera can see you.
-- All of the above (water, snack, etc.).
 
 ## The morning-of mental prep
 

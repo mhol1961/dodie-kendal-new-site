@@ -1,0 +1,11 @@
+# Real client reviews go here as individual JSON files matching the schema in
+# src/content/config.ts.
+#
+# Per 2026-06-02 call notes: the fabricated reviews previously in this directory
+# (01-stuck-patterns, 02-before-and-after, 03-puzzle-pieces) were removed —
+# Dodie confirmed they were AI-generated placeholders, not real clients.
+#
+# Dodie's real Google reviews are being collected (7+ already, reaching out to
+# all 26 past clients) and will be dropped in here as part of the Reputation
+# Management build. Until then, the TestimonialGrid section on the home page
+# renders nothing (it guards with {featured && (...)}).
