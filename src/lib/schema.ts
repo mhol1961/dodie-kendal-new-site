@@ -50,7 +50,7 @@ export function person() {
     familyName: 'Kendall',
     jobTitle: 'QHHT Practitioner',
     description:
-      'Dodie Kendall is a Level 2 Quantum Healing Hypnosis Technique (QHHT) practitioner based in Stuart, Florida, trained in the Dolores Cannon lineage and working toward Level 3 certification. She offers in-person QHHT sessions of about five hours.',
+      'Dodie Kendall is a Quantum Healing Hypnosis Technique (QHHT) practitioner based in Stuart, Florida, trained in the Dolores Cannon lineage. She offers in-person QHHT sessions of about five hours.',
     url: `${SITE_URL}/about`,
     image: `${SITE_URL}/dodie-portrait.jpg`,
     telephone: '+1-561-201-6918',

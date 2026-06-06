@@ -1,12 +1,12 @@
 ---
 title: "What Actually Happens in a QHHT Session"
-description: "A clear, grounded walk-through of a 5-hour QHHT session — from pre-session conversation to the audio recording you take home."
+description: "A clear, grounded walk-through of a QHHT session — from pre-session conversation to the audio recording you take home."
 pubDate: 2026-05-18
 tags: ["qhht", "what-to-expect", "first-session"]
-answerCapsule: "A QHHT session is about 5 hours total. We start with a relaxed pre-session conversation, then I guide you into the Theta brainwave state — the threshold between waking and dreaming — and your Subconscious responds to the questions you brought. We record audio with your consent. You take the recording home."
+answerCapsule: "Plan for about five hours together — about two hours of conversation, then I guide you into the Theta brainwave state (the threshold between waking and dreaming) for the hypnosis portion, which usually runs two to three hours. Your Subconscious responds to the questions you brought. We record audio with your consent. You take the recording home."
 ---
 
-If you're considering a Quantum Healing Hypnosis Technique session and trying to picture what one actually looks like, this is for you. I'll walk you through how a 5-hour session unfolds in practice — no mystery, no jargon, no pressure.
+If you're considering a Quantum Healing Hypnosis Technique session and trying to picture what one actually looks like, this is for you. I'll walk you through how a session unfolds in practice — no mystery, no jargon, no pressure.
 
 ## A session is a conversation in three parts
 
