@@ -3,6 +3,7 @@ import '@styles/global.css';
 import Header from '@components/Header.astro';
 import Footer from '@components/Footer.astro';
 import ChatWidget from '@components/ChatWidget.astro';
+import MetaPixel from '@components/shared/MetaPixel.astro';
 import type { PageSeo } from '@lib/seo';
 import { localBusiness, person } from '@lib/schema';
 
@@ -58,6 +59,9 @@ const isProd = import.meta.env.PROD;
     {schemas.map((s) => (
       <script type="application/ld+json" is:inline set:html={JSON.stringify(s)} />
     ))}
+
+    <!-- Meta (Facebook) Pixel — only renders when PUBLIC_FB_PIXEL_ID is set -->
+    <MetaPixel />
 
     <!-- Analytics: Plausible (privacy-first) — production only -->
     {isProd && plausibleDomain && (

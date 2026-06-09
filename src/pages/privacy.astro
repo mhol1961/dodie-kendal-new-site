@@ -10,7 +10,7 @@ const seo = getSeo({
 });
 
 const schemas = [breadcrumb([{ name: 'Home', href: '/' }, { name: 'Privacy' }])];
-const lastUpdated = '2026-05-17';
+const lastUpdated = '2026-06-09';
 ---
 <Base seo={seo} schemas={schemas}>
   <section class="section-y bg-bg-base">
@@ -37,17 +37,18 @@ const lastUpdated = '2026-05-17';
             <li><strong>Lead-magnet opt-in.</strong> Your first name, email, and your consent to receive our pre-session prep guide.</li>
             <li><strong>Booking details.</strong> Your name, email, phone, and deposit information are collected by our calendar partner (GoHighLevel) on the booking page.</li>
             <li><strong>Analytics events.</strong> Anonymized page-view and click data through Plausible Analytics — no cookies, no cross-site tracking, no personal identifiers.</li>
+            <li><strong>Meta (Facebook) Pixel.</strong> Standard page-view tracking through Meta's advertising pixel — used for ad measurement and audience building if and when we run paid campaigns. Sends visit data to Facebook and sets third-party cookies on the facebook.com domain. Active on production only.</li>
             <li><strong>Server logs.</strong> Standard request logs (IP, user agent, request path, timestamp) collected by our hosting provider for operational security.</li>
           </ul>
         </section>
 
         <section>
-          <h2 class="font-display text-2xl text-ink">3. What we do not collect</h2>
+          <h2 class="font-display text-2xl text-ink">3. What we do not do</h2>
           <ul class="mt-3 list-disc space-y-2 pl-6">
-            <li>No advertising or retargeting pixels (no Facebook, Google Ads, etc.).</li>
-            <li>No session-replay or screen-recording tools.</li>
-            <li>No third-party tracking cookies.</li>
-            <li>No reverse-sync of contact data back to the website.</li>
+            <li>No session-replay, screen-recording, or heatmap tools.</li>
+            <li>No ad pixels beyond a single Meta (Facebook) Pixel — no Google Ads, TikTok Pixel, LinkedIn Insight, or others.</li>
+            <li>No reverse-sync of contact data from the CRM back to the website for on-page personalization.</li>
+            <li>No sale or rental of your personal information.</li>
           </ul>
         </section>
 
@@ -66,6 +67,7 @@ const lastUpdated = '2026-05-17';
           <ul class="mt-3 list-disc space-y-2 pl-6">
             <li><strong>GoHighLevel</strong> — our customer-relationship and booking platform. Acts as data processor; we are the data controller. Their privacy policy applies.</li>
             <li><strong>Plausible Analytics</strong> — EU-hosted, privacy-first analytics. No cookies, no personal data.</li>
+            <li><strong>Meta (Facebook)</strong> — advertising pixel for ad measurement and audience building. Sets third-party cookies on facebook.com. Their privacy policy and your Facebook ad-preferences page apply.</li>
             <li><strong>Cloudflare</strong> — hosting and DNS. Standard hosting agreement.</li>
             <li><strong>Resend</strong> — transactional email fallback when our primary CRM is unavailable.</li>
           </ul>
@@ -79,7 +81,7 @@ const lastUpdated = '2026-05-17';
 
         <section>
           <h2 class="font-display text-2xl text-ink">7. Cookies</h2>
-          <p class="mt-3">The site does not set tracking cookies. Cloudflare may set a security cookie (<code>__cf_bm</code>) for bot mitigation. Plausible analytics is cookie-free.</p>
+          <p class="mt-3">The site itself does not set first-party tracking cookies. Cloudflare may set a security cookie (<code>__cf_bm</code>) for bot mitigation. Plausible analytics is cookie-free. The Meta (Facebook) Pixel sets third-party cookies on the <code>facebook.com</code> domain — typically <code>_fbp</code> (first-party conversion attribution) and <code>_fbc</code> (click-through attribution). You can manage or block these at the browser level or via your <a href="https://www.facebook.com/settings?tab=ads" class="text-brand underline">Facebook ad preferences</a>.</p>
         </section>
 
         <section>

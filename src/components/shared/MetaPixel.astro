@@ -1,0 +1,58 @@
+---
+/**
+ * MetaPixel — Meta (Facebook) Pixel base code + PageView tracking.
+ *
+ * Renders the standard Meta Pixel snippet (init + PageView) plus the
+ * <noscript> fallback tracking image. Gated on BOTH:
+ *   - PUBLIC_FB_PIXEL_ID being set in the environment, AND
+ *   - import.meta.env.PROD being true.
+ *
+ * Either guard alone renders nothing. The PROD gate is critical:
+ * without it, dev/preview/QA traffic would land in the same Facebook
+ * audience and conversion stream as real visitors, polluting custom
+ * audiences and skewing ad optimization — and that pollution is
+ * expensive to unwind once it's collected.
+ *
+ * For dev verification, use Meta's test-events feature
+ * (https://developers.facebook.com/docs/meta-pixel/advanced/test-events)
+ * with a separate test pixel ID — do NOT just set PUBLIC_FB_PIXEL_ID
+ * in dev with the live ID.
+ *
+ * Privacy note: this pixel fires on every production page view, sets
+ * third-party cookies on facebook.com, and sends visit data to Meta.
+ * The privacy policy at /privacy must disclose this. If a consent
+ * banner is added later, gate this component behind that state too.
+ *
+ * Reference: https://developers.facebook.com/docs/meta-pixel/get-started
+ */
+
+const pixelId = import.meta.env.PUBLIC_FB_PIXEL_ID;
+const enabled = import.meta.env.PROD && pixelId;
+---
+{enabled && (
+  <>
+    {/* Meta Pixel Code */}
+    <script is:inline define:vars={{ pixelId }}>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', pixelId);
+      fbq('track', 'PageView');
+    </script>
+    <noscript>
+      <img
+        height="1"
+        width="1"
+        style="display:none"
+        alt=""
+        src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
+      />
+    </noscript>
+    {/* End Meta Pixel Code */}
+  </>
+)}
