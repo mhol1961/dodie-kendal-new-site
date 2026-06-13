@@ -1,0 +1,25 @@
+# Local-dev runtime secrets for `npm run dev` (Astro + Cloudflare platformProxy).
+#
+# Copy this file to `.dev.vars` (gitignored) and fill in real values to test the
+# server endpoints — /api/quiz, /api/contact, /api/lead-magnet — against a live
+# GHL sub-account locally. These mirror the Worker's production Variables/Secrets.
+#
+#   cp .dev.vars.example .dev.vars   # then edit
+#
+# Full inventory + which are secret vs non-secret: see ENV.md.
+
+# --- GHL: required for /api/quiz to write the contact + answer tags to the CRM.
+#     Use Dodie's OWN subaccount (not guidingwinds). Without these, /api/quiz
+#     falls back to email; without the Resend key below too, it returns 502.
+GHL_PRIVATE_INTEGRATION_TOKEN=
+GHL_LOCATION_ID=
+
+# --- Fallback email (Resend) — used only when the GHL write path is unavailable.
+RESEND_API_KEY=
+FALLBACK_EMAIL_TO=dodiekendall@gmail.com
+FALLBACK_EMAIL_FROM=no-reply@dodiekendall.com
+
+# --- Optional: booking + workflows
+GHL_CALENDAR_ID=
+GHL_WORKFLOW_LEAD_MAGNET_ID=
+GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID=
