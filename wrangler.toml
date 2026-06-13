@@ -3,6 +3,15 @@ main = "./dist/_worker.js/index.js"
 compatibility_date = "2026-05-18"
 compatibility_flags = ["nodejs_compat"]
 
+# Non-secret runtime vars. These MUST live here, not just in the dashboard:
+# every push triggers a `wrangler deploy`, which RESETS dashboard-set plain-text
+# vars (but preserves Secrets). GHL_LOCATION_ID is a non-secret subaccount id
+# (Dodie's dodiekendall subaccount), so it belongs here. The matching
+# GHL_PRIVATE_INTEGRATION_TOKEN is a Secret — keep it in the dashboard / `wrangler
+# secret put`, never here.
+[vars]
+GHL_LOCATION_ID = "6pOamCMOsrYqjbufLI5y"
+
 # Static assets directory. Cloudflare Workers Assets serves files from /dist
 # directly from the edge. The Worker (above) handles SSR routes that have
 # `export const prerender = false` — namely /book and /api/*.
