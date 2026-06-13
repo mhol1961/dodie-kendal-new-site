@@ -127,7 +127,12 @@ const steps = [
       <!--
         QHHT Quiz — GHL embed (cross-origin: links.guidingwinds-unplug.com).
         Wrapper styling is ours; the form theme is configured inside GHL.
-        form_embed.js auto-resizes the iframe height via postMessage.
+        form_embed.js auto-resizes the iframe height via a postMessage handshake
+        that only fires AFTER the iframe content loads. This quiz sits deep in the
+        page, so it must NOT be loading="lazy" — a lazy iframe this far down never
+        loads at initial render, the handshake never fires, and the wrapper
+        collapses to a thin line. It's also variant 1's primary CTA, so eager is
+        correct. min-height holds the box open during the brief load.
       -->
       <div class="overflow-hidden rounded-lg border border-border-subtle bg-bg-raised p-2 shadow-md">
         <iframe
@@ -145,7 +150,6 @@ const steps = [
           data-layout-iframe-id="inline-Sv6wLoRU5khzSvRlNYWf"
           data-form-id="Sv6wLoRU5khzSvRlNYWf"
           title="QHHT Quiz"
-          loading="lazy"
           referrerpolicy="strict-origin-when-cross-origin"
           class="block w-full rounded-md"
           style="border:none;min-height:832px"
