@@ -7,14 +7,14 @@
  * Primary CTA: take the QHHT quiz (email/lead capture) — NOT a hard booking push.
  * Proof:    transparent step-by-step process + practitioner + lineage.
  *
- * Interim lead magnet: Dodie's existing GHL "QHHT Quiz" (same embed as /contact).
- * Planned swap: a free guided audio meditation in Dodie's voice once recorded.
- * See LANDING-PAGE-SCOPE.md.
+ * Lead magnet: native multi-step QhhtQuiz → /api/quiz → Dodie's GHL (tags per
+ * answer). Built in-code rather than GHL's form builder. See LANDING-PAGE-SCOPE.md.
  */
 import LandingLayout from '@layouts/LandingLayout.astro';
 import Hero from '@components/Hero.astro';
 import TrustStrip from '@components/TrustStrip.astro';
 import TestimonialGrid from '@components/TestimonialGrid.astro';
+import QhhtQuiz from '@components/QhhtQuiz.astro';
 import { getSeo } from '@lib/seo';
 import { qhhtService, breadcrumb } from '@lib/schema';
 
@@ -108,60 +108,9 @@ const steps = [
     headingItalic="after a session."
   />
 
-  <!-- QUIZ CAPTURE — the primary conversion for this variant.
-       Interim lead magnet = Dodie's existing GHL "QHHT Quiz" (same form as /contact). -->
-  <section id="quiz" class="bg-bg-sunken py-20 md:py-28">
-    <div class="container-default max-w-3xl">
-      <header class="mb-10 text-center">
-        <p class="text-xs uppercase tracking-[0.24em] text-brand">A small first step</p>
-        <h2 class="mt-3 font-display text-ink">
-          <span class="block">Is QHHT right</span>
-          <span class="italic-accent block text-brand">for you?</span>
-        </h2>
-        <p class="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-ink-secondary">
-          Answer a few short questions and I'll personally point you toward the
-          right next step — no pressure, no obligation to book.
-        </p>
-      </header>
-
-      <!--
-        QHHT Quiz — GHL embed (cross-origin: links.guidingwinds-unplug.com).
-        Wrapper styling is ours; the form theme is configured inside GHL.
-        form_embed.js auto-resizes the iframe height via a postMessage handshake
-        that only fires AFTER the iframe content loads. This quiz sits deep in the
-        page, so it must NOT be loading="lazy" — a lazy iframe this far down never
-        loads at initial render, the handshake never fires, and the wrapper
-        collapses to a thin line. It's also variant 1's primary CTA, so eager is
-        correct. min-height holds the box open during the brief load.
-      -->
-      <div class="overflow-hidden rounded-lg border border-border-subtle bg-bg-raised p-2 shadow-md">
-        <iframe
-          src="https://links.guidingwinds-unplug.com/widget/form/Sv6wLoRU5khzSvRlNYWf"
-          id="inline-Sv6wLoRU5khzSvRlNYWf"
-          data-layout="{'id':'INLINE'}"
-          data-trigger-type="alwaysShow"
-          data-trigger-value=""
-          data-activation-type="alwaysActivated"
-          data-activation-value=""
-          data-deactivation-type="neverDeactivate"
-          data-deactivation-value=""
-          data-form-name="QHHT Quiz"
-          data-height="832"
-          data-layout-iframe-id="inline-Sv6wLoRU5khzSvRlNYWf"
-          data-form-id="Sv6wLoRU5khzSvRlNYWf"
-          title="QHHT Quiz"
-          referrerpolicy="strict-origin-when-cross-origin"
-          class="block w-full rounded-md"
-          style="border:none;min-height:832px"
-        ></iframe>
-      </div>
-
-      <p class="mt-6 text-center text-sm text-ink-muted">
-        Ready now? You can
-        <a href="/book" class="text-brand underline underline-offset-2 hover:text-brand-hover">book a session directly</a>.
-      </p>
-    </div>
-  </section>
+  <!-- QUIZ CAPTURE — the primary conversion. Native multi-step quiz (not a GHL
+       embed); posts to /api/quiz which upserts the contact + tags each answer. -->
+  <QhhtQuiz />
 
   <!-- Sticky mobile CTA — keeps the primary action in the thumb zone -->
   <div class="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-bg-raised/95 p-3 backdrop-blur-sm shadow-[0_-8px_24px_-12px_oklch(0.18_0.018_240_/_0.35)] md:hidden">
@@ -172,11 +121,4 @@ const steps = [
       Take the 60-second quiz →
     </a>
   </div>
-
-  <!--
-    GHL form embed runtime — auto-resizes the iframe to content height.
-    SRI intentionally omitted: form_embed.js is a mutable vendor script with no
-    pinned version URL (same trust boundary + rationale as /contact).
-  -->
-  <script src="https://links.guidingwinds-unplug.com/js/form_embed.js" is:inline defer></script>
 </LandingLayout>

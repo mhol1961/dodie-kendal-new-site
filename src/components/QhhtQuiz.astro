@@ -1,0 +1,259 @@
+---
+/**
+ * QhhtQuiz — native "Is QHHT right for you?" multi-step quiz.
+ *
+ * Replaces the GHL form iframe on /landing-page-1. Renders from the single
+ * source of truth in src/lib/quiz.ts and posts to /api/quiz, which upserts the
+ * contact into Dodie's GHL and tags each answer. No GHL form-builder involved.
+ *
+ * Progressive enhancement: without JS, every question renders stacked in one
+ * <form> that posts form-encoded to /api/quiz (the endpoint accepts both). With
+ * JS, it becomes a one-question-at-a-time stepper with a progress bar and an
+ * async JSON submit.
+ */
+import { QUIZ_QUESTIONS } from '@lib/quiz';
+
+const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
+---
+<section id="quiz" class="bg-bg-sunken py-20 md:py-28">
+  <div class="container-default max-w-2xl">
+    <header class="mb-10 text-center">
+      <p class="text-xs uppercase tracking-[0.24em] text-brand">A small first step</p>
+      <h2 class="mt-3 font-display text-ink">
+        <span class="block">Is QHHT right</span>
+        <span class="italic-accent block text-brand">for you?</span>
+      </h2>
+      <p class="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-ink-secondary">
+        Five short questions. I'll personally read your answers and point you
+        toward the right next step — no pressure, no obligation to book.
+      </p>
+    </header>
+
+    <div class="rounded-lg border border-border-subtle bg-bg-raised p-6 shadow-md md:p-8">
+      <!-- Progress (JS-controlled; hidden without JS) -->
+      <div data-quiz-progress class="mb-8 hidden">
+        <div class="flex items-center justify-between text-xs uppercase tracking-[0.2em] text-ink-muted">
+          <span data-quiz-step-label>Question 1 of {totalSteps}</span>
+          <span data-quiz-percent>0%</span>
+        </div>
+        <div class="mt-2 h-1.5 w-full overflow-hidden rounded-pill bg-border-subtle">
+          <div data-quiz-bar class="h-full rounded-pill bg-brand transition-[width] duration-base ease-standard" style="width:0%"></div>
+        </div>
+      </div>
+
+      <form id="qhht-quiz" action="/api/quiz" method="POST" novalidate>
+        <!-- Honeypot — bots fill this; humans never see it -->
+        <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="sr-only" />
+
+        {QUIZ_QUESTIONS.map((q, i) => (
+          <fieldset data-step={i} class="quiz-step">
+            <legend class="font-display text-xl text-ink md:text-2xl">{q.question}</legend>
+            {q.help && <p class="mt-2 text-sm text-ink-muted">{q.help}</p>}
+            <div class="mt-6 grid gap-3">
+              {q.options.map((o) => (
+                <label class="quiz-option group flex cursor-pointer items-center gap-3 rounded-lg border border-border-subtle bg-bg-base px-4 py-3.5 transition-colors hover:border-brand/50 has-[:checked]:border-brand has-[:checked]:bg-brand/5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand">
+                  <input type="radio" name={q.id} value={o.value} required class="peer sr-only" />
+                  <span aria-hidden="true" class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-border-strong peer-checked:border-brand peer-checked:bg-brand">
+                    <span class="h-2 w-2 rounded-full bg-bg-raised opacity-0 peer-checked:opacity-100"></span>
+                  </span>
+                  <span class="text-ink-secondary peer-checked:text-ink">{o.label}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        ))}
+
+        <!-- Contact step -->
+        <fieldset data-step={QUIZ_QUESTIONS.length} class="quiz-step">
+          <legend class="font-display text-xl text-ink md:text-2xl">Where should I send your next step?</legend>
+          <p class="mt-2 text-sm text-ink-muted">I'll reply personally — usually within 24–48 hours.</p>
+          <div class="mt-6 grid gap-4">
+            <label class="block">
+              <span class="text-sm font-medium text-ink">First name</span>
+              <input type="text" name="firstName" required autocomplete="given-name" class="mt-1.5 w-full rounded-lg border border-border-subtle bg-bg-base px-4 py-3 text-ink outline-none transition-colors focus:border-brand focus-visible:ring-2 focus-visible:ring-brand" />
+            </label>
+            <label class="block">
+              <span class="text-sm font-medium text-ink">Email</span>
+              <input type="email" name="email" required autocomplete="email" inputmode="email" placeholder="you@somewhere.com" class="mt-1.5 w-full rounded-lg border border-border-subtle bg-bg-base px-4 py-3 text-ink outline-none transition-colors focus:border-brand focus-visible:ring-2 focus-visible:ring-brand" />
+            </label>
+            <label class="block">
+              <span class="text-sm font-medium text-ink">Phone <span class="text-ink-muted">(optional)</span></span>
+              <input type="tel" name="phone" autocomplete="tel" inputmode="tel" class="mt-1.5 w-full rounded-lg border border-border-subtle bg-bg-base px-4 py-3 text-ink outline-none transition-colors focus:border-brand focus-visible:ring-2 focus-visible:ring-brand" />
+            </label>
+            <label class="mt-1 flex items-start gap-3 text-sm text-ink-secondary">
+              <input type="checkbox" name="consentMarketing" value="true" required class="mt-1 h-4 w-4 shrink-0 rounded border-border-strong text-brand focus-visible:ring-2 focus-visible:ring-brand" />
+              <span>I'd like Dodie to reach out about my answers and QHHT. I can unsubscribe anytime.</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Status / errors -->
+        <p data-quiz-status role="status" aria-live="polite" class="mt-6 text-sm text-ink-muted empty:hidden"></p>
+
+        <!-- Navigation -->
+        <div class="mt-8 flex items-center justify-between gap-4">
+          <button type="button" data-quiz-back class="hidden text-sm font-medium text-ink-muted underline-offset-4 hover:text-ink hover:underline">
+            ← Back
+          </button>
+          <span class="flex-1"></span>
+          <button type="button" data-quiz-next class="hidden cta-glow items-center justify-center rounded-pill px-7 py-3 text-base font-medium">
+            Next →
+          </button>
+          <button type="submit" data-quiz-submit class="cta-glow inline-flex items-center justify-center rounded-pill px-7 py-3 text-base font-medium">
+            See my result
+          </button>
+        </div>
+      </form>
+
+      <!-- Success state (revealed by JS after a successful submit) -->
+      <div data-quiz-success hidden class="py-6 text-center">
+        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand/10">
+          <svg class="h-7 w-7 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <h3 class="mt-5 font-display text-2xl text-ink">Thank you — it's on its way.</h3>
+        <p class="mx-auto mt-3 max-w-md text-ink-secondary leading-relaxed">
+          I've got your answers and I'll be in touch personally with your next step.
+          If you already know you're ready, you can book now.
+        </p>
+        <a href="/book" class="cta-glow mt-7 inline-flex items-center justify-center rounded-pill px-8 py-3.5 text-base font-medium">
+          Book a session →
+        </a>
+      </div>
+    </div>
+
+    <p class="mt-6 text-center text-sm text-ink-muted">
+      Prefer to skip ahead?
+      <a href="/book" class="text-brand underline underline-offset-2 hover:text-brand-hover">Book a session directly</a>.
+    </p>
+  </div>
+</section>
+
+<style>
+  /* Without JS, every step is visible and the single submit works.
+     The .js class (added on load) switches to one-step-at-a-time. */
+  #qhht-quiz.js .quiz-step { display: none; }
+  #qhht-quiz.js .quiz-step.is-active { display: block; }
+  .quiz-step + .quiz-step { margin-top: 2.5rem; }
+  #qhht-quiz.js .quiz-step + .quiz-step { margin-top: 0; }
+</style>
+
+<script>
+  const form = document.getElementById('qhht-quiz') as HTMLFormElement | null;
+  if (form) {
+    const steps = Array.from(form.querySelectorAll<HTMLElement>('.quiz-step'));
+    const total = steps.length;
+    const root = form.closest('div');
+    const progress = root?.querySelector<HTMLElement>('[data-quiz-progress]');
+    const bar = root?.querySelector<HTMLElement>('[data-quiz-bar]');
+    const stepLabel = root?.querySelector<HTMLElement>('[data-quiz-step-label]');
+    const percent = root?.querySelector<HTMLElement>('[data-quiz-percent]');
+    const backBtn = form.querySelector<HTMLButtonElement>('[data-quiz-back]');
+    const nextBtn = form.querySelector<HTMLButtonElement>('[data-quiz-next]');
+    const submitBtn = form.querySelector<HTMLButtonElement>('[data-quiz-submit]');
+    const status = form.querySelector<HTMLElement>('[data-quiz-status]');
+    const success = root?.querySelector<HTMLElement>('[data-quiz-success]');
+
+    let current = 0;
+
+    form.classList.add('js');
+    if (progress) progress.classList.remove('hidden');
+
+    function render() {
+      steps.forEach((s, i) => s.classList.toggle('is-active', i === current));
+      const isLast = current === total - 1;
+      backBtn?.classList.toggle('hidden', current === 0);
+      nextBtn?.classList.toggle('hidden', isLast);
+      nextBtn?.classList.toggle('inline-flex', !isLast);
+      submitBtn?.classList.toggle('hidden', !isLast);
+      submitBtn?.classList.toggle('inline-flex', isLast);
+      const pct = Math.round(((current + 1) / total) * 100);
+      if (bar) bar.style.width = pct + '%';
+      if (percent) percent.textContent = pct + '%';
+      if (stepLabel) stepLabel.textContent = isLast ? 'Almost done' : `Question ${current + 1} of ${total - 1}`;
+      if (status) status.textContent = '';
+      // Move focus to the step for screen-reader + keyboard users.
+      const active = steps[current];
+      const firstInput = active?.querySelector<HTMLElement>('input');
+      firstInput?.focus({ preventScroll: true });
+    }
+
+    function stepValid(): boolean {
+      const active = steps[current];
+      if (!active) return false;
+      const radios = active.querySelectorAll<HTMLInputElement>('input[type="radio"]');
+      if (radios.length) {
+        const chosen = Array.from(radios).some((r) => r.checked);
+        if (!chosen && status) status.textContent = 'Pick one to continue.';
+        return chosen;
+      }
+      // Contact step — use native validity.
+      const fields = active.querySelectorAll<HTMLInputElement>('input[required]');
+      for (const f of fields) {
+        if (!f.checkValidity()) {
+          f.reportValidity();
+          return false;
+        }
+      }
+      return true;
+    }
+
+    nextBtn?.addEventListener('click', () => {
+      if (!stepValid()) return;
+      if (current < total - 1) { current++; render(); }
+    });
+    backBtn?.addEventListener('click', () => {
+      if (current > 0) { current--; render(); }
+    });
+
+    // Auto-advance a touch after picking a radio (feels quiz-like).
+    steps.forEach((s, i) => {
+      s.querySelectorAll<HTMLInputElement>('input[type="radio"]').forEach((r) => {
+        r.addEventListener('change', () => {
+          if (i === current && current < total - 1) {
+            window.setTimeout(() => { if (current === i) { current++; render(); } }, 220);
+          }
+        });
+      });
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!stepValid()) return;
+      const fd = new FormData(form);
+      if ((fd.get('website') as string)?.length) return; // honeypot
+      const answers: Record<string, string> = {};
+      form.querySelectorAll<HTMLInputElement>('input[type="radio"]:checked').forEach((r) => {
+        answers[r.name] = r.value;
+      });
+      const payload = {
+        firstName: (fd.get('firstName') as string) || '',
+        email: (fd.get('email') as string) || '',
+        phone: (fd.get('phone') as string) || undefined,
+        consentMarketing: fd.get('consentMarketing') === 'true',
+        answers,
+      };
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending…'; }
+      if (status) status.textContent = '';
+      try {
+        const res = await fetch('/api/quiz', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok || res.status === 202) {
+          form.hidden = true;
+          if (progress) progress.classList.add('hidden');
+          if (success) success.hidden = false;
+          success?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          throw new Error('Bad status ' + res.status);
+        }
+      } catch {
+        if (status) status.textContent = "Something went wrong sending that. Please try again, or email dodiekendall@gmail.com.";
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'See my result'; }
+      }
+    });
+
+    render();
+  }
+</script>
