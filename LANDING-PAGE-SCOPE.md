@@ -57,14 +57,27 @@ voice does the trust-building). When ready, repoint variant 1's capture to it.
    the `TestimonialGrid` slot renders nothing. We did not fabricate quotes
    (dishonest + a liability for a hypnosis practice). Add 2–3 real, approved
    testimonials to `src/content/testimonials/` and all three pages light up.
-2. **Audio meditation** — record + wire as the variant-1 magnet (replaces quiz).
-3. **Deploy** — there is **no GitHub→Cloudflare auto-build** (no CI; `wrangler.toml`
+2. **GHL env vars for the quiz** — variant 1 now uses a native multi-step quiz
+   (`QhhtQuiz.astro` → `/api/quiz` → GHL tags), not a GHL form embed. For answers
+   to reach Dodie's CRM, set `GHL_PRIVATE_INTEGRATION_TOKEN` (secret) +
+   `GHL_LOCATION_ID` on the `dodie-kendal-new-site` Worker (her subaccount, not
+   guidingwinds). Without them, leads still capture via the fallback email
+   (`RESEND_API_KEY` + `FALLBACK_EMAIL_TO/FROM`).
+3. **Quiz abuse protection — DEFERRED, do before live ad spend.** `/api/quiz` is
+   public + unauthenticated with only a honeypot (Codex finding #3, 2026-06-13).
+   Before real paid traffic, add Cloudflare **Turnstile** (CAPTCHA + server
+   verify) and/or a WAF rate-limit rule on the path. Fine as-is for Dodie's
+   preview. Also worth: unit tests for `/api/quiz` (JSON + form-encoded, consent
+   coercion, applyTag-fails-after-upsert) — no test runner configured yet.
+4. **Audio meditation** — optionally record + offer as an additional variant-1
+   magnet alongside the quiz.
+5. **Deploy** — there is **no GitHub→Cloudflare auto-build** (no CI; `wrangler.toml`
    = manual `wrangler deploy` of `dist/`). A commit alone does not publish. Run a
    build + deploy to push these live.
-4. **Domain** — `dodiekendall.com` is not cut over yet, so until launch these are
+6. **Domain** — `dodiekendall.com` is not cut over yet, so until launch these are
    visible at the `*.workers.dev` preview URL (e.g. `…workers.dev/landing-page-1`),
    not `dodiekendall.com/landing-page-1`.
-5. **Pixel + analytics env** — set `PUBLIC_FB_PIXEL_ID` and `PUBLIC_PLAUSIBLE_DOMAIN`
+7. **Pixel + analytics env** — set `PUBLIC_FB_PIXEL_ID` and `PUBLIC_PLAUSIBLE_DOMAIN`
    in the production environment so conversion tracking fires.
 
 ## Next step (when ready)
