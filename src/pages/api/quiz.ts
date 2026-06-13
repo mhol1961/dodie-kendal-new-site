@@ -5,6 +5,10 @@
 //
 // Answers are stored as GHL TAGS (not custom fields) on purpose: tags
 // auto-create on apply, so there is zero GHL UI setup. See src/lib/quiz.ts.
+//
+// Two clients: the enhanced quiz posts JSON (→ JSON responses); a no-JS browser
+// posts a plain form (→ branded HTML responses so the user never lands on raw
+// JSON). The `isFormPost` flag below drives which representation we return.
 
 import type { APIRoute } from 'astro';
 import { z } from 'zod';
@@ -60,26 +64,86 @@ async function readBody(request: Request): Promise<Record<string, unknown>> {
   };
 }
 
+// --- Response helpers ------------------------------------------------------
+// For JSON clients we return JSON; for no-JS form posts we return a small,
+// self-contained branded HTML page so the user gets a real confirmation/error
+// instead of raw JSON. Copy is plain text only (no user input echoed → no XSS).
+
+function jsonResponse(status: number, body: Record<string, unknown>): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+function htmlPage(
+  status: number,
+  opts: { heading: string; message: string; primary?: { href: string; label: string } }
+): Response {
+  const primary = opts.primary
+    ? `<a class="btn" href="${opts.primary.href}">${opts.primary.label}</a>`
+    : '';
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" /><title>${opts.heading}</title>
+<style>
+:root{color-scheme:light}
+body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:2rem;
+  font-family:Georgia,'Times New Roman',serif;background:#f6f1e7;color:#3a2f28}
+.card{max-width:34rem;text-align:center;background:#fffdf8;border:1px solid #e7ded0;
+  border-radius:14px;padding:2.5rem 2rem;box-shadow:0 20px 50px -30px rgba(60,47,40,.5)}
+h1{font-size:1.8rem;margin:0 0 .75rem;color:#b65a4a}
+p{font-size:1.05rem;line-height:1.6;margin:0 auto 1.5rem;max-width:28rem;color:#5a4c42}
+.btn{display:inline-block;background:#c2604f;color:#fff;text-decoration:none;
+  padding:.85rem 1.6rem;border-radius:999px;font-family:system-ui,sans-serif;font-weight:600}
+.link{display:block;margin-top:1.25rem;font-family:system-ui,sans-serif;font-size:.9rem;color:#8a7a6c}
+</style></head><body><div class="card">
+<h1>${opts.heading}</h1><p>${opts.message}</p>${primary}
+<a class="link" href="/landing-page-1#quiz">← Back to the quiz</a>
+</div></body></html>`;
+  return new Response(html, {
+    status,
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  });
+}
+
+/** Success representation for whichever client submitted. */
+function successResponse(isFormPost: boolean, status: number, extra: Record<string, unknown> = {}): Response {
+  if (isFormPost) {
+    return htmlPage(status, {
+      heading: "Thank you — it's on its way.",
+      message:
+        "I've got your answers and I'll be in touch personally with your next step. If you already know you're ready, you can book now.",
+      primary: { href: '/book', label: 'Book a session' },
+    });
+  }
+  return jsonResponse(status, { ok: true, ...extra });
+}
+
 export const POST: APIRoute = async ({ request, locals }) => {
+  const contentType = request.headers.get('content-type') ?? '';
+  const isFormPost = !contentType.includes('application/json');
+
   let body: Record<string, unknown> = {};
   try {
     body = await readBody(request);
   } catch {
-    return new Response(JSON.stringify({ error: 'Invalid request body' }), { status: 400 });
+    return isFormPost
+      ? htmlPage(400, { heading: 'Hmm — that didn’t go through.', message: 'Please go back and try again, or email dodiekendall@gmail.com.' })
+      : jsonResponse(400, { error: 'Invalid request body' });
   }
 
-  // Honeypot FIRST — before zod. Any non-empty value silently 200s.
+  // Honeypot FIRST — before zod. Any non-empty value silently succeeds.
   const trap = body[honeypotKey];
   if (typeof trap === 'string' && trap.length > 0) {
-    return new Response(JSON.stringify({ ok: true }), { status: 200 });
+    return successResponse(isFormPost, 200);
   }
 
   const parsed = payloadSchema.safeParse(body);
   if (!parsed.success) {
-    return new Response(
-      JSON.stringify({ error: 'Validation failed', issues: parsed.error.issues }),
-      { status: 422 }
-    );
+    return isFormPost
+      ? htmlPage(422, { heading: 'Almost there', message: 'A couple of answers were missing. Please go back, complete every question, and submit again.', primary: { href: '/landing-page-1#quiz', label: 'Return to the quiz' } })
+      : jsonResponse(422, { error: 'Validation failed', issues: parsed.error.issues });
   }
 
   const data = parsed.data;
@@ -99,20 +163,24 @@ export const POST: APIRoute = async ({ request, locals }) => {
     submittedAt: new Date().toISOString(),
   };
 
+  // --- No GHL configured: capture via fallback email instead of losing the lead.
   if (!token || !locationId) {
     console.error('[quiz] GHL env missing — using fallback email path');
     const sent = await sendFallbackEmail(
       { formName: 'QHHT quiz', payload: formPayload, context: ['GHL env not configured at request time.'] },
       env as { RESEND_API_KEY: string }
     );
-    return new Response(
-      JSON.stringify({ ok: sent, ...(sent ? {} : { error: 'Configuration error; please email dodiekendall@gmail.com directly.' }) }),
-      { status: sent ? 202 : 502 }
-    );
+    if (sent) return successResponse(isFormPost, 202, { fallback: true });
+    return isFormPost
+      ? htmlPage(502, { heading: 'We couldn’t save that just now', message: 'Please try again shortly, or email dodiekendall@gmail.com directly.' })
+      : jsonResponse(502, { error: 'Configuration error; please email dodiekendall@gmail.com directly.' });
   }
 
+  // --- Step 1: create/upsert the contact. THIS is the lead capture. If it fails,
+  //     the lead is genuinely not captured → fall back to email.
+  let contactId: string;
   try {
-    const { id } = await upsertContact(
+    ({ id: contactId } = await upsertContact(
       {
         firstName: data.firstName,
         email: data.email,
@@ -120,33 +188,44 @@ export const POST: APIRoute = async ({ request, locals }) => {
         source: 'website_qhht_quiz',
       },
       { GHL_PRIVATE_INTEGRATION_TOKEN: token, GHL_LOCATION_ID: locationId }
-    );
-
-    // One tag per answer + the completion marker. applyTag is idempotent.
-    for (const tag of tags) {
-      await applyTag(id, tag, { GHL_PRIVATE_INTEGRATION_TOKEN: token });
-    }
-
-    return new Response(JSON.stringify({ ok: true }), { status: 200 });
+    ));
   } catch (err) {
-    console.error('[quiz] GHL upsert/tag failed', err);
+    console.error('[quiz] GHL upsertContact failed', err);
     const sent = await sendFallbackEmail(
       {
         formName: 'QHHT quiz',
         payload: formPayload,
         context: [
-          'GHL upsert/tag failed — see Cloudflare logs for the exact error.',
+          'GHL upsertContact failed — lead NOT in CRM; see Cloudflare logs.',
           err instanceof GhlError ? `GHL status: ${err.status}` : `Error: ${String(err)}`,
         ],
       },
       env as { RESEND_API_KEY: string }
     );
-    if (sent) {
-      return new Response(JSON.stringify({ ok: true, fallback: true }), { status: 202 });
-    }
-    return new Response(
-      JSON.stringify({ error: 'CRM and fallback email both unavailable; please email dodiekendall@gmail.com directly.' }),
-      { status: 502 }
-    );
+    if (sent) return successResponse(isFormPost, 202, { fallback: true });
+    return isFormPost
+      ? htmlPage(502, { heading: 'We couldn’t save that just now', message: 'Please try again shortly, or email dodiekendall@gmail.com directly.' })
+      : jsonResponse(502, { error: 'CRM and fallback email both unavailable; please email dodiekendall@gmail.com directly.' });
   }
+
+  // --- Step 2: tagging is best-effort enrichment. The lead is ALREADY captured,
+  //     so a tag failure must NOT trigger the lost-lead fallback or report
+  //     failure to the client. Log partial failures for follow-up instead.
+  const failedTags: string[] = [];
+  for (const tag of tags) {
+    try {
+      await applyTag(contactId, tag, { GHL_PRIVATE_INTEGRATION_TOKEN: token });
+    } catch (err) {
+      failedTags.push(tag);
+      console.error(`[quiz] applyTag failed (contact ${contactId} already captured)`, tag, err);
+    }
+  }
+  if (failedTags.length) {
+    console.error('[quiz] partial tag failure — contact captured, some tags missing', {
+      contactId,
+      failedTags,
+    });
+  }
+
+  return successResponse(isFormPost, 200);
 };

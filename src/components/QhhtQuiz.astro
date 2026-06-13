@@ -7,9 +7,10 @@
  * contact into Dodie's GHL and tags each answer. No GHL form-builder involved.
  *
  * Progressive enhancement: without JS, every question renders stacked in one
- * <form> that posts form-encoded to /api/quiz (the endpoint accepts both). With
- * JS, it becomes a one-question-at-a-time stepper with a progress bar and an
- * async JSON submit.
+ * <form> that posts form-encoded to /api/quiz, which detects the no-JS post and
+ * returns a branded HTML confirmation/error page (not raw JSON). With JS, it
+ * becomes a one-question-at-a-time stepper with a progress bar and an async JSON
+ * submit that swaps in the in-place success state.
  */
 import { QUIZ_QUESTIONS } from '@lib/quiz';
 
