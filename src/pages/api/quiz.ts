@@ -173,9 +173,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (sent) return successResponse(isFormPost, 202, { fallback: true });
     return isFormPost
       ? htmlPage(502, { heading: 'We couldn’t save that just now', message: 'Please try again shortly, or email dodiekendall@gmail.com directly.' })
-      // `config` exposes presence booleans ONLY (never the values) so we can tell
-      // which binding the Worker is missing. Safe to leave; remove once stable.
-      : jsonResponse(502, { error: 'Configuration error; please email dodiekendall@gmail.com directly.', config: { hasToken: !!token, hasLocationId: !!locationId } });
+      // `config` exposes presence booleans + GHL-related binding NAMES only
+      // (never values) so we can spot a misnamed/missing token. Temporary.
+      : jsonResponse(502, {
+          error: 'Configuration error; please email dodiekendall@gmail.com directly.',
+          config: {
+            hasToken: !!token,
+            hasLocationId: !!locationId,
+            ghlKeys: Object.keys(env).filter((k) => /ghl|token|location|resend|fallback/i.test(k)).sort(),
+          },
+        });
   }
 
   // --- Step 1: create/upsert the contact. THIS is the lead capture. If it fails,
