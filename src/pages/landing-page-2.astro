@@ -1,0 +1,230 @@
+---
+/**
+ * /landing-page-2 — PAID SOCIAL LANDING PAGE · Variant B: "The Outcome"
+ *
+ * Angle:    Lead with the transformation. Benefit-first, direct response.
+ * Audience: Warmer / retargeting traffic that already knows it wants change.
+ * Primary CTA: Book a Session (→ /book). Direct, confident.
+ * Proof:    outcomes framing + transparent offer + FAQ objection handling.
+ *
+ * Scope-of-practice safe: outcomes are framed as clarity / insight / release /
+ * peace — NOT medical, psychological, or therapeutic claims.
+ */
+import LandingLayout from '@layouts/LandingLayout.astro';
+import TrustStrip from '@components/TrustStrip.astro';
+import TestimonialGrid from '@components/TestimonialGrid.astro';
+import ClosingCTA from '@components/ClosingCTA.astro';
+import { getSeo } from '@lib/seo';
+import { qhhtService, breadcrumb } from '@lib/schema';
+
+const seo = getSeo({
+  path: '/landing-page-2',
+  title: 'Answers You Can Feel — QHHT',
+  description:
+    "Carrying a question you can't quite answer? A QHHT session with Dodie Kendall opens a guided conversation with your own inner wisdom. Book in Stuart, FL.",
+  noIndex: true,
+});
+
+const schemas = [qhhtService(), breadcrumb([{ name: 'QHHT' }])];
+
+const openings = [
+  {
+    title: 'Clarity on a question you keep circling',
+    body: "The decision you can't make. The pattern you can't name. A session brings a different kind of knowing to the surface — in your own words, in your own voice.",
+  },
+  {
+    title: 'Release of a weight you have carried a long time',
+    body: "Old stories, old loops, old fear. Many people describe leaving a session feeling noticeably lighter — like something finally got to be set down.",
+  },
+  {
+    title: 'A felt sense of peace and direction',
+    body: "Not a lecture and not a prescription — a quiet, grounded sense of where to step next, and why.",
+  },
+];
+
+const steps = [
+  { n: '01', t: 'Bring your questions', b: "We start with a relaxed call to shape what you most want to understand." },
+  { n: '02', t: 'Settle into a guided state', b: "On session day I gently guide you into deep relaxation — aware and in control the whole time." },
+  { n: '03', t: 'Leave with the recording', b: "You take the full audio home, plus a complimentary 30-day follow-up." },
+];
+
+const faqs = [
+  {
+    q: 'Will I be unconscious or lose control?',
+    a: "No. QHHT is a deeply relaxed, focused state — not sleep. You stay aware, you remember the session, and you can speak, pause, or stop at any time.",
+  },
+  {
+    q: 'Is this medical or psychological treatment?',
+    a: "No. QHHT is a hypnosis modality for self-discovery and personal growth. It is not medical, psychological, or therapeutic care, and it is not a substitute for licensed care.",
+  },
+  {
+    q: 'How long is a session, and what does it cost?',
+    a: "Plan for about five hours total, with a smaller portion in hypnosis. A session is $300, held with a $50 deposit when you book.",
+  },
+  {
+    q: 'Where do sessions happen?',
+    a: "In person in Stuart, Florida. Remote sessions are available — ask if that's a better fit for you.",
+  },
+];
+---
+<LandingLayout seo={seo} schemas={schemas}>
+  <!-- TEXT-LED HERO — oversized type, no video. Outcome-first, confident. -->
+  <section class="relative isolate overflow-hidden bg-sunrise pt-24 pb-20 md:pt-32 md:pb-28">
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-0 -z-10"
+      style="background-image: radial-gradient(ellipse 60% 50% at 80% 10%, oklch(var(--brand-primary) / 0.12), transparent 60%), radial-gradient(ellipse 50% 50% at 10% 90%, oklch(var(--brand-teal) / 0.10), transparent 65%);"
+    ></div>
+    <div class="container-default max-w-4xl text-center">
+      <p class="text-xs uppercase tracking-[0.24em] text-brand">Quantum Healing Hypnosis Technique · Stuart, FL</p>
+      <h1 class="mx-auto mt-6 font-display text-ink">
+        <span class="block">The answer you've been</span>
+        <span class="italic-accent block text-brand">looking for is yours.</span>
+      </h1>
+      <p class="mx-auto mt-7 max-w-2xl text-lg md:text-xl leading-relaxed text-ink-secondary">
+        QHHT opens a guided, deeply respectful conversation with the part of you
+        that already holds your answers. One session. One recording. A clarity
+        that keeps unfolding for weeks.
+      </p>
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-5">
+        <a href="/book" class="cta-glow inline-flex items-center justify-center rounded-pill px-8 py-3.5 text-base font-medium">
+          Book your session
+          <svg class="ml-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#how" class="inline-flex items-center gap-2 text-sm font-medium text-ink underline decoration-1 underline-offset-[6px] hover:text-brand">
+          How it works
+        </a>
+      </div>
+      <p class="mt-8 text-xs uppercase tracking-[0.22em] text-ink-muted">$300 session · $50 deposit to reserve · Booking confirmed within 24 hours</p>
+    </div>
+  </section>
+
+  <TrustStrip
+    items={[
+      'Trained in the Dolores Cannon lineage',
+      'You stay aware & in control',
+      'Audio recording included',
+      'Complimentary 30-day follow-up',
+    ]}
+  />
+
+  <!-- PAIN / LONGING → OPENINGS (benefits, scope-safe) -->
+  <section class="bg-bg-base py-20 md:py-28">
+    <div class="container-default">
+      <header class="mx-auto mb-16 max-w-2xl text-center">
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">If something keeps tugging at you</p>
+        <h2 class="mt-3 font-display text-ink">
+          <span class="block">You don't need more advice.</span>
+          <span class="italic-accent block text-brand">You need your own answer.</span>
+        </h2>
+        <p class="mt-5 text-lg leading-relaxed text-ink-secondary">
+          A QHHT session isn't someone telling you what to do. It's a guided way
+          back to what you already know. Here's what people come looking for:
+        </p>
+      </header>
+
+      <div class="grid gap-8 md:grid-cols-3 md:gap-10">
+        {openings.map((o) => (
+          <article class="rounded-lg border border-border-subtle bg-bg-raised p-7 shadow-sm">
+            <h3 class="font-display text-xl leading-snug text-ink">{o.title}</h3>
+            <p class="mt-3 text-sm leading-relaxed text-ink-secondary">{o.body}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS — 3 steps, compact -->
+  <section id="how" class="bg-bg-sunken py-20 md:py-24">
+    <div class="container-default max-w-5xl">
+      <header class="mb-14 max-w-2xl">
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">How it works</p>
+        <h2 class="mt-3 font-display text-ink">
+          <span class="block">Three unhurried</span>
+          <span class="italic-accent block text-brand">steps.</span>
+        </h2>
+      </header>
+      <ol class="grid gap-8 md:grid-cols-3 md:gap-10" role="list">
+        {steps.map((s) => (
+          <li class="relative rounded-lg border border-border-subtle bg-bg-raised p-6 shadow-sm">
+            <p class="font-display text-5xl leading-none text-brand/30">{s.n}</p>
+            <h3 class="mt-3 font-display text-lg leading-snug text-ink">{s.t}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-secondary">{s.b}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- TESTIMONIAL SLOT — auto-renders once testimonials are added (currently empty). -->
+  <TestimonialGrid
+    heading="What people say"
+    headingItalic="after a session."
+  />
+
+  <!-- OFFER CARD — transparent, removes price friction -->
+  <section class="bg-bg-base py-20 md:py-24">
+    <div class="container-default max-w-3xl">
+      <div class="rounded-lg border border-brand/25 bg-bg-raised p-8 shadow-md md:p-12">
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">Your session includes</p>
+        <h2 class="mt-3 font-display text-ink">Everything in one unhurried visit.</h2>
+        <ul class="mt-8 grid gap-4 sm:grid-cols-2">
+          {[
+            'A relaxed pre-session conversation',
+            'Your full guided QHHT session (~5 hours total)',
+            'The complete audio recording to keep',
+            'A complimentary 30-day follow-up',
+          ].map((item) => (
+            <li class="flex items-start gap-3 text-ink-secondary">
+              <svg class="mt-1 h-5 w-5 shrink-0 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+        <div class="mt-10 flex flex-col items-start gap-4 border-t border-border-subtle pt-8 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="font-display text-3xl text-ink">$300<span class="text-base text-ink-muted"> · $50 deposit to reserve</span></p>
+            <p class="mt-1 text-sm text-ink-muted">In person in Stuart, FL · Remote available</p>
+          </div>
+          <a href="/book" class="cta-glow inline-flex items-center justify-center rounded-pill px-8 py-3.5 text-base font-medium">
+            Book a Session →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ — objection handling -->
+  <section class="bg-bg-sunken py-20 md:py-24">
+    <div class="container-default max-w-3xl">
+      <header class="mb-10">
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">Before you book</p>
+        <h2 class="mt-3 font-display text-ink">Good questions, answered plainly.</h2>
+      </header>
+      <dl class="divide-y divide-border-subtle">
+        {faqs.map((f) => (
+          <div class="py-6">
+            <dt class="font-display text-lg text-ink">{f.q}</dt>
+            <dd class="mt-2 text-ink-secondary leading-relaxed">{f.a}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <ClosingCTA
+    headlineLead="The question is already"
+    headlineItalic="in you."
+    headlineTail="Come find the answer."
+    subhead="Reserve your session with a small deposit. Booking confirmed within 24 hours."
+    cta={{ label: 'Book a Session', href: '/book' }}
+    trustLine="Stuart, FL · $300 · $50 deposit to reserve"
+  />
+
+  <!-- Sticky mobile CTA -->
+  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-bg-raised/95 p-3 backdrop-blur-sm shadow-[0_-8px_24px_-12px_oklch(0.18_0.018_240_/_0.35)] md:hidden">
+    <a href="/book" class="flex w-full items-center justify-center rounded-pill bg-brand px-5 py-3 text-sm font-medium text-ink-inverse shadow-sm">
+      Book a Session →
+    </a>
+  </div>
+</LandingLayout>

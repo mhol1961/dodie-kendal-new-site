@@ -1,0 +1,190 @@
+---
+/**
+ * /landing-page-3 — PAID SOCIAL LANDING PAGE · Variant C: "The Practitioner"
+ *
+ * Angle:    Trust the person first. Authority + warmth + safety.
+ * Audience: Skeptics who need to trust WHO they'd work with before the modality.
+ * Primary CTA: a free 15-min question-fit call (low-commitment) → /contact.
+ *              Secondary: book a full session → /book.
+ * Proof:    practitioner story, the Dolores Cannon lineage, safety reassurance.
+ *
+ * Lower-friction CTA on purpose: a call de-risks the $300 / 5-hour commitment
+ * for a colder, more cautious viewer.
+ */
+import LandingLayout from '@layouts/LandingLayout.astro';
+import TrustStrip from '@components/TrustStrip.astro';
+import TestimonialGrid from '@components/TestimonialGrid.astro';
+import { getSeo } from '@lib/seo';
+import { qhhtService, breadcrumb } from '@lib/schema';
+
+const seo = getSeo({
+  path: '/landing-page-3',
+  title: 'Meet Dodie Kendall — QHHT',
+  description:
+    "Quantum Healing Hypnosis with someone you can trust. Meet Dodie Kendall, QHHT practitioner in Stuart, FL — and book a free 15-minute question-fit call.",
+  noIndex: true,
+});
+
+const schemas = [qhhtService(), breadcrumb([{ name: 'About' }])];
+
+const reassurances = [
+  {
+    title: 'You stay aware and in control',
+    body: "QHHT is deep relaxation, not sleep. You remember the session, you can speak at any time, and nothing happens without you.",
+  },
+  {
+    title: 'It is held in confidence',
+    body: "What surfaces in a session stays between us. The recording is yours alone — I never share or use it for anything else.",
+  },
+  {
+    title: 'It is not a medical or therapy substitute',
+    body: "This is hypnosis for self-discovery and personal growth. I'll always be honest if a session isn't the right fit for what you're carrying.",
+  },
+];
+---
+<LandingLayout seo={seo} schemas={schemas}>
+  <!-- SPLIT HERO — portrait + credibility. Trust the person first. -->
+  <section class="relative isolate overflow-hidden bg-bg-inverse-deeper text-inverse">
+    <div
+      aria-hidden="true"
+      class="absolute inset-0 z-0"
+      style="background-image: radial-gradient(ellipse 60% 50% at 18% 30%, oklch(var(--brand-teal) / 0.28), transparent 60%), radial-gradient(ellipse 55% 50% at 85% 80%, oklch(var(--brand-primary) / 0.22), transparent 65%);"
+    ></div>
+    <div class="relative z-10 container-default grid items-center gap-12 py-20 md:grid-cols-[1.05fr,0.95fr] md:py-28 lg:gap-16">
+      <div>
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">Meet your practitioner</p>
+        <h1 class="mt-6 font-display text-inverse">
+          <span class="block">The work is gentle.</span>
+          <span class="italic-accent block text-brand">So is the person who guides it.</span>
+        </h1>
+        <p class="mt-7 max-w-xl text-lg md:text-xl leading-relaxed text-inverse-muted">
+          I'm Dodie Kendall — a QHHT practitioner in Stuart, Florida, trained in
+          the Dolores Cannon lineage. Before you decide anything, let's just talk.
+        </p>
+        <div class="mt-10 flex flex-wrap items-center gap-5">
+          <a href="/contact" class="cta-glow inline-flex items-center justify-center rounded-pill px-8 py-3.5 text-base font-medium">
+            Book a free 15-min call
+            <svg class="ml-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="/book" class="inline-flex items-center gap-2 text-sm font-medium text-inverse underline decoration-1 underline-offset-[6px] hover:text-brand">
+            Or book a session
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="relative flex justify-center md:justify-end">
+        <div class="relative">
+          <span aria-hidden="true" class="absolute -inset-8 -z-10 rounded-full blur-3xl bg-gradient-to-br from-teal-glow/40 via-brand/30 to-transparent"></span>
+          <img
+            src="/dodie-portrait.jpg"
+            alt="Dodie Kendall, QHHT Practitioner in Stuart, FL"
+            width="540"
+            height="675"
+            loading="eager"
+            fetchpriority="high"
+            class="relative h-auto w-[280px] sm:w-[340px] md:w-[400px] aspect-[4/5] object-cover object-top shadow-[0_30px_60px_-20px_oklch(0.05_0.02_240_/_0.8)]"
+            style="border-radius: 48% 52% 38% 62% / 40% 44% 56% 60%;"
+          />
+          <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 md:left-auto md:right-4 md:translate-x-0 rounded-pill bg-bg-inverse/85 backdrop-blur-md px-4 py-2 shadow-md border border-teal-glow/30">
+            <p class="text-[10px] uppercase tracking-[0.22em] text-inverse-muted">QHHT · Dolores Cannon lineage</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-20 z-10 bg-gradient-to-b from-transparent to-bg-inverse-deeper"></div>
+  </section>
+
+  <TrustStrip
+    items={[
+      'Native Floridian · Stuart, FL',
+      'Dolores Cannon lineage',
+      'Sessions held in confidence',
+      'Honest about fit — always',
+    ]}
+  />
+
+  <!-- HER APPROACH — story / why her -->
+  <section class="bg-bg-base py-20 md:py-28">
+    <div class="container-default max-w-3xl">
+      <p class="text-xs uppercase tracking-[0.24em] text-brand">Why work with me</p>
+      <h2 class="mt-3 font-display text-ink">
+        <span class="block">I am the invitation,</span>
+        <span class="italic-accent block text-brand">not the insistence.</span>
+      </h2>
+      <div class="mt-7 space-y-5 text-lg leading-relaxed text-ink-secondary">
+        <p>
+          I walked a long path through many traditions before I arrived at the
+          simple truth that only love exists. I found Quantum Healing Hypnosis
+          Technique through Dolores Cannon's work, and from my very first session
+          as a client, I knew this was the work I was meant to do.
+        </p>
+        <p>
+          My job isn't to interpret you or fix you. It's to hold a calm, safe
+          space and gently guide you to the part of yourself that already has your
+          answers — and then to get out of the way while you listen.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SAFETY / REASSURANCE — the core job of this variant -->
+  <section class="bg-bg-sunken py-20 md:py-24">
+    <div class="container-default">
+      <header class="mx-auto mb-14 max-w-2xl text-center">
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">It's safe to be curious</p>
+        <h2 class="mt-3 font-display text-ink">
+          <span class="block">What you can</span>
+          <span class="italic-accent block text-brand">count on.</span>
+        </h2>
+      </header>
+      <div class="grid gap-8 md:grid-cols-3 md:gap-10">
+        {reassurances.map((r) => (
+          <article class="rounded-lg border border-border-subtle bg-bg-raised p-7 shadow-sm">
+            <svg class="h-7 w-7 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <h3 class="mt-4 font-display text-xl leading-snug text-ink">{r.title}</h3>
+            <p class="mt-3 text-sm leading-relaxed text-ink-secondary">{r.body}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIAL SLOT — auto-renders once testimonials are added (currently empty). -->
+  <TestimonialGrid
+    heading="In the words of people"
+    headingItalic="who trusted the process."
+  />
+
+  <!-- CLOSING — low-commitment call first -->
+  <section class="relative isolate overflow-hidden bg-bg-inverse-deeper py-24 md:py-32 text-inverse">
+    <div
+      aria-hidden="true"
+      class="absolute inset-0 z-0"
+      style="background-image: radial-gradient(ellipse 70% 60% at 50% 50%, oklch(var(--brand-teal) / 0.22), transparent 70%), radial-gradient(ellipse 70% 90% at 50% 100%, oklch(var(--brand-primary) / 0.30), transparent 70%);"
+    ></div>
+    <div class="relative z-10 container-default text-center">
+      <h2 class="mx-auto max-w-3xl font-display">
+        <span class="block">No pressure.</span>
+        <span class="italic-accent block text-brand">Just a conversation to start.</span>
+      </h2>
+      <p class="mx-auto mt-6 max-w-xl text-lg text-inverse-muted leading-relaxed">
+        Tell me what you're working through. If a session feels right, we'll plan
+        one. If it's not the right time, I'll say so — honestly.
+      </p>
+      <div class="mt-12 flex flex-wrap justify-center gap-5">
+        <a href="/contact" class="cta-glow inline-flex items-center justify-center rounded-pill px-10 py-4 text-lg font-medium">
+          Book a free 15-min call →
+        </a>
+      </div>
+      <p class="mt-10 text-xs uppercase tracking-[0.24em] text-inverse-muted">Stuart, FL · Monday – Saturday · I reply personally</p>
+    </div>
+  </section>
+
+  <!-- Sticky mobile CTA -->
+  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-bg-raised/95 p-3 backdrop-blur-sm shadow-[0_-8px_24px_-12px_oklch(0.18_0.018_240_/_0.35)] md:hidden">
+    <a href="/contact" class="flex w-full items-center justify-center rounded-pill bg-brand px-5 py-3 text-sm font-medium text-ink-inverse shadow-sm">
+      Book a free 15-min call →
+    </a>
+  </div>
+</LandingLayout>

@@ -1,0 +1,166 @@
+---
+/**
+ * LandingLayout — minimal, conversion-focused chrome for paid-traffic (FB/IG)
+ * landing pages. Deliberately strips the full Header nav and Footer site-map so
+ * there are no "escape routes" off the page (a core CRO principle for ad LPs).
+ *
+ * What it KEEPS from Base.astro:
+ *   - Full <head> SEO/OG/Twitter + self-hosted fonts + JSON-LD business/person
+ *   - Meta (Facebook) Pixel  ← essential: these pages exist to receive FB/IG ad
+ *     traffic; the pixel powers conversion tracking + retargeting audiences
+ *   - Plausible analytics (production only)
+ *
+ * What it DROPS:
+ *   - Header primary nav (no menu — one page, one job)
+ *   - Footer site-map columns (replaced with a compliance-only footer)
+ *   - ChatWidget (removes a competing call-to-action)
+ *
+ * Landing pages default to noindex (paid-traffic pages should not compete with
+ * the canonical site in organic search). Pass seo via getSeo({ noIndex: true }).
+ */
+import '@styles/global.css';
+import MetaPixel from '@components/shared/MetaPixel.astro';
+import type { PageSeo } from '@lib/seo';
+import { localBusiness, person } from '@lib/schema';
+
+interface Props {
+  seo: PageSeo;
+  schemas?: Array<Record<string, unknown>>;
+  /** Show a phone link in the minimal top bar. Default true. */
+  showPhone?: boolean;
+}
+
+const { seo, schemas = [], showPhone = true } = Astro.props;
+const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN;
+const isProd = import.meta.env.PROD;
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{seo.title}</title>
+    <meta name="description" content={seo.description} />
+    <link rel="canonical" href={seo.canonical} />
+    {seo.noIndex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={seo.title} />
+    <meta property="og:description" content={seo.description} />
+    <meta property="og:url" content={seo.canonical} />
+    <meta property="og:image" content={seo.ogImage} />
+    <meta property="og:type" content={seo.ogType} />
+    <meta property="og:site_name" content="Dodie Kendall QHHT" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={seo.title} />
+    <meta name="twitter:description" content={seo.description} />
+    <meta name="twitter:image" content={seo.ogImage} />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Self-hosted fonts -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Fraunces-VariableUpright.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Fraunces-VariableItalic.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/CormorantGaramond-Medium.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/InterVariable.woff2" crossorigin />
+
+    <!-- JSON-LD: global business + person -->
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(localBusiness())} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(person())} />
+    {schemas.map((s) => (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(s)} />
+    ))}
+
+    <!-- Meta (Facebook) Pixel — only renders when PUBLIC_FB_PIXEL_ID is set -->
+    <MetaPixel />
+
+    <!-- Analytics: Plausible (privacy-first) — production only -->
+    {isProd && plausibleDomain && (
+      <script
+        is:inline
+        defer
+        data-domain={plausibleDomain}
+        src="https://plausible.io/js/script.js"
+      />
+    )}
+  </head>
+  <body class="bg-bg-base text-ink antialiased">
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-bg-raised focus:px-4 focus:py-2 focus:rounded-pill focus:shadow-md">
+      Skip to content
+    </a>
+
+    <!-- Minimal top bar: brand mark (non-nav) + optional phone CTA only -->
+    <header class="border-b border-border-subtle bg-bg-base/90 backdrop-blur-sm">
+      <div class="container-default flex h-16 items-center justify-between">
+        <img
+          src="/dodie-kendall-five-tattoo-stars-extra-deep-transparent.png"
+          alt="Dodie Kendall QHHT"
+          width="240"
+          height="156"
+          class="h-[52px] w-auto"
+        />
+        {showPhone && (
+          <a
+            href="tel:+15612016918"
+            class="inline-flex items-center gap-2 text-sm font-medium text-ink hover:text-brand"
+          >
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            <span class="hidden sm:inline">1-561-201-6918</span>
+            <span class="sm:hidden">Call</span>
+          </a>
+        )}
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <!-- Compliance-only footer (no site-map nav) -->
+    <footer class="border-t border-border-subtle bg-bg-sunken">
+      <div class="container-default flex flex-col gap-4 py-8 text-xs text-ink-muted md:flex-row md:items-center md:justify-between">
+        <p>© {year} Dodie Kendall QHHT · Stuart, FL ·
+          <a href="/privacy" class="hover:text-brand">Privacy</a> ·
+          <a href="/terms" class="hover:text-brand">Terms</a>
+        </p>
+        <p class="max-w-2xl md:text-right">
+          QHHT is a hypnosis modality intended for self-discovery and personal growth.
+          This site does not provide medical, psychological, or therapeutic advice and is not a substitute for licensed care.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .focus\:not-sr-only:focus {
+    position: absolute;
+    width: auto;
+    height: auto;
+    padding: revert;
+    margin: revert;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+</style>

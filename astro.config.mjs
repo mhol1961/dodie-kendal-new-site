@@ -17,7 +17,9 @@ export default defineConfig({
       filter: (page) =>
         !page.includes('/api/') &&
         !page.includes('/admin/') &&
-        !page.endsWith('/design'),
+        !page.endsWith('/design') &&
+        // noindex paid-traffic landing pages — keep them out of the sitemap
+        !page.includes('/landing-page-'),
       changefreq: 'weekly',
       priority: 0.7,
     }),

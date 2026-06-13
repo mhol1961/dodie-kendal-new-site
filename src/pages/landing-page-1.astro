@@ -1,0 +1,178 @@
+---
+/**
+ * /landing-page-1 — PAID SOCIAL LANDING PAGE · Variant A: "The Experience"
+ *
+ * Angle:    Demystify the session. Lower the fear of the unknown.
+ * Audience: Coldest top-of-funnel — curious-but-nervous FB/IG scrollers.
+ * Primary CTA: take the QHHT quiz (email/lead capture) — NOT a hard booking push.
+ * Proof:    transparent step-by-step process + practitioner + lineage.
+ *
+ * Interim lead magnet: Dodie's existing GHL "QHHT Quiz" (same embed as /contact).
+ * Planned swap: a free guided audio meditation in Dodie's voice once recorded.
+ * See LANDING-PAGE-SCOPE.md.
+ */
+import LandingLayout from '@layouts/LandingLayout.astro';
+import Hero from '@components/Hero.astro';
+import TrustStrip from '@components/TrustStrip.astro';
+import TestimonialGrid from '@components/TestimonialGrid.astro';
+import { getSeo } from '@lib/seo';
+import { qhhtService, breadcrumb } from '@lib/schema';
+
+const seo = getSeo({
+  path: '/landing-page-1',
+  title: 'What Happens in a QHHT Session',
+  description:
+    "Curious about Quantum Healing Hypnosis? See what a session with Dodie Kendall actually involves — and take the short quiz to find out if QHHT is right for you.",
+  noIndex: true,
+});
+
+const schemas = [qhhtService(), breadcrumb([{ name: 'QHHT' }])];
+
+const steps = [
+  {
+    number: '01',
+    eyebrow: 'Before — you bring the questions',
+    title: 'It starts with a relaxed conversation.',
+    body: "We begin with an unhurried call. The things you can't quite explain, the choices you keep circling, the questions you've carried for years — you bring them. There are no wrong ones.",
+  },
+  {
+    number: '02',
+    eyebrow: 'During — a guided, relaxed state',
+    title: 'I guide you in. You stay completely aware.',
+    body: "On session day we settle into a quiet room. You recline, eyes closed, and I gently guide you into a deeply relaxed state — the threshold between waking and dreaming. You are aware the whole time. You stay in charge the whole time.",
+  },
+  {
+    number: '03',
+    eyebrow: 'After — you take it home',
+    title: 'You leave with the recording, and it keeps unfolding.',
+    body: "We record the whole session. You take the audio home, and people tell me the insights keep arriving for weeks. A complimentary 30-day follow-up is included.",
+  },
+];
+---
+<LandingLayout seo={seo} schemas={schemas}>
+  <!-- HERO — soft, curious, video. The threshold/doorway metaphor. -->
+  <Hero
+    variant="qhht"
+    eyebrow="Quantum Healing Hypnosis Technique · Stuart, FL"
+    headlineLead="What if the answers"
+    headlineItalic="were already inside you?"
+    subhead="QHHT is a gentle, guided conversation with the deepest part of yourself — the part that has been quietly holding your answers all along. Curious whether it's right for you?"
+    primaryCta={{ label: 'Take the 60-second quiz', href: '#quiz' }}
+    secondaryCta={{ label: 'See how a session works', href: '#how' }}
+    bgImage="/video/doorway-opens-poster.jpg"
+    bgVideo="/video/doorway-opens.mp4"
+    bgPosition="center"
+  />
+
+  <TrustStrip
+    items={[
+      'Trained in the Dolores Cannon lineage',
+      'You stay aware & in control',
+      'Audio recording included',
+      'Complimentary 30-day follow-up',
+    ]}
+  />
+
+  <!-- DEMYSTIFY — the core job of this variant: remove fear of the unknown -->
+  <section id="how" class="bg-bg-base py-20 md:py-28">
+    <div class="container-default">
+      <header class="mx-auto mb-16 max-w-2xl text-center">
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">No mystery, no pressure</p>
+        <h2 class="mt-3 font-display text-ink">
+          <span class="block">Here's exactly what</span>
+          <span class="italic-accent block text-brand">a session is like.</span>
+        </h2>
+        <p class="mt-5 text-lg leading-relaxed text-ink-secondary">
+          Most people arrive a little nervous and leave wishing they'd come sooner.
+          You won't be unconscious, you won't lose control, and you'll remember it.
+        </p>
+      </header>
+
+      <ol class="grid gap-8 md:grid-cols-3 md:gap-10" role="list">
+        {steps.map((step) => (
+          <li class="relative rounded-lg border border-border-subtle bg-bg-raised p-7 shadow-sm">
+            <p class="font-display text-5xl leading-none text-brand/30">{step.number}</p>
+            <p class="mt-4 text-[11px] uppercase tracking-[0.2em] text-ink-muted">{step.eyebrow}</p>
+            <h3 class="mt-2 font-display text-xl leading-snug text-ink">{step.title}</h3>
+            <p class="mt-3 text-sm leading-relaxed text-ink-secondary">{step.body}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- TESTIMONIAL SLOT — auto-renders once Dodie's testimonials are added to the
+       content collection (currently empty → renders nothing). #1 pre-ad content gap. -->
+  <TestimonialGrid
+    heading="What people say"
+    headingItalic="after a session."
+  />
+
+  <!-- QUIZ CAPTURE — the primary conversion for this variant.
+       Interim lead magnet = Dodie's existing GHL "QHHT Quiz" (same form as /contact). -->
+  <section id="quiz" class="bg-bg-sunken py-20 md:py-28">
+    <div class="container-default max-w-3xl">
+      <header class="mb-10 text-center">
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">A small first step</p>
+        <h2 class="mt-3 font-display text-ink">
+          <span class="block">Is QHHT right</span>
+          <span class="italic-accent block text-brand">for you?</span>
+        </h2>
+        <p class="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-ink-secondary">
+          Answer a few short questions and I'll personally point you toward the
+          right next step — no pressure, no obligation to book.
+        </p>
+      </header>
+
+      <!--
+        QHHT Quiz — GHL embed (cross-origin: links.guidingwinds-unplug.com).
+        Wrapper styling is ours; the form theme is configured inside GHL.
+        form_embed.js auto-resizes the iframe height via postMessage.
+      -->
+      <div class="overflow-hidden rounded-lg border border-border-subtle bg-bg-raised p-2 shadow-md">
+        <iframe
+          src="https://links.guidingwinds-unplug.com/widget/form/Sv6wLoRU5khzSvRlNYWf"
+          id="inline-Sv6wLoRU5khzSvRlNYWf"
+          data-layout="{'id':'INLINE'}"
+          data-trigger-type="alwaysShow"
+          data-trigger-value=""
+          data-activation-type="alwaysActivated"
+          data-activation-value=""
+          data-deactivation-type="neverDeactivate"
+          data-deactivation-value=""
+          data-form-name="QHHT Quiz"
+          data-height="832"
+          data-layout-iframe-id="inline-Sv6wLoRU5khzSvRlNYWf"
+          data-form-id="Sv6wLoRU5khzSvRlNYWf"
+          title="QHHT Quiz"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+          class="block w-full rounded-md"
+          style="border:none;min-height:832px"
+        ></iframe>
+      </div>
+
+      <p class="mt-6 text-center text-sm text-ink-muted">
+        Ready now? You can
+        <a href="/book" class="text-brand underline underline-offset-2 hover:text-brand-hover">book a session directly</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- Sticky mobile CTA — keeps the primary action in the thumb zone -->
+  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-bg-raised/95 p-3 backdrop-blur-sm shadow-[0_-8px_24px_-12px_oklch(0.18_0.018_240_/_0.35)] md:hidden">
+    <a
+      href="#quiz"
+      class="flex w-full items-center justify-center rounded-pill bg-brand px-5 py-3 text-sm font-medium text-ink-inverse shadow-sm"
+    >
+      Take the 60-second quiz →
+    </a>
+  </div>
+
+  <!--
+    GHL form embed runtime — auto-resizes the iframe to content height.
+    SRI intentionally omitted: form_embed.js is a mutable vendor script with no
+    pinned version URL (same trust boundary + rationale as /contact).
+  -->
+  <script src="https://links.guidingwinds-unplug.com/js/form_embed.js" is:inline defer></script>
+</LandingLayout>
