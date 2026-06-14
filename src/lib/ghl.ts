@@ -3,6 +3,8 @@
 
 const GHL_BASE = 'https://services.leadconnectorhq.com';
 const GHL_API_VERSION = '2021-07-28';
+// The conversations/messages endpoint is versioned differently from contacts.
+const GHL_CONVERSATIONS_VERSION = '2021-04-15';
 
 export interface ContactPayload {
   email: string;
@@ -20,11 +22,11 @@ export class GhlError extends Error {
   }
 }
 
-function authHeaders(token: string) {
+function authHeaders(token: string, version: string = GHL_API_VERSION) {
   return {
     Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
-    Version: GHL_API_VERSION,
+    Version: version,
   };
 }
 
@@ -101,5 +103,45 @@ export async function triggerWorkflow(
   );
   if (!res.ok) {
     throw new GhlError(res.status, `triggerWorkflow failed: ${await res.text()}`);
+  }
+}
+
+/**
+ * Send an email to a contact through GHL (uses the location's configured sender).
+ * NOT retried — sending is non-idempotent and a replay would duplicate the email.
+ * Callers treat this as best-effort and must not fail the request on error.
+ */
+export async function sendContactEmail(
+  contactId: string,
+  opts: { subject: string; html: string },
+  env: { GHL_PRIVATE_INTEGRATION_TOKEN: string }
+): Promise<void> {
+  const res = await fetch(`${GHL_BASE}/conversations/messages`, {
+    method: 'POST',
+    headers: authHeaders(env.GHL_PRIVATE_INTEGRATION_TOKEN, GHL_CONVERSATIONS_VERSION),
+    body: JSON.stringify({ type: 'Email', contactId, subject: opts.subject, html: opts.html }),
+  });
+  if (!res.ok) {
+    throw new GhlError(res.status, `sendContactEmail failed: ${await res.text()}`);
+  }
+}
+
+/**
+ * Send an SMS to a contact through GHL. Requires a connected phone number in the
+ * sub-account; otherwise GHL returns an error (caught by the best-effort caller).
+ * NOT retried — non-idempotent.
+ */
+export async function sendContactSms(
+  contactId: string,
+  message: string,
+  env: { GHL_PRIVATE_INTEGRATION_TOKEN: string }
+): Promise<void> {
+  const res = await fetch(`${GHL_BASE}/conversations/messages`, {
+    method: 'POST',
+    headers: authHeaders(env.GHL_PRIVATE_INTEGRATION_TOKEN, GHL_CONVERSATIONS_VERSION),
+    body: JSON.stringify({ type: 'SMS', contactId, message }),
+  });
+  if (!res.ok) {
+    throw new GhlError(res.status, `sendContactSms failed: ${await res.text()}`);
   }
 }

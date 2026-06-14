@@ -12,7 +12,7 @@
 
 import type { APIRoute } from 'astro';
 import { z } from 'zod';
-import { upsertContact, applyTag, GhlError } from '@lib/ghl';
+import { upsertContact, applyTag, sendContactEmail, sendContactSms, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
 import { QUIZ_VALUES, answersToTags } from '@lib/quiz';
 
@@ -227,5 +227,78 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
+  // --- Step 3: notifications. BEST-EFFORT ONLY. The lead is already captured,
+  //     so every send here is wrapped and logged on failure — nothing below can
+  //     change the 200 response. All sends go through Dodie's GHL (no Resend).
+  const ghlAuth = { GHL_PRIVATE_INTEGRATION_TOKEN: token };
+
+  // (a) Confirmation email to the person who took the quiz.
+  try {
+    await sendContactEmail(
+      contactId,
+      { subject: 'Thank you — I have your answers', html: submitterEmailHtml(data.firstName) },
+      ghlAuth
+    );
+  } catch (err) {
+    console.error('[quiz] submitter confirmation email failed', err);
+  }
+
+  // (b)+(c) Alert Dodie by email + SMS. GHL messages target a contact, so we
+  //     upsert a stable internal contact for her, then notify it. SMS only sends
+  //     if her sub-account has a connected number; otherwise it logs and moves on.
+  try {
+    const { id: dodieId } = await upsertContact(
+      {
+        firstName: 'Dodie',
+        lastName: 'Kendall',
+        email: 'dodiekendall@gmail.com',
+        phone: '+15612016918',
+        source: 'internal_quiz_alert',
+      },
+      { GHL_PRIVATE_INTEGRATION_TOKEN: token, GHL_LOCATION_ID: locationId }
+    );
+    const lead = `${data.firstName} (${data.phone ?? data.email})`;
+    await sendContactEmail(
+      dodieId,
+      { subject: `New QHHT quiz lead: ${data.firstName}`, html: dodieAlertHtml(data) },
+      ghlAuth
+    ).catch((err) => console.error('[quiz] Dodie alert email failed', err));
+    await sendContactSms(
+      dodieId,
+      `New QHHT quiz lead: ${lead}. Their answers are tagged on the contact in GHL.`,
+      ghlAuth
+    ).catch((err) => console.error('[quiz] Dodie alert SMS failed (number connected in GHL?)', err));
+  } catch (err) {
+    console.error('[quiz] Dodie alert failed', err);
+  }
+
   return successResponse(isFormPost, 200);
 };
+
+// --- Email bodies (plain, branded; no user input echoed beyond the first name,
+//     which is escaped to keep the HTML safe). ---
+function esc(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function submitterEmailHtml(firstName: string): string {
+  return `<div style="font-family:Georgia,serif;font-size:16px;line-height:1.6;color:#3a2f28;max-width:560px;">
+    <p>Hi ${esc(firstName)},</p>
+    <p>Thank you for sharing what's drawing you to QHHT. I've read your answers, and I'll be in touch personally with a thoughtful next step — usually within 24–48 hours, Monday through Saturday.</p>
+    <p>If you already feel ready, you're warmly welcome to book a session anytime:
+      <a href="https://dodiekendall.com/book" style="color:#c2604f;">dodiekendall.com/book</a>.</p>
+    <p>With warmth,<br/>Dodie Kendall<br/>QHHT Practitioner · Stuart, FL</p>
+  </div>`;
+}
+
+function dodieAlertHtml(data: { firstName: string; email: string; phone?: string; answers: Record<string, string> }): string {
+  const rows = Object.entries(data.answers)
+    .map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;font-weight:600;">${esc(k)}</td><td style="padding:4px 0;">${esc(v)}</td></tr>`)
+    .join('');
+  return `<div style="font-family:system-ui,sans-serif;font-size:14px;line-height:1.6;color:#222;max-width:560px;">
+    <p><strong>${esc(data.firstName)}</strong> just completed the QHHT quiz.</p>
+    <p>Email: ${esc(data.email)}<br/>Phone: ${esc(data.phone ?? '—')}</p>
+    <table style="border-collapse:collapse;font-size:13px;">${rows}</table>
+    <p>Their answers are also tagged on the contact record (tags starting <code>quiz-</code>). Reach out personally.</p>
+  </div>`;
+}
