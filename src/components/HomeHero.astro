@@ -56,7 +56,11 @@ const {
     style="background-image: radial-gradient(ellipse 80% 100% at 50% 100%, oklch(var(--brand-primary) / 0.18) 0%, transparent 65%);"
   ></div>
 
-  <!-- LAYER 2 — Dodie cinemagraph, anchored right, large -->
+  <!-- LAYER 2 — Dodie portrait (white dress), anchored right, large.
+       The studio shot has a solid gray backdrop; we feather its left/top/bottom
+       edges to transparent so the gray rectangle dissolves into the lit palms
+       instead of sitting as a hard box over the text. (Static for now — the
+       animated white-dress cinemagraph is being regenerated separately.) -->
   <div
     aria-hidden="true"
     class="pointer-events-none absolute inset-y-0 right-0 z-[2] w-full md:w-[58%] lg:w-[55%] flex items-end justify-end"
@@ -64,20 +68,25 @@ const {
     <!-- Soft halo behind the portrait -->
     <span class="pointer-events-none absolute top-1/2 right-[8%] -translate-y-1/2 w-[80%] aspect-square rounded-full bg-gradient-to-br from-teal-glow/25 via-brand/20 to-transparent blur-3xl"></span>
     <img
-      src="/video/dodie-cinemagraph-poster.jpg"
+      src="/dodie-portrait-white-dress.jpg"
       alt="Dodie Kendall, QHHT Practitioner"
-      width="900"
-      height="1125"
+      width="1400"
+      height="1750"
       loading="eager"
       fetchpriority="high"
-      class="relative h-full w-auto max-h-[92vh] object-cover object-bottom motion-safe:opacity-0"
-    />
-    <video
-      src="/video/dodie-cinemagraph.mp4"
-      poster="/video/dodie-cinemagraph-poster.jpg"
-      autoplay muted loop playsinline preload="metadata"
-      aria-hidden="true"
-      class="absolute right-0 bottom-0 h-full w-auto max-h-[92vh] object-cover object-bottom motion-reduce:hidden"
+      class="relative h-full w-auto max-h-[92vh] object-cover object-bottom"
+      style="
+        -webkit-mask-image:
+          linear-gradient(to right, transparent 0%, #000 34%),
+          linear-gradient(to bottom, transparent 0%, #000 12%),
+          linear-gradient(to top, transparent 0%, #000 10%);
+        -webkit-mask-composite: source-in;
+        mask-image:
+          linear-gradient(to right, transparent 0%, #000 34%),
+          linear-gradient(to bottom, transparent 0%, #000 12%),
+          linear-gradient(to top, transparent 0%, #000 10%);
+        mask-composite: intersect;
+      "
     />
   </div>
 
