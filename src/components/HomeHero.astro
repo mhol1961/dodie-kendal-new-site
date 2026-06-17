@@ -22,7 +22,7 @@ const {
   trustLine = 'In-person sessions · Stuart, FL',
 } = Astro.props;
 ---
-<section class="relative isolate overflow-hidden bg-bg-inverse-deeper text-inverse min-h-[100vh] flex items-center">
+<section class="relative isolate overflow-hidden bg-bg-base text-ink min-h-[100vh] flex items-center">
   <!-- LAYER 1 — backlit palm tapestry. Warm tropical family as About hero but distinct composition:
        dense backlit fronds (no visible sun), dreamy and impressionistic vs About's sunburst-through-palms. -->
   <img
@@ -38,19 +38,21 @@ const {
     aria-hidden="true"
     class="absolute inset-0 z-0 h-full w-full object-cover motion-reduce:hidden"
   />
-  <!-- Dark veil — pulls the backdrop down so it doesn't compete with the portrait -->
+  <!-- Light veil — airy white wash with an aqua teal-glow in the upper-left and a
+       faint gold warmth upper-right; keeps the left text column light for AA contrast -->
   <div
     aria-hidden="true"
     class="absolute inset-0 z-[1]"
     style="background-image:
-      linear-gradient(180deg, oklch(0.08 0.020 240 / 0.62) 0%, oklch(0.08 0.020 240 / 0.50) 40%, oklch(0.08 0.020 240 / 0.85) 100%),
-      radial-gradient(ellipse 70% 55% at 18% 38%, oklch(0.08 0.020 240 / 0) 0%, oklch(0.08 0.020 240 / 0.40) 70%);"
+      radial-gradient(ellipse 70% 60% at 20% 35%, oklch(var(--brand-teal-glow) / 0.22) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 45% at 88% 22%, oklch(var(--brand-accent) / 0.16) 0%, transparent 60%),
+      linear-gradient(180deg, oklch(var(--bg-base) / 0.80) 0%, oklch(var(--bg-base) / 0.60) 45%, oklch(var(--bg-base) / 0.90) 100%);"
   ></div>
-  <!-- Coral horizon glow at bottom -->
+  <!-- Soft coral-pink glow at bottom -->
   <div
     aria-hidden="true"
     class="absolute inset-x-0 bottom-0 z-[1] h-1/2"
-    style="background-image: radial-gradient(ellipse 80% 100% at 50% 100%, oklch(var(--brand-primary) / 0.28) 0%, transparent 65%);"
+    style="background-image: radial-gradient(ellipse 80% 100% at 50% 100%, oklch(var(--brand-primary) / 0.18) 0%, transparent 65%);"
   ></div>
 
   <!-- LAYER 2 — Dodie cinemagraph, anchored right, large -->
@@ -81,14 +83,14 @@ const {
   <!-- LAYER 3 — kinetic text -->
   <div class="relative z-10 container-default w-full">
     <div class="max-w-2xl md:max-w-[52%]">
-      <p class="hero-line eyebrow text-xs md:text-sm uppercase tracking-[0.28em] font-medium text-brand">
+      <p class="hero-line eyebrow text-xs md:text-sm uppercase tracking-[0.28em] font-medium text-brand-hover">
         {eyebrow}
       </p>
-      <h1 class="mt-8 font-display text-inverse">
+      <h1 class="mt-8 font-display text-ink">
         <span class="hero-line line-a block">Get direct answers</span>
         <span class="hero-line line-b italic-accent block text-brand">and deep healing.</span>
       </h1>
-      <p class="hero-line line-c mt-7 max-w-xl text-lg md:text-xl leading-relaxed text-inverse-muted">
+      <p class="hero-line line-c mt-7 max-w-xl text-lg md:text-xl leading-relaxed text-ink-secondary">
         You already hold the answers. Through Quantum Healing Hypnosis Technique,
         I guide you to the part of you that's been waiting to speak — your Higher
         Self, your Subconscious, the deepest part of you that's been there all along.
@@ -105,20 +107,20 @@ const {
         </a>
         <a
           href={secondaryCta.href}
-          class="inline-flex items-center gap-2 text-sm font-medium text-inverse underline-offset-8 transition-colors hover:text-brand"
+          class="inline-flex items-center gap-2 text-sm font-medium text-ink underline-offset-8 transition-colors hover:text-brand-hover"
         >
           <span class="underline decoration-1 underline-offset-[6px]">{secondaryCta.label}</span>
           <span aria-hidden="true">↗</span>
         </a>
       </div>
-      <p class="hero-line line-e mt-8 text-xs uppercase tracking-[0.22em] text-inverse-muted">
+      <p class="hero-line line-e mt-8 text-xs uppercase tracking-[0.22em] text-ink-secondary">
         {trustLine}
       </p>
     </div>
   </div>
 
   <!-- Bottom edge fade into next section -->
-  <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-20 z-[5] bg-gradient-to-b from-transparent to-bg-inverse-deeper"></div>
+  <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-20 z-[5] bg-gradient-to-b from-transparent to-bg-base"></div>
 </section>
 
 <style>
