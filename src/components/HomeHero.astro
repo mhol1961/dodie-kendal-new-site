@@ -38,15 +38,16 @@ const {
     aria-hidden="true"
     class="absolute inset-0 z-0 h-full w-full object-cover motion-reduce:hidden"
   />
-  <!-- Light veil — airy white wash with an aqua teal-glow in the upper-left and a
-       faint gold warmth upper-right; keeps the left text column light for AA contrast -->
+  <!-- Light veil — anchored to the LEFT text column only, so the tropical backdrop
+       stays visible on the right behind the portrait. Aqua teal-glow upper-left;
+       gentle bottom lift keeps the trust line legible. No full-screen white wash. -->
   <div
     aria-hidden="true"
     class="absolute inset-0 z-[1]"
     style="background-image:
-      radial-gradient(ellipse 70% 60% at 20% 35%, oklch(var(--brand-teal-glow) / 0.22) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 45% at 88% 22%, oklch(var(--brand-accent) / 0.16) 0%, transparent 60%),
-      linear-gradient(180deg, oklch(var(--bg-base) / 0.80) 0%, oklch(var(--bg-base) / 0.60) 45%, oklch(var(--bg-base) / 0.90) 100%);"
+      radial-gradient(ellipse 70% 60% at 18% 32%, oklch(var(--brand-teal-glow) / 0.18) 0%, transparent 55%),
+      linear-gradient(100deg, oklch(var(--bg-base) / 0.90) 0%, oklch(var(--bg-base) / 0.58) 38%, oklch(var(--bg-base) / 0.15) 60%, transparent 78%),
+      linear-gradient(0deg, oklch(var(--bg-base) / 0.45) 0%, transparent 28%);"
   ></div>
   <!-- Soft coral-pink glow at bottom -->
   <div
