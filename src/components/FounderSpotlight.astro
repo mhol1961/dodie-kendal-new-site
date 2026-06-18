@@ -18,6 +18,8 @@ interface Props {
   cta?: { label: string; href: string };
   photoSrc: string;
   photoAlt: string;
+  /** Extra utility classes on the photo (e.g. object-position + scale for a tighter crop). */
+  photoClass?: string;
 }
 
 const {
@@ -31,6 +33,7 @@ const {
   cta,
   photoSrc,
   photoAlt,
+  photoClass = '',
 } = Astro.props;
 ---
 <section class="section-y bg-bg-base">
@@ -53,17 +56,20 @@ const {
             />
             <div class="absolute inset-0 bg-gradient-to-br from-teal/20 via-brand/15 to-transparent blur-2xl"></div>
           </div>
-          <img
-            src={photoSrc}
-            alt={photoAlt}
-            width="900"
-            height="1100"
-            loading="lazy"
-            class="relative w-full h-auto aspect-[9/11] object-cover rounded-lg shadow-[0_30px_60px_-20px_oklch(0.18_0.018_240_/_0.4)]"
-          />
-          <!-- Credential overlay strip on the photo -->
-          <div class="absolute bottom-5 left-5 right-5 rounded-md bg-bg-base/95 backdrop-blur px-4 py-3 shadow-md border border-border-subtle">
-            <p class="text-[10px] uppercase tracking-[0.22em] text-ink-muted">{role}</p>
+          <!-- Clip frame: rounded + overflow-hidden so a scaled photo crops cleanly -->
+          <div class="relative overflow-hidden rounded-lg shadow-[0_30px_60px_-20px_oklch(0.18_0.018_240_/_0.4)]">
+            <img
+              src={photoSrc}
+              alt={photoAlt}
+              width="900"
+              height="1100"
+              loading="lazy"
+              class:list={['w-full h-auto aspect-[9/11] object-cover', photoClass]}
+            />
+            <!-- Credential overlay strip on the photo -->
+            <div class="absolute bottom-5 left-5 right-5 rounded-md bg-bg-base/95 backdrop-blur px-4 py-3 shadow-md border border-border-subtle">
+              <p class="text-[10px] uppercase tracking-[0.22em] text-ink-muted">{role}</p>
+            </div>
           </div>
         </div>
       </div>
