@@ -50,7 +50,10 @@ const {
 } = Astro.props;
 
 const isHome = variant === 'home';
-const isDark = variant !== 'generic';
+const isAbout = variant === 'about';
+// About uses a bright, sun-lit treatment (dark text on a warm wash); the
+// qhht/insights variants stay dark, generic stays its light cream.
+const isDark = variant !== 'generic' && !isAbout;
 
 // Variant defaults for background photography
 const defaultBg: Record<string, string> = {
@@ -67,8 +70,8 @@ const finalBg = bgImage ?? (isDark ? defaultBg[variant] : undefined);
 const finalVideo = bgVideo ?? defaultVideo[variant];
 
 const titleClass = isDark ? 'text-inverse' : 'text-ink';
-const subClass = isDark ? 'text-inverse-muted' : 'text-ink-secondary';
-const eyebrowClass = isDark ? 'text-brand' : 'text-ink-muted';
+const subClass = isDark ? 'text-inverse-muted' : (isAbout ? 'text-ink' : 'text-ink-secondary');
+const eyebrowClass = isDark ? 'text-brand' : (isAbout ? 'text-brand-hover' : 'text-ink-muted');
 ---
 
 <section
@@ -108,6 +111,11 @@ const eyebrowClass = isDark ? 'text-brand' : 'text-ink-muted';
             ? `background-image:
                 linear-gradient(180deg, oklch(0.10 0.020 240 / 0.55) 0%, oklch(0.10 0.020 240 / 0.35) 40%, oklch(0.10 0.020 240 / 0.85) 100%),
                 radial-gradient(ellipse 60% 50% at 18% 35%, oklch(0.10 0.020 240 / 0) 0%, oklch(0.10 0.020 240 / 0.55) 75%);`
+            : isAbout
+            ? `background-image:
+                radial-gradient(ellipse 42% 38% at 82% 12%, oklch(0.99 0.045 95 / 0.60) 0%, transparent 55%),
+                radial-gradient(ellipse 60% 55% at 80% 16%, oklch(var(--brand-accent) / 0.50) 0%, transparent 62%),
+                linear-gradient(100deg, oklch(0.97 0.020 80 / 0.88) 0%, oklch(0.97 0.020 80 / 0.60) 44%, oklch(0.97 0.020 80 / 0.18) 68%, transparent 84%);`
             : `background-image:
                 linear-gradient(180deg, oklch(0.10 0.020 240 / 0.7) 0%, oklch(0.10 0.020 240 / 0.55) 40%, oklch(0.10 0.020 240 / 0.85) 100%);`
         }
