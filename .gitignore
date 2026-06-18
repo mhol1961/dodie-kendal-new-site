@@ -58,3 +58,6 @@ C:\\Users\\*
 # Scrape cache + review screenshots
 .firecrawl/
 public/full-page-homepage.png
+
+# Heavy original photos (optimized copies live in public/)
+_source-photos/
