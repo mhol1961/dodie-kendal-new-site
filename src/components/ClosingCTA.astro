@@ -38,8 +38,8 @@ const {
     alt=""
     aria-hidden="true"
     loading="lazy"
-    class={`absolute inset-0 z-0 h-full w-full object-cover opacity-90 ${bgVideo ? 'motion-safe:opacity-0' : ''}`}
-    style={`object-position: ${bgPosition};`}
+    class={`absolute inset-0 z-0 h-full w-full object-cover ${bgVideo ? 'motion-safe:opacity-0' : ''}`}
+    style={`object-position: ${bgPosition}; filter: brightness(1.3) saturate(1.05);`}
   />
   {bgVideo && (
     <video
@@ -51,8 +51,8 @@ const {
       playsinline
       preload="metadata"
       aria-hidden="true"
-      class="absolute inset-0 z-0 h-full w-full object-cover opacity-90 motion-reduce:hidden"
-      style={`object-position: ${bgPosition};`}
+      class="absolute inset-0 z-0 h-full w-full object-cover motion-reduce:hidden"
+      style={`object-position: ${bgPosition}; filter: brightness(1.3) saturate(1.05);`}
     />
   )}
   <!-- Dark gradient veil for legibility -->
@@ -60,8 +60,8 @@ const {
     aria-hidden="true"
     class="absolute inset-0 z-0"
     style="background-image:
-      radial-gradient(ellipse 70% 60% at 50% 50%, oklch(0.10 0.020 240 / 0.45) 0%, oklch(0.10 0.020 240 / 0.85) 80%),
-      linear-gradient(180deg, oklch(0.10 0.020 240 / 0.6) 0%, oklch(0.05 0.020 240 / 0.9) 100%);"
+      radial-gradient(ellipse 75% 65% at 50% 50%, oklch(0.10 0.020 240 / 0.10) 0%, oklch(0.10 0.020 240 / 0.55) 85%),
+      linear-gradient(180deg, oklch(0.10 0.020 240 / 0.22) 0%, oklch(0.05 0.020 240 / 0.62) 100%);"
   ></div>
   <!-- Coral horizon glow -->
   <div
@@ -70,7 +70,7 @@ const {
     style="background-image: radial-gradient(ellipse 70% 90% at 50% 100%, oklch(var(--brand-primary) / 0.32) 0%, transparent 70%);"
   ></div>
 
-  <div class="relative z-10 container-default text-center">
+  <div class="relative z-10 container-default text-center" style="text-shadow: 0 2px 16px oklch(0.05 0.020 240 / 0.65);">
     {(headlineLead || headlineItalic || headlineTail) ? (
       <h2 class="mx-auto max-w-4xl font-display">
         {headlineLead && <span class="block">{headlineLead}</span>}
