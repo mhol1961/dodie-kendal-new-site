@@ -1,0 +1,65 @@
+---
+import Base from '@layouts/Base.astro';
+import ClosingCTA from '@components/ClosingCTA.astro';
+import { getSeo } from '@lib/seo';
+import { breadcrumb } from '@lib/schema';
+import { getCollection } from 'astro:content';
+
+const seo = getSeo({
+  path: '/testimonials',
+  title: 'Client Reviews',
+  description:
+    "In their own words — reviews from clients who have experienced a QHHT session with Dodie Kendall in Stuart, FL.",
+});
+
+const schemas = [breadcrumb([{ name: 'Home', href: '/' }, { name: 'Reviews' }])];
+
+const reviews = (await getCollection('testimonials').catch(() => []))
+  .sort((a, b) => a.data.order - b.data.order);
+---
+<Base seo={seo} schemas={schemas}>
+  <section class="section-y bg-bg-base">
+    <div class="container-default">
+      <header class="max-w-2xl">
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">In their words</p>
+        <h1 class="mt-3 font-display">What clients say after a session.</h1>
+        <p class="mt-5 max-w-prose text-lg leading-relaxed text-ink-secondary">
+          These reviews were shared by clients on Google. Every session is different — but the through-line is the same: a calm, safe space to explore what you already carry inside.
+        </p>
+      </header>
+
+      <div class="mt-14 gap-6 [column-fill:_balance] sm:columns-2 lg:columns-3">
+        {reviews.map((t) => (
+          <figure class="mb-6 break-inside-avoid rounded-lg border border-border-subtle bg-bg-raised p-6 shadow-sm">
+            <span aria-hidden="true" class="font-display text-4xl leading-none text-brand">&ldquo;</span>
+            <blockquote class="mt-1 text-ink-secondary leading-relaxed">
+              {t.data.quote}
+            </blockquote>
+            <figcaption class="mt-5 flex items-center gap-3 border-t border-border-subtle pt-4 text-sm">
+              <span
+                aria-hidden="true"
+                class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-display text-sm text-ink-inverse"
+                style="background: linear-gradient(135deg, oklch(var(--brand-primary)) 0%, oklch(var(--brand-teal)) 100%);"
+              >
+                {(t.data.author?.[0] ?? '·').toUpperCase()}
+              </span>
+              <span>
+                <span class="block font-medium text-ink">{t.data.author}</span>
+                {t.data.role && <span class="block text-xs text-ink-muted">{t.data.role}</span>}
+              </span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <ClosingCTA
+    headlineLead="Your own experience"
+    headlineItalic="is waiting."
+    headlineTail="Come see for yourself."
+    subhead="A conversation with the deepest part of you. Held with confidentiality, recorded for you to keep."
+    cta={{ label: 'Book a Session', href: '/book' }}
+    trustLine="In-person sessions · Stuart, FL"
+  />
+</Base>

@@ -9,19 +9,17 @@ import { breadcrumb } from '@lib/schema';
 
 const SITE_URL = import.meta.env.SITE_URL || 'https://dodiekendall.com';
 
-// [NEEDS COPY] Per 2026-06-02 call: Dodie is rewriting her bio. She asked
-// for all religion references removed across the site. The heavy chapter
-// content below (Catholic upbringing, Pentecostal years, Buddhist/Muslim/
-// Hindu openings, "only love exists" resolution) is left intact for now —
-// gutting it without her replacement leaves the page hollow. The hero
-// subhead, SEO description, identity strip, and closing CTA below have
-// been softened to remove religion-line specifics while we wait for her
-// new draft.
+// Copy: Dodie's own bio draft (emailed 2026-07-14), replacing the earlier
+// religion-heavy chapter narrative she asked to remove (2026-06-02 call).
+// The new arc is: a decades-long personal search → understanding us as
+// multidimensional energy → discovering Dolores Cannon's QHHT → the work
+// today. No denominational specifics per her request. Wording is kept close
+// to her draft; era/takeaway/eyebrow scaffolding lines are ours.
 const seo = getSeo({
   path: '/about',
   title: 'About Dodie Kendall',
   description:
-    "Dodie Kendall — a native Floridian QHHT practitioner who came home to the simple truth that only love exists.",
+    "Dodie Kendall — a native Floridian QHHT practitioner whose decades-long search for meaning led her to Dolores Cannon's Quantum Healing Hypnosis Technique.",
 });
 
 const aboutPageSchema = {
@@ -34,16 +32,35 @@ const schemas = [
   aboutPageSchema,
   breadcrumb([{ name: 'Home', href: '/' }, { name: 'About' }]),
 ];
+
+const principles = [
+  {
+    title: 'A mirror, not a guru.',
+    body: "I offer a path; I don't walk it for you.",
+  },
+  {
+    title: 'I trust your timing.',
+    body: 'Every soul finds its own moment, and I meet you exactly where you are.',
+  },
+  {
+    title: 'Love, not urgency.',
+    body: "There's no pressure here — only invitation.",
+  },
+  {
+    title: 'Healing flows through me, not from me.',
+    body: "You are the one doing the healing. I'm simply here to hold space for it.",
+  },
+];
 ---
 <Base seo={seo} schemas={schemas}>
-  <!-- HERO — tropical Florida sunrise video -->
+  <!-- HERO — tropical Florida light -->
   <Hero
     variant="about"
     eyebrow="About Dodie"
-    headlineLead="The path to purpose —"
-    headlineItalic="from tradition"
-    headlineTail="to transcendence."
-    subhead="A native Floridian who walked a long path through many traditions and arrived at the simple truth that only love exists."
+    headlineLead="The path that"
+    headlineItalic="brought me"
+    headlineTail="here."
+    subhead="I'm a QHHT practitioner — but before the work I do now, let me tell you about the path that led me to it. If you're reading this, chances are you're on a search of your own. I don't believe our paths crossing is an accident."
     bgImage="/video/about-tropical-light-poster.jpg"
     bgVideo="/video/about-tropical-light.mp4"
   />
@@ -70,106 +87,70 @@ const schemas = [
     </div>
   </section>
 
-  <!-- CH 01 + 02 — scan-friendly chapter component, with image on Ch 01 -->
+  <!-- CH 01 + 02 -->
   <section class="bg-bg-base py-20 md:py-24">
     <div class="container-default max-w-5xl space-y-24">
       <AboutChapter
         num="01"
-        era="Childhood · South Florida"
-        title="The early years — ritual and questioning."
-        takeaway="The structure was always around me. The disconnect was always inside me."
+        era="Where I started · South Florida"
+        title="Where I started."
+        takeaway="Underneath the career and the daily busyness, a quieter question was always running."
         body={[
-          "I was raised Catholic in South Florida — baptism, CCD, Catholic High School, the full structure. From the outside it looked complete. From the inside, the ceremonies felt more intimidating than comforting.",
-          "By my teens I felt church was for “old people,” and I stepped away to find my own way.",
+          "I was born in Fort Lauderdale and raised in Pompano Beach. I grew up with a strong sense of tradition and faith — and, like so many of us, I spent years inside a belief system that had been handed down to me rather than one I'd chosen for myself.",
+          "As a young woman I moved from Broward County to Palm Beach County and built the foundation of my adult life: teaching aerobics, then moving into mortgage, title, and real estate, where I spent decades building a career I'm proud of. But underneath it all, a quieter question kept running — who is the Creator of this universe, really? And who am I in relation to that?",
         ]}
-        image={{
-          src: "/photos/early-years-ritual-questioning-detail.png",
-          alt: "A folded Catholic school uniform shirt with a rosary, a journal, a small scroll, and a blank record sheet arranged on a South Florida terrazzo floor, palm shadows on the wall.",
-        }}
-        imageRight
       />
 
       <AboutChapter
         num="02"
-        era="Young adulthood · A new question"
-        title="The search for something more."
-        takeaway="Whoo-hoo moments — and my first real lesson in the complexity of healing."
+        era="The searching years"
+        title="A search that took decades."
+        takeaway="I tried, sincerely, to live inside the frameworks I was given. Pieces of them never quite fit."
         body={[
-          "Teaching aerobics and making the usual unwise choices of youth, I met a young woman whose vibrant faith challenged what I thought religion was. She wasn't an old person. I followed her into a non-denominational Pentecostal church.",
-          "What I saw there was new to me — tongues, dancing, a raw supernatural energy. And then the question that changed everything: 'Dodie, do you know where you'd go if you died tonight?'",
+          "That question sent me on a long, winding journey. I explored different communities and teachings, different ways people made sense of the soul and the meaning of our lives here on Earth. I watched how people lived out their beliefs — the struggles and the joys, the certainty and the doubt — and I tried, sincerely, to live inside the frameworks I was given.",
+          "But pieces of it never quite fit. So I kept searching. I married the love of my life, raised two children, built a career, and traveled — experiencing different cultures and different ways of understanding the sacred. Through it all, the search never stopped.",
         ]}
       />
     </div>
   </section>
 
-  <!-- SHORT pull quote — replaces the long "prayer of faith" paragraph -->
-  <PullQuote
-    variant="dark"
-    quote="Where would you go if you died tonight?"
-  />
+  <PullQuote variant="dark" quote="Through it all, the search never stopped." />
 
-  <!-- CH 03 — scan-friendly format continues -->
+  <!-- CH 03 — What I found -->
   <section class="bg-bg-base py-20 md:py-24">
     <div class="container-default max-w-5xl">
       <AboutChapter
         num="03"
-        era="The questioning years"
-        title="A lesson in healing — and its limits."
-        takeaway="I prayed with the promise of scripture. He did not heal. A seed of doubt."
+        era="The click"
+        title="What I found."
+        takeaway="Everything I'd been searching for came into focus. I knew this was what I was born to do."
         body={[
-          "My brother's friend was in the ICU with acute leukemia. The promise was that the prayer of faith would heal the sick. My friend and I laid hands on him. His body did not heal — he passed on.",
-          "I was told he was in heaven because of our prayers. But something in me felt out of alignment. I eventually left that church, but carried for years the heavy belief that there was only one way to God.",
+          "Eventually, it began to click. I came to understand us as multidimensional beings — that at our essence we are energy: patterns of light, consciousness, and information, moving through what I've come to think of as “Earth school.” A place to learn, to evolve, to create, and to grow.",
+          "I found that quantum physics offers a beautiful, tangible way of understanding these same truths at the smallest levels of reality — that separation is an illusion, and that we are all part of one vast, indivisible field of consciousness. When I discovered QHHT, the work pioneered by Dolores Cannon, everything came into focus. I knew, immediately and completely, that this was what I was born to do.",
         ]}
       />
     </div>
   </section>
 
-  <!-- DARK IMAGE BREAK — Santa Teresa sunset (card overlay removed per Dodie 2026-06-10) -->
-  <section class="bg-bg-inverse-deeper">
-    <img
-      src="/dodie/santa-teresa-sunset.jpg"
-      alt="A Florida sunset glowing through tropical foliage — from Dodie's view"
-      class="w-full h-auto aspect-[16/9] object-cover"
-      loading="lazy"
-    />
-  </section>
+  <PullQuote variant="dark" quote="I was born to do this!" />
 
-  <!-- CH 04 -->
-  <section class="bg-bg-base py-20 md:py-24">
-    <div class="container-default max-w-5xl">
-      <AboutChapter
-        num="04"
-        era="The widening"
-        title="From fear to universal love."
-        takeaway="The idea that a loving God would condemn good souls no longer rang true."
-        body={[
-          "Life happened. I met beautiful, compassionate people from every walk — Buddhists, Muslims, Hindus, Atheists. The idea of a loving God damning these souls stopped making sense.",
-          "I chose a new perspective: God is energy. A loving universal energy that holds all of us. In that space, only love exists, and free will is the greatest gift we have.",
-        ]}
-      />
-    </div>
-  </section>
-
-  <!-- DARK PULL QUOTE — kept (this one is short and perfect) -->
-  <PullQuote variant="dark" quote="Only love exists." />
-
-  <!-- RUMI LAMPS — the thesis image -->
+  <!-- ONE LIGHT — Rumi lanterns, reframed to oneness (not tradition-divisions) -->
   <section class="bg-bg-inverse-deeper">
     <div class="container-default py-16 md:py-20">
       <header class="mb-10 max-w-2xl">
-        <p class="text-xs uppercase tracking-[0.24em] text-brand">A line that opened the door</p>
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">One light</p>
         <h2 class="mt-3 font-display text-inverse">
           <span class="block">Different lamps.</span>
           <span class="italic-accent block text-brand">Same light.</span>
         </h2>
         <p class="mt-5 text-lg text-inverse-muted leading-relaxed">
-          A quote that captured what I was already finding inside myself — that the divisions between traditions are surface, and the light underneath is one.
+          A way of seeing I kept arriving at on my own — that what looks like separation is only the surface, and the light underneath is one.
         </p>
       </header>
       <figure class="relative mx-auto max-w-4xl overflow-hidden rounded-lg shadow-[0_30px_60px_-20px_oklch(0.05_0.02_240_/_0.7)]">
         <img
           src="/dodie/rumi-lamps.jpg"
-          alt="Colorful paper lanterns with Rumi's quote: 'The lamps are different, but the light is the same.'"
+          alt="Colorful paper lanterns glowing against a dark sky."
           class="w-full h-auto object-cover"
           loading="lazy"
         />
@@ -177,73 +158,78 @@ const schemas = [
     </div>
   </section>
 
-  <!-- CH 05 -->
+  <!-- CH 04 — What I do now -->
   <section class="bg-bg-base py-20 md:py-24">
     <div class="container-default max-w-5xl">
       <AboutChapter
-        num="05"
+        num="04"
         era="The arrival"
-        title="Discovering the Sacred Technology."
-        takeaway="The bridge between my spiritual past and the work I was meant to do."
+        title="What I do now."
+        takeaway="It isn't a career change so much as an arrival."
         body={[
-          "I'd always held onto the scripture that we would do 'greater things' than those who came before — but I never knew how. Then I was introduced to Dolores Cannon's QHHT.",
-          "The moment I discovered it, I had an inner knowing. This was the modality that explained everything. It was the bridge I'd been waiting for.",
+          "After years as a new construction sales consultant (2013–2023), and later as a residential realtor, I made the decision to devote myself fully to QHHT. It wasn't so much a career change as an arrival — the place all those years of searching, working, and living had quietly been leading me.",
+          "As a practitioner, my role is simple, and I hold it humbly.",
         ]}
         image={{
           src: "/dodie/dodie-standing-pink.jpg",
           alt: "Dodie Kendall standing in a soft pink dress with a calm, contemplative expression.",
         }}
+        imageRight
       />
+
+      <!-- Four principles — static grid (no carousel) -->
+      <div class="mt-14 grid gap-5 sm:grid-cols-2">
+        {principles.map((p) => (
+          <div class="rounded-lg border border-border-subtle bg-bg-raised p-6 shadow-sm">
+            <p class="font-display text-xl text-ink leading-snug">{p.title}</p>
+            <p class="mt-2 text-ink-secondary leading-relaxed">{p.body}</p>
+          </div>
+        ))}
+      </div>
     </div>
   </section>
 
-  <!-- DARK VIDEO BREAK — Florida sunrise -->
+  <PullQuote variant="dark" quote="I am a mirror, not a guru. I offer a path; I don't walk it for you." />
+
+  <!-- NATURE BREAK — red cardinal (a recurring 'sign' motif in Dodie's world) -->
   <section class="bg-bg-inverse-deeper">
     <div class="relative overflow-hidden">
       <img
-        src="/video/florida-sunrise-poster.jpg"
-        alt="Florida coast at sunrise — palm fronds framing the horizon"
+        src="/photos/about-red-cardinal.jpg"
+        alt="A red cardinal perched on a flowering branch in soft morning light."
         loading="lazy"
-        class="w-full h-auto aspect-[21/9] object-cover motion-safe:opacity-0"
+        class="w-full h-auto aspect-[21/9] object-cover"
       />
-      <video
-        src="/video/florida-sunrise.mp4"
-        poster="/video/florida-sunrise-poster.jpg"
-        autoplay muted loop playsinline preload="metadata"
-        aria-hidden="true"
-        class="absolute inset-0 w-full h-full object-cover motion-reduce:hidden"
-      />
-      <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-bg-inverse-deeper/80 via-transparent to-transparent"></div>
+      <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-bg-inverse-deeper/70 via-transparent to-transparent"></div>
       <div class="absolute inset-x-0 bottom-0">
         <div class="container-default pb-8 md:pb-12">
-          <p class="text-xs uppercase tracking-[0.24em] text-brand">Where the practice was born</p>
+          <p class="text-xs uppercase tracking-[0.24em] text-brand">A sign, arriving right on time</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CH 06 -->
+  <!-- CH 05 — Life outside the work -->
   <section class="bg-bg-base py-20 md:py-24">
     <div class="container-default max-w-5xl">
       <AboutChapter
-        num="06"
-        era="Today"
-        title="The invitation."
-        takeaway="I am the invitation, not the insistence. Healing flows through me, not from me."
+        num="05"
+        era="Away from the work"
+        title="My life outside this work."
+        takeaway="I've been where you might be — searching, unsure, wondering if there's more."
         body={[
-          "Today, I help you experience the Creator's gift: the connection to your Higher Self, the Subconscious, the Holy Spirit. Whatever name you give it — it is the voice that guides us.",
-          "Only love exists. I invite you to allow me to guide you, so you can finally receive the messages your Higher Self has been waiting for you to hear.",
+          "I'm married to my best friend. This is my second marriage, and together we've built a beautifully blended family — my two children, who were already grown and on their own when we met, and his two, who lived with us as they grew up. Between us, we've now been blessed with three grandchildren, who bring more joy into my life than I ever could have imagined.",
+          "My own journey — the searching, the blending, the years of questioning — is part of why I do this work with so much care. I've been where you might be: searching, unsure, wondering if there's more. I believe there is.",
         ]}
         image={{
-          src: "/dodie/dodie-standing-sage.jpg",
-          alt: "Dodie Kendall standing in a soft sage-green dress with a warm, welcoming smile.",
+          src: "/dodie/beach-evening.jpg",
+          alt: "Dodie Kendall on a Florida beach in the soft light of evening.",
         }}
-        imageRight
       />
     </div>
   </section>
 
-  <!-- HEALING-TREE PROMISE -->
+  <!-- WHY I DO THIS WORK — healing-tree promise + signature -->
   <section class="bg-bg-sunken py-20 md:py-24">
     <div class="container-default grid items-center gap-10 md:grid-cols-[1fr,1.1fr] lg:gap-16">
       <figure class="mx-auto max-w-md md:max-w-none">
@@ -255,14 +241,18 @@ const schemas = [
         />
       </figure>
       <div>
-        <p class="text-xs uppercase tracking-[0.24em] text-brand">The promise</p>
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">Why I do this work</p>
         <h2 class="mt-3 font-display text-ink">
           <span class="block">You are not broken.</span>
           <span class="italic-accent block text-brand">You are remembering.</span>
         </h2>
         <p class="mt-5 max-w-prose text-lg text-ink-secondary leading-relaxed">
-          QHHT doesn't add anything to you. It quiets the noise long enough for what you already are to come back into focus. The body remembers. The Higher Self has been waiting. The work is yours; the conversation is the door.
+          We are all connected — points of light, patterns of energy and information, woven into one vast web of consciousness. My hope is that through this work, you come away not just with answers, but with a deeper awareness of your own multidimensional nature, and the peace that comes with remembering who you really are.
         </p>
+        <p class="mt-6 max-w-prose text-lg text-ink-secondary leading-relaxed">
+          I'd be honored to walk alongside you as you explore your own path.
+        </p>
+        <p class="mt-6 font-serif text-2xl text-ink italic-accent">— Dodie</p>
       </div>
     </div>
   </section>

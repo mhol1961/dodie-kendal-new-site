@@ -27,13 +27,13 @@ const sessionActs = [
     number: '01',
     eyebrow: 'Before — Set intentions',
     title: 'You bring the questions.',
-    body: "We start with a relaxed pre-session call. Pain you can't explain, choices you can't quite see, relationships that loop. Whatever has been waiting for an answer — bring it. There are no wrong questions.",
+    body: "We start with a relaxed pre-session conversation — it's all about you. Pain you can't explain, choices you can't quite see, relationships that loop. Whatever has been waiting for an answer, bring it. There are no wrong questions.",
   },
   {
     number: '02',
     eyebrow: 'During — Enter the Theta state',
     title: 'I guide you to the doorway. You walk through.',
-    body: "On session day we settle in a quiet room. You recline, headphones on. I guide you into the Theta brainwave state — the threshold between waking and dreaming, where the Subconscious can speak clearly. You stay aware. You stay in charge.",
+    body: "On session day we settle in a quiet room. You recline and let yourself settle. I guide you into the Theta brainwave state — the threshold between waking and dreaming, where the Subconscious can speak clearly. You stay aware. You stay in charge.",
   },
   {
     number: '03',
@@ -51,7 +51,6 @@ const sessionActs = [
       'Trained in the Dolores Cannon lineage',
       'In-person sessions in Stuart, FL',
       'Audio recording included',
-      'Complimentary 30-day follow-up',
     ]}
   />
 
@@ -77,21 +76,13 @@ const sessionActs = [
     ctaHref="/qhht"
   />
 
-  <!--
-    [NEEDS COPY] First body paragraph is a placeholder.
-    Original referenced Catholic-school / Pentecostal / belief-systems — Dodie
-    asked for the religion line removed across the site; she is rewriting her
-    bio and will send the new story. Working copy below preserves her closing
-    line ("only love exists") but drops the religious specifics. Replace once
-    her draft arrives.
-  -->
   <FounderSpotlight
     role="Founder · Dodie Kendall QHHT"
     headlineLead="Guided by intuition,"
     headlineItalic="grounded in love."
     body={[
-      "I'm a native Floridian who walked a long path through many traditions and arrived at the simple truth that only love exists.",
-      "I found Quantum Healing Hypnosis Technique through Dolores Cannon's work. From my first session as a client, I knew: this was the work I was meant to do.",
+      "I'm a native Floridian who spent decades searching — through a long career and a longer set of questions — for who we really are.",
+      "That search led me to understand us as multidimensional beings, and then to Dolores Cannon's Quantum Healing Hypnosis Technique. From my first session as a client, I knew this was the work I was born to do.",
     ]}
     credentials={[
       'Dolores Cannon lineage',
@@ -106,8 +97,15 @@ const sessionActs = [
   <TestimonialGrid
     heading="What clients say"
     headingItalic="after a session."
-    subhead="Three women, three different journeys. The thing they have in common is the moment everything finally made sense."
+    subhead="Different journeys, one thing in common — the moment everything finally made sense."
   />
+
+  <div class="bg-bg-inverse-deeper pb-20 md:pb-24 text-center">
+    <a href="/testimonials" class="inline-flex items-center gap-2 rounded-pill border border-teal-glow/30 px-6 py-2.5 text-sm text-inverse transition-colors hover:border-brand hover:text-brand">
+      Read all client reviews
+      <span aria-hidden="true">&rarr;</span>
+    </a>
+  </div>
 
   <LeadMagnetGate />
 
@@ -115,7 +113,7 @@ const sessionActs = [
     headlineLead="Your Higher Self"
     headlineItalic="is already speaking."
     headlineTail="Are you ready to listen?"
-    subhead="One session. One audio recording. One complimentary follow-up. Reserve your time with a small deposit."
+    subhead="One session. One audio recording, yours to keep. Reserve your time with a small deposit."
     cta={{ label: 'Book a Session', href: '/book' }}
     trustLine="Stuart, FL · Booking confirmed within 24 hours"
   />

@@ -9,6 +9,7 @@ const nav = [
   { label: 'QHHT', href: '/qhht' },
   { label: 'FAQ', href: '/faq' },
   { label: 'Insights', href: '/insights' },
+  { label: 'Resources', href: '/resources' },
   { label: 'Contact', href: '/contact' },
 ];
 const pathname = Astro.url.pathname;
@@ -29,7 +30,7 @@ function isActive(href: string): boolean {
       />
     </a>
 
-    <nav aria-label="Primary" class="hidden items-center gap-8 text-sm md:flex">
+    <nav aria-label="Primary" class="hidden items-center gap-5 text-sm md:flex lg:gap-8">
       {nav.map((item) => (
         <a
           href={item.href}
