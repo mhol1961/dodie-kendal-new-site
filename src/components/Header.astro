@@ -9,6 +9,7 @@ const nav = [
   { label: 'QHHT', href: '/qhht' },
   { label: 'FAQ', href: '/faq' },
   { label: 'Insights', href: '/insights' },
+  { label: 'Reviews', href: '/testimonials' },
   { label: 'Resources', href: '/resources' },
   { label: 'Contact', href: '/contact' },
 ];
@@ -30,7 +31,7 @@ function isActive(href: string): boolean {
       />
     </a>
 
-    <nav aria-label="Primary" class="hidden items-center gap-5 text-sm md:flex lg:gap-8">
+    <nav aria-label="Primary" class="hidden items-center gap-4 text-sm md:flex lg:gap-6">
       {nav.map((item) => (
         <a
           href={item.href}
@@ -45,7 +46,7 @@ function isActive(href: string): boolean {
     <div class="flex items-center gap-3">
       <a
         href="/book"
-        class="hidden rounded-pill bg-brand px-5 py-2 text-sm font-medium text-ink-inverse shadow-sm transition-all hover:bg-brand-hover hover:shadow-md md:inline-flex"
+        class="hidden rounded-pill bg-brand px-5 py-2 text-sm font-medium text-ink-inverse shadow-sm transition-all hover:bg-brand-hover hover:shadow-md lg:inline-flex"
       >
         Book a Session
       </a>
