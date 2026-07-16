@@ -10,7 +10,7 @@ const seo = getSeo({
 });
 
 const schemas = [breadcrumb([{ name: 'Home', href: '/' }, { name: 'Privacy' }])];
-const lastUpdated = '2026-06-09';
+const lastUpdated = '2026-07-16';
 ---
 <Base seo={seo} schemas={schemas}>
   <section class="section-y bg-bg-base">
@@ -36,6 +36,7 @@ const lastUpdated = '2026-06-09';
             <li><strong>Contact-form submissions.</strong> Your name, email, optional phone number, your message, and your communication consents.</li>
             <li><strong>Lead-magnet opt-in.</strong> Your first name, email, and your consent to receive our pre-session prep guide.</li>
             <li><strong>Booking details.</strong> Your name, email, phone, and deposit information are collected by our calendar partner (GoHighLevel) on the booking page.</li>
+            <li><strong>Chat and voice assistant interactions.</strong> If you use the on-site assistant, we and our provider (LeadConnector / GoHighLevel) collect the messages you type and, if you use the voice option, the transcript of that conversation, along with any name, email, or phone number you share, so we can answer your questions and follow up.</li>
             <li><strong>Analytics events.</strong> Anonymized page-view and click data through Plausible Analytics — no cookies, no cross-site tracking, no personal identifiers.</li>
             <li><strong>Meta (Facebook) Pixel.</strong> Standard page-view tracking through Meta's advertising pixel — used for ad measurement and audience building if and when we run paid campaigns. Sends visit data to Facebook and sets third-party cookies on the facebook.com domain. Active on production only.</li>
             <li><strong>Server logs.</strong> Standard request logs (IP, user agent, request path, timestamp) collected by our hosting provider for operational security.</li>
@@ -66,6 +67,7 @@ const lastUpdated = '2026-06-09';
           <h2 class="font-display text-2xl text-ink">5. Third parties</h2>
           <ul class="mt-3 list-disc space-y-2 pl-6">
             <li><strong>GoHighLevel</strong> — our customer-relationship and booking platform. Acts as data processor; we are the data controller. Their privacy policy applies.</li>
+            <li><strong>LeadConnector / GoHighLevel</strong> — powers the on-site chat and voice assistant. It processes your conversation content and sets cookies required to run the widget.</li>
             <li><strong>Plausible Analytics</strong> — EU-hosted, privacy-first analytics. No cookies, no personal data.</li>
             <li><strong>Meta (Facebook)</strong> — advertising pixel for ad measurement and audience building. Sets third-party cookies on facebook.com. Their privacy policy and your Facebook ad-preferences page apply.</li>
             <li><strong>Cloudflare</strong> — hosting and DNS. Standard hosting agreement.</li>
@@ -81,7 +83,7 @@ const lastUpdated = '2026-06-09';
 
         <section>
           <h2 class="font-display text-2xl text-ink">7. Cookies</h2>
-          <p class="mt-3">The site itself does not set first-party tracking cookies. Cloudflare may set a security cookie (<code>__cf_bm</code>) for bot mitigation. Plausible analytics is cookie-free. The Meta (Facebook) Pixel sets third-party cookies on the <code>facebook.com</code> domain — typically <code>_fbp</code> (first-party conversion attribution) and <code>_fbc</code> (click-through attribution). You can manage or block these at the browser level or via your <a href="https://www.facebook.com/settings?tab=ads" class="text-brand underline">Facebook ad preferences</a>.</p>
+          <p class="mt-3">The chat and voice assistant (LeadConnector / GoHighLevel) sets cookies necessary to operate the widget, such as keeping your chat session. Apart from these and the analytics noted above, the site does not set first-party advertising cookies. Cloudflare may set a security cookie (<code>__cf_bm</code>) for bot mitigation. Plausible analytics is cookie-free. The Meta (Facebook) Pixel sets third-party cookies on the <code>facebook.com</code> domain — typically <code>_fbp</code> (first-party conversion attribution) and <code>_fbc</code> (click-through attribution). You can manage or block these at the browser level or via your <a href="https://www.facebook.com/settings?tab=ads" class="text-brand underline">Facebook ad preferences</a>.</p>
         </section>
 
         <section>
