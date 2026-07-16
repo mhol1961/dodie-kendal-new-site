@@ -31,14 +31,23 @@ const assistantTelDisplay = '(772) 247-5534';
 ></script>
 
 <!-- Click-to-call voice option: reaches the QHHT AI voice assistant by phone.
-     Anchored bottom-right, stacked above the GHL chat bubble. -->
-<a
-  href={`tel:${assistantTel}`}
-  aria-label={`Call Dodie's QHHT assistant at ${assistantTelDisplay}`}
-  class="group fixed bottom-24 right-5 z-50 inline-flex items-center gap-2 rounded-pill bg-brand px-4 py-3 text-ink-inverse shadow-lg transition-all hover:bg-brand-hover hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 md:bottom-28 md:right-7"
->
-  <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
-  </svg>
-  <span class="text-sm font-medium leading-none">Talk to our assistant</span>
-</a>
+     Circular FAB anchored bottom-right, stacked above the GHL chat bubble,
+     with a hover/focus tooltip. Sized to mirror the GHL chat bubble. -->
+<div class="group fixed bottom-24 right-5 z-50 md:bottom-28 md:right-6">
+  <a
+    href={`tel:${assistantTel}`}
+    aria-label={`Call Dodie's QHHT assistant at ${assistantTelDisplay}`}
+    class="flex h-14 w-14 items-center justify-center rounded-full bg-brand text-ink-inverse shadow-lg ring-1 ring-black/5 transition-all hover:bg-brand-hover hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 md:h-[3.75rem] md:w-[3.75rem]"
+  >
+    <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
+    </svg>
+  </a>
+  <!-- Tooltip: appears on hover of the button and on keyboard focus -->
+  <span
+    role="tooltip"
+    class="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 translate-x-1 whitespace-nowrap rounded-md bg-bg-inverse-deeper px-3 py-1.5 text-xs font-medium text-inverse opacity-0 shadow-md transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100 group-focus-within:translate-x-0 group-focus-within:opacity-100"
+  >
+    Talk to our assistant
+  </span>
+</div>
