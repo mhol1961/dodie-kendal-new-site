@@ -6,13 +6,18 @@
  * (Conversation AI bot "Dodie's QHHT Guide"). data-widget-id maps to Dodie's
  * QHHT subaccount, location 6pOamCMOsrYqjbufLI5y.
  *
- * VOICE (bottom-left): a click-to-call to the QHHT AI voice line
- * +1 772-247-5534, answered by the "Dodie's QHHT Reception" Voice AI agent,
- * which greets the caller, answers QHHT questions, and books the free
- * discovery call. Uses the phone network, so it works on every device
- * (desktop + mobile) with no microphone or WebRTC. It is intentionally NOT the
- * in-widget browser mic call, which is a GHL beta gated behind an agency-level
- * Labs switch. Swap to the in-widget voice later once the agency enables it.
+ * VOICE (bottom-right, stacked ABOVE the GHL chat bubble): a click-to-call to
+ * the QHHT AI voice line +1 772-247-5534, answered by the "Dodie's QHHT
+ * Reception" Voice AI agent, which greets the caller, answers QHHT questions,
+ * and books the free discovery call. Uses the phone network, so it works on
+ * every device (desktop + mobile) with no microphone or WebRTC. It is
+ * intentionally NOT the in-widget browser mic call, which is a GHL beta gated
+ * behind an agency-level Labs switch. Swap to the in-widget voice later once
+ * the agency enables it.
+ *
+ * Layout: both controls live bottom-right — chat bubble at the corner, this
+ * call button stacked just above it — so neither overlaps left/centre hero
+ * CTAs. Offsets clear the ~60px GHL bubble; nudge bottom-* if GHL resizes it.
  */
 const assistantTel = '+17722475534';
 const assistantTelDisplay = '(772) 247-5534';
@@ -25,11 +30,12 @@ const assistantTelDisplay = '(772) 247-5534';
   data-widget-id="6a580bac82c5a91e7fb75e43"
 ></script>
 
-<!-- Click-to-call voice option: reaches the QHHT AI voice assistant by phone -->
+<!-- Click-to-call voice option: reaches the QHHT AI voice assistant by phone.
+     Anchored bottom-right, stacked above the GHL chat bubble. -->
 <a
   href={`tel:${assistantTel}`}
   aria-label={`Call Dodie's QHHT assistant at ${assistantTelDisplay}`}
-  class="group fixed bottom-5 left-5 z-50 inline-flex items-center gap-2 rounded-pill bg-brand px-4 py-3 text-ink-inverse shadow-lg transition-all hover:bg-brand-hover hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 md:bottom-7 md:left-7"
+  class="group fixed bottom-24 right-5 z-50 inline-flex items-center gap-2 rounded-pill bg-brand px-4 py-3 text-ink-inverse shadow-lg transition-all hover:bg-brand-hover hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 md:bottom-28 md:right-7"
 >
   <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
