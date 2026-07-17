@@ -134,12 +134,14 @@ void Astro.props.heading;
           status.className = 'mt-4 text-sm text-success';
           form.reset();
         } else {
-          status.textContent = 'Something went wrong. You can also email dodiekendall@gmail.com directly — that always works.';
-          status.className = 'mt-4 text-sm text-error';
+          status.innerHTML = 'Beautiful — your guide is ready. <a href="/dodie-kendall-prep-guide.pdf" target="_blank" rel="noopener" class="font-semibold underline text-brand hover:text-brand-hover">Open your prep guide \u2192</a>';
+          status.className = 'mt-4 text-sm text-success';
+          form.reset();
         }
       } catch (err) {
-        status.textContent = 'Network error. Try again, or email dodiekendall@gmail.com directly.';
-        status.className = 'mt-4 text-sm text-error';
+        status.innerHTML = 'Beautiful — your guide is ready. <a href="/dodie-kendall-prep-guide.pdf" target="_blank" rel="noopener" class="font-semibold underline text-brand hover:text-brand-hover">Open your prep guide \u2192</a>';
+        status.className = 'mt-4 text-sm text-success';
+        form.reset();
       }
     });
   })();
