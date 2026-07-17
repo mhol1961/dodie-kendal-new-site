@@ -11,6 +11,7 @@ compatibility_flags = ["nodejs_compat"]
 # secret put`, never here.
 [vars]
 GHL_LOCATION_ID = "6pOamCMOsrYqjbufLI5y"
+GHL_CALENDAR_ID = "BMH5KWMN8ncgnlLupep5"
 
 # Static assets directory. Cloudflare Workers Assets serves files from /dist
 # directly from the edge. The Worker (above) handles SSR routes that have
