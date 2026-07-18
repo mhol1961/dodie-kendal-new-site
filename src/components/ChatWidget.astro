@@ -1,28 +1,33 @@
 ---
 /**
- * ChatWidget — GHL chat + voice for the site.
+ * ChatWidget — single consolidated "speed dial" launcher (bottom-right).
  *
- * TEXT CHAT (bottom-right): GHL all-in-one widget "Dodie's QHHT Assistant"
- * (Conversation AI bot "Dodie's QHHT Guide"). data-widget-id maps to Dodie's
- * QHHT subaccount, location 6pOamCMOsrYqjbufLI5y.
+ * One custom round button expands to two labeled actions:
+ *   - "Talk to us"  -> click-to-call the QHHT AI voice line (tel: link, exactly
+ *                      as it worked before: +1 772-247-5534).
+ *   - "Chat with us" -> opens the GoHighLevel / LeadConnector chat widget via
+ *                      its public API: window.leadConnector.chatWidget.openWidget().
  *
- * VOICE (bottom-right, stacked ABOVE the GHL chat bubble): a click-to-call to
- * the QHHT AI voice line +1 772-247-5534, answered by the "Dodie's QHHT
- * Reception" Voice AI agent, which greets the caller, answers QHHT questions,
- * and books the free discovery call. Uses the phone network, so it works on
- * every device (desktop + mobile) with no microphone or WebRTC. It is
- * intentionally NOT the in-widget browser mic call, which is a GHL beta gated
- * behind an agency-level Labs switch. Swap to the in-widget voice later once
- * the agency enables it.
+ * The GHL widget still loads (loader.js + data-widget-id), but its DEFAULT
+ * floating bubble is hidden (chat-widget host: opacity:0 / pointer-events:none)
+ * whenever the panel is idle, and revealed only while the panel is open
+ * (synced to chatWidget.isActive()). So only our one custom button shows.
  *
- * Layout: both controls live bottom-right — chat bubble at the corner, this
- * call button stacked just above it — so neither overlaps left/centre hero
- * CTAs. Offsets clear the ~60px GHL bubble; nudge bottom-* if GHL resizes it.
+ * Notes:
+ *  - Voice is a phone call (tel:), not an in-browser mic widget — works on
+ *    every device with no WebRTC.
+ *  - Uses only GHL's documented public API (openWidget / isActive) + the stable
+ *    <chat-widget> host tag; no fragile shadow-DOM selectors.
+ *  - Colours use this site's brand tokens (bg-brand / ink / bg-raised / …).
+ *  - Accessible: keyboard operable, aria-expanded/haspopup, Esc + click-outside
+ *    to close, focus returns to the toggle, honours prefers-reduced-motion.
+ *  - No localStorage.
+ *  - data-widget-id maps to Dodie's QHHT subaccount (location 6pOamCMOsrYqjbufLI5y).
  */
 const assistantTel = '+17722475534';
 const assistantTelDisplay = '(772) 247-5534';
 ---
-<!-- GHL all-in-one chat + voice widget (Dodie's QHHT Assistant) -->
+<!-- GHL all-in-one chat widget (its default bubble is hidden; we drive it) -->
 <script
   is:inline
   src="https://widgets.leadconnectorhq.com/loader.js"
@@ -30,24 +35,232 @@ const assistantTelDisplay = '(772) 247-5534';
   data-widget-id="6a580bac82c5a91e7fb75e43"
 ></script>
 
-<!-- Click-to-call voice option: reaches the QHHT AI voice assistant by phone.
-     Circular FAB anchored bottom-right, stacked above the GHL chat bubble,
-     with a hover/focus tooltip. Sized to mirror the GHL chat bubble. -->
-<div class="group fixed bottom-24 right-5 z-50 md:bottom-28 md:right-6">
-  <a
-    href={`tel:${assistantTel}`}
-    aria-label={`Call Dodie's QHHT assistant at ${assistantTelDisplay}`}
+<!-- Consolidated launcher -->
+<div
+  id="qhht-launcher"
+  data-open="false"
+  class="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-3 md:bottom-7 md:right-7"
+>
+  <!-- Expanding actions (hidden until the launcher is opened) -->
+  <div id="qhht-actions" class="flex flex-col items-end gap-3">
+    <!-- Talk to us — click-to-call the voice assistant -->
+    <a
+      href={`tel:${assistantTel}`}
+      class="qhht-action group/act flex items-center gap-3 focus-visible:outline-none"
+      data-action="voice"
+      aria-label={`Talk to us — call Dodie's QHHT assistant at ${assistantTelDisplay}`}
+    >
+      <span class="rounded-full border border-border-subtle bg-bg-raised px-3 py-1.5 text-[0.8125rem] font-medium leading-none text-ink shadow-sm whitespace-nowrap">Talk to us</span>
+      <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-brand text-ink-inverse shadow-md transition-all group-hover/act:bg-brand-hover group-focus-visible/act:bg-brand-hover group-focus-visible/act:ring-2 group-focus-visible/act:ring-brand/60 motion-reduce:transition-none">
+        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+      </span>
+    </a>
+
+    <!-- Chat with us — opens the GHL chat panel -->
+    <button
+      type="button"
+      id="qhht-open-chat"
+      class="qhht-action group/act flex items-center gap-3 focus-visible:outline-none"
+      data-action="chat"
+      aria-label="Chat with us — open the chat window"
+    >
+      <span class="rounded-full border border-border-subtle bg-bg-raised px-3 py-1.5 text-[0.8125rem] font-medium leading-none text-ink shadow-sm whitespace-nowrap">Chat with us</span>
+      <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-brand text-ink-inverse shadow-md transition-all group-hover/act:bg-brand-hover group-focus-visible/act:bg-brand-hover group-focus-visible/act:ring-2 group-focus-visible/act:ring-brand/60 motion-reduce:transition-none">
+        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+        </svg>
+      </span>
+    </button>
+  </div>
+
+  <!-- Main toggle FAB -->
+  <button
+    type="button"
+    id="qhht-launcher-toggle"
     class="flex h-14 w-14 items-center justify-center rounded-full bg-brand text-ink-inverse shadow-lg ring-1 ring-black/5 transition-all hover:bg-brand-hover hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 md:h-[3.75rem] md:w-[3.75rem]"
+    aria-label="Contact us"
+    aria-haspopup="true"
+    aria-expanded="false"
+    aria-controls="qhht-actions"
   >
-    <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
+    <svg data-icon="open" viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
     </svg>
-  </a>
-  <!-- Tooltip: appears on hover of the button and on keyboard focus -->
-  <span
-    role="tooltip"
-    class="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 translate-x-1 whitespace-nowrap rounded-md bg-bg-inverse-deeper px-3 py-1.5 text-xs font-medium text-inverse opacity-0 shadow-md transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100 group-focus-within:translate-x-0 group-focus-within:opacity-100"
-  >
-    Talk to our assistant
-  </span>
+    <svg data-icon="close" viewBox="0 0 24 24" class="hidden h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
 </div>
+
+<style is:global>
+  /* Hide GHL's default floating bubble while the panel is idle; reveal it
+     only while the chat panel is actually open (synced via isActive()). */
+  chat-widget {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 200ms ease;
+  }
+  chat-widget.qhht-chat-visible {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  /* Speed-dial reveal (token-free: layout + motion only) */
+  #qhht-actions {
+    transition: opacity 200ms ease, transform 200ms ease;
+  }
+  #qhht-launcher[data-open='false'] #qhht-actions {
+    opacity: 0;
+    transform: translateY(0.5rem);
+    pointer-events: none;
+  }
+  #qhht-launcher[data-open='true'] #qhht-actions {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Reset the <button> action so only the pill + dot show */
+  .qhht-action {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    chat-widget,
+    #qhht-actions {
+      transition: none !important;
+    }
+    #qhht-launcher[data-open='false'] #qhht-actions {
+      transform: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    if (typeof window === 'undefined') return;
+
+    var launcher = document.getElementById('qhht-launcher');
+    var toggle = document.getElementById('qhht-launcher-toggle');
+    var actions = document.getElementById('qhht-actions');
+    var chatBtn = document.getElementById('qhht-open-chat');
+    if (!launcher || !toggle || !actions) return;
+
+    var iconOpen = toggle.querySelector('[data-icon="open"]');
+    var iconClose = toggle.querySelector('[data-icon="close"]');
+    var actionEls = Array.prototype.slice.call(actions.querySelectorAll('.qhht-action'));
+
+    function setActionsFocusable(on) {
+      actionEls.forEach(function (el) {
+        if (on) el.removeAttribute('tabindex');
+        else el.setAttribute('tabindex', '-1');
+      });
+    }
+    setActionsFocusable(false);
+
+    function isOpen() {
+      return launcher.getAttribute('data-open') === 'true';
+    }
+    function openMenu() {
+      launcher.setAttribute('data-open', 'true');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', 'Close contact options');
+      if (iconOpen) iconOpen.classList.add('hidden');
+      if (iconClose) iconClose.classList.remove('hidden');
+      setActionsFocusable(true);
+    }
+    function closeMenu(returnFocus) {
+      launcher.setAttribute('data-open', 'false');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Contact us');
+      if (iconOpen) iconOpen.classList.remove('hidden');
+      if (iconClose) iconClose.classList.add('hidden');
+      setActionsFocusable(false);
+      if (returnFocus) toggle.focus();
+    }
+
+    toggle.addEventListener('click', function () {
+      if (isOpen()) {
+        closeMenu(false);
+      } else {
+        openMenu();
+        if (actionEls[0]) actionEls[0].focus();
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && isOpen()) closeMenu(true);
+    });
+    document.addEventListener('click', function (e) {
+      if (isOpen() && !launcher.contains(e.target)) closeMenu(false);
+    });
+    document.addEventListener('focusin', function (e) {
+      if (isOpen() && !launcher.contains(e.target)) closeMenu(false);
+    });
+
+    // Voice action is a plain tel: link — collapse the menu after tap.
+    var voiceEl = actions.querySelector('[data-action="voice"]');
+    if (voiceEl) voiceEl.addEventListener('click', function () { closeMenu(false); });
+
+    /* ---- GHL chat control (public API only) ---- */
+    var chatReady = false;
+    var pendingOpen = false;
+    var syncing = false;
+
+    function lc() {
+      return window.leadConnector && window.leadConnector.chatWidget
+        ? window.leadConnector.chatWidget
+        : null;
+    }
+    function chatEl() {
+      return document.querySelector('chat-widget');
+    }
+    function reveal(on) {
+      var el = chatEl();
+      if (!el) return;
+      if (on) el.classList.add('qhht-chat-visible');
+      else el.classList.remove('qhht-chat-visible');
+    }
+    function openChat() {
+      var w = lc();
+      if (!w || !chatReady || typeof w.openWidget !== 'function') {
+        pendingOpen = true; // fire once the widget finishes loading
+        return;
+      }
+      try { w.openWidget(); } catch (err) {}
+      reveal(true);
+    }
+    function startSync() {
+      if (syncing) return;
+      syncing = true;
+      setInterval(function () {
+        var w = lc();
+        if (!w || typeof w.isActive !== 'function') return;
+        var active = false;
+        try { active = !!w.isActive(); } catch (err) {}
+        reveal(active);
+      }, 300);
+    }
+
+    window.addEventListener('LC_chatWidgetLoaded', function () {
+      chatReady = true;
+      startSync();
+      if (pendingOpen) { pendingOpen = false; openChat(); }
+    }, false);
+
+    // In case the widget was ready before this script ran.
+    if (lc()) { chatReady = true; startSync(); }
+
+    if (chatBtn) {
+      chatBtn.addEventListener('click', function () {
+        openChat();
+        closeMenu(false);
+      });
+    }
+  })();
+</script>
