@@ -61,3 +61,12 @@ public/full-page-homepage.png
 
 # Heavy original photos (optimized copies live in public/)
 _source-photos/
+
+# Local working notes — GHL admin screenshots, client PII, never publish
+.local-notes/
+
+# Stray git lock files from a crashed operation
+_to_delete/
+
+# Client proposals — pricing, not for a public repo
+IntellaGrow-Kendall-Proposal-*

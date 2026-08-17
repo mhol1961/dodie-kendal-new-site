@@ -1,0 +1,6 @@
+# Legacy prep-guide URL used by the live GHL appointment-confirmation email.
+# That email (workflow-sent, template editable only in the GHL UI) links to
+# /QHHT-Subject-Preparation-Guide-1.pdf, which never existed here -> 404.
+# Redirecting fixes every already-sent email retroactively, so the GHL template
+# edit becomes optional rather than urgent.
+/QHHT-Subject-Preparation-Guide-1.pdf  /dodie/qhht-pre-session-prep-guide.pdf  301
