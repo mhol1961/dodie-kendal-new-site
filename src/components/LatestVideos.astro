@@ -1,0 +1,155 @@
+---
+/**
+ * LatestVideos — auto-updating grid of Dodie's most recent YouTube uploads.
+ *
+ * Data comes from /api/videos.json, which reads the channel's public RSS feed
+ * server-side on Cloudflare and caches it for an hour (YouTube blocks
+ * browser-side reads of the feed, so it cannot be fetched from here directly).
+ *
+ * The section renders hidden and only reveals itself once real videos arrive —
+ * if the feed is unreachable, visitors simply never see it.
+ *
+ * Thumbnails are a click-to-play facade: the YouTube iframe is only injected
+ * on click, so the page ships zero third-party JS until someone wants a video.
+ */
+interface Props {
+  /** How many videos to show. */
+  limit?: number;
+  eyebrow?: string;
+  heading?: string;
+  headingItalic?: string;
+  subhead?: string;
+  /** Background surface class — lets the section sit against its neighbours. */
+  surface?: string;
+}
+
+const {
+  limit = 6,
+  eyebrow = 'On YouTube',
+  heading = 'Latest videos',
+  headingItalic = 'from Dodie.',
+  subhead = 'Short talks on QHHT, the Subconscious, and what people actually experience in session.',
+  surface = 'bg-bg-sunken',
+} = Astro.props;
+
+const CHANNEL_URL = 'https://www.youtube.com/@dodiekendallQHHT';
+---
+<section
+  class:list={['section-y', surface]}
+  data-latest-videos
+  data-limit={String(limit)}
+  aria-label="Latest videos"
+  hidden
+>
+  <div class="container-default">
+    <header class="mb-12 max-w-2xl">
+      <p class="text-xs uppercase tracking-[0.22em] text-brand">{eyebrow}</p>
+      <h2 class="mt-3 font-display text-ink">
+        <span class="block">{heading}</span>
+        {headingItalic && <span class="italic-accent block text-brand">{headingItalic}</span>}
+      </h2>
+      {subhead && <p class="mt-5 text-lg text-ink-secondary leading-relaxed">{subhead}</p>}
+    </header>
+
+    <ul class="grid gap-8 md:grid-cols-2 lg:grid-cols-3" role="list" data-video-grid></ul>
+
+    <div class="mt-12">
+      <a
+        href={CHANNEL_URL}
+        target="_blank"
+        rel="noopener"
+        class="inline-flex items-center gap-2 rounded-pill border border-border-strong bg-bg-base px-6 py-2.5 text-sm text-ink transition-colors hover:border-brand hover:text-brand"
+      >
+        View all videos on YouTube
+        <span aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Card shape lives here so the markup stays in the design system, not in a JS string. -->
+  <template data-video-card>
+    <li>
+      <article class="group flex h-full flex-col">
+        <div class="relative overflow-hidden rounded-lg bg-bg-inverse-deeper" data-player>
+          <button type="button" class="block w-full appearance-none" data-play>
+            <img
+              alt=""
+              width="480"
+              height="270"
+              loading="lazy"
+              class="w-full h-auto aspect-video object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+            />
+            <span
+              aria-hidden="true"
+              class="pointer-events-none absolute inset-0 flex items-center justify-center bg-bg-inverse-deeper/20 transition-colors group-hover:bg-bg-inverse-deeper/10"
+            >
+              <span class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-brand text-ink-inverse shadow-[0_10px_30px_-10px_oklch(0.05_0.02_240_/_0.8)] transition-transform duration-300 group-hover:scale-110">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+                  <path d="M8 5.5v13l11-6.5-11-6.5z" />
+                </svg>
+              </span>
+            </span>
+          </button>
+        </div>
+        <p class="mt-5 text-xs uppercase tracking-[0.22em] text-ink-muted" data-date></p>
+        <h3 class="mt-2 font-display text-2xl text-ink leading-snug transition-colors group-hover:text-brand" data-title></h3>
+      </article>
+    </li>
+  </template>
+</section>
+
+<script>
+  const sections = document.querySelectorAll<HTMLElement>('[data-latest-videos]');
+  if (sections.length) {
+    fetch('/api/videos.json')
+      .then((r) => (r.ok ? r.json() : { videos: [] }))
+      .then(({ videos }: { videos: Array<{ id: string; title: string; published: string }> }) => {
+        if (!Array.isArray(videos) || videos.length === 0) return;
+
+        const fmt = new Intl.DateTimeFormat('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+
+        for (const section of sections) {
+          const grid = section.querySelector('[data-video-grid]');
+          const tpl = section.querySelector<HTMLTemplateElement>('[data-video-card]');
+          if (!grid || !tpl) continue;
+
+          const limit = Number(section.dataset.limit) || 6;
+          for (const video of videos.slice(0, limit)) {
+            const card = tpl.content.cloneNode(true) as DocumentFragment;
+            const img = card.querySelector('img')!;
+            const button = card.querySelector<HTMLButtonElement>('[data-play]')!;
+            const player = card.querySelector<HTMLElement>('[data-player]')!;
+
+            img.src = `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`;
+            card.querySelector('[data-title]')!.textContent = video.title;
+
+            const date = new Date(video.published);
+            const dateEl = card.querySelector('[data-date]')!;
+            if (!Number.isNaN(date.valueOf())) dateEl.textContent = fmt.format(date);
+
+            button.setAttribute('aria-label', `Play video: ${video.title}`);
+            button.addEventListener('click', () => {
+              const frame = document.createElement('iframe');
+              frame.src = `https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0`;
+              frame.title = video.title;
+              frame.className = 'w-full aspect-video';
+              frame.allow =
+                'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+              frame.allowFullscreen = true;
+              player.replaceChildren(frame);
+            });
+
+            grid.appendChild(card);
+          }
+          section.hidden = false;
+        }
+      })
+      .catch(() => {
+        /* Feed unavailable — leave the section hidden. */
+      });
+  }
+</script>

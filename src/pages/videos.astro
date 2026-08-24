@@ -1,0 +1,44 @@
+---
+import Base from '@layouts/Base.astro';
+import Hero from '@components/Hero.astro';
+import LatestVideos from '@components/LatestVideos.astro';
+import ClosingCTA from '@components/ClosingCTA.astro';
+import { getSeo } from '@lib/seo';
+import { breadcrumb } from '@lib/schema';
+
+const seo = getSeo({
+  path: '/videos',
+  title: 'Videos',
+  description:
+    'Watch Dodie Kendall talk through QHHT, the Subconscious, and what unfolds in a session — the latest videos from her YouTube channel.',
+});
+
+const schemas = [breadcrumb([{ name: 'Home', href: '/' }, { name: 'Videos' }])];
+---
+<Base seo={seo} schemas={schemas}>
+  <Hero
+    variant="insights"
+    eyebrow="Videos"
+    headlineLead="See it in her"
+    headlineItalic="own words."
+    subhead="Dodie on QHHT, the Subconscious, and the questions people bring to a session. New videos appear here as soon as they go up on YouTube."
+    bgImage="/video/doorway-opens-poster.jpg"
+    bgPosition="center"
+  />
+
+  <LatestVideos
+    limit={15}
+    eyebrow="From the channel"
+    heading="Recent videos"
+    headingItalic="from Dodie."
+    subhead="Dodie's most recent uploads, newest first. Tap a thumbnail to play it right here."
+    surface="bg-bg-base"
+  />
+
+  <ClosingCTA
+    headlineLead="Watched enough."
+    headlineItalic="Ready to listen?"
+    cta={{ label: 'Book a Session', href: '/book' }}
+    trustLine="In-person sessions · Stuart, FL"
+  />
+</Base>
