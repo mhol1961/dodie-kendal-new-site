@@ -6,6 +6,7 @@ import PullQuote from '@components/PullQuote.astro';
 import ThreeAct from '@components/ThreeAct.astro';
 import FounderSpotlight from '@components/FounderSpotlight.astro';
 import LeadMagnetGate from '@components/LeadMagnetGate.astro';
+import LatestVideos from '@components/LatestVideos.astro';
 import TestimonialGrid from '@components/TestimonialGrid.astro';
 import ClosingCTA from '@components/ClosingCTA.astro';
 import { getSeo } from '@lib/seo';
@@ -106,6 +107,8 @@ const sessionActs = [
       <span aria-hidden="true">&rarr;</span>
     </a>
   </div>
+
+  <LatestVideos />
 
   <LeadMagnetGate />
 
