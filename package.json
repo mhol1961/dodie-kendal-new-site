@@ -14,7 +14,8 @@
     "typecheck": "astro check",
     "lint": "eslint . --ext .js,.ts,.astro",
     "format": "prettier --write \"**/*.{js,ts,astro,md,json}\"",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:feed": "node --experimental-strip-types --test test/youtube-feed.test.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^11.0.0",

@@ -141,11 +141,16 @@ const CHANNEL_URL = 'https://www.youtube.com/@dodiekendallQHHT';
                 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
               frame.allowFullscreen = true;
               player.replaceChildren(frame);
+              // The focused button just got removed — hand focus to the player
+              // so keyboard users land on the video, not back at the top.
+              frame.focus();
             });
 
             grid.appendChild(card);
           }
           section.hidden = false;
+          // Real cards are up — retire the no-JS/no-feed fallback if one exists.
+          document.querySelectorAll('[data-videos-fallback]').forEach((el) => el.remove());
         }
       })
       .catch(() => {
