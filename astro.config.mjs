@@ -19,7 +19,8 @@ export default defineConfig({
         !page.includes('/admin/') &&
         !page.endsWith('/design') &&
         // noindex paid-traffic landing pages — keep them out of the sitemap
-        !page.includes('/landing-page-'),
+        !page.includes('/landing-page-') &&
+        !page.includes('/free-guide'),
       changefreq: 'weekly',
       priority: 0.7,
     }),

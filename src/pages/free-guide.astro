@@ -1,0 +1,300 @@
+---
+/**
+ * /free-guide — PAID SOCIAL LANDING PAGE · Variant D: "The Offer"
+ *
+ * Why this page exists: Dodie's feedback (2026-08-27) on variants A/B/C was that
+ * nothing captures attention, "I just see questions." She is right — none of the
+ * first three lead with a tangible free thing. This variant is offer-led: the
+ * giveaway is named, shown, and claimable above the fold, and every question
+ * comes after the reader already wants it.
+ *
+ * Angle:       The Offer — the free prep guide IS the hero.
+ * Audience:    Coldest top-of-funnel FB/IG traffic.
+ * Primary CTA: email capture → /api/lead-magnet → GHL (same path as the homepage
+ *              LeadMagnetGate) → instant link to /dodie-kendall-prep-guide.pdf.
+ * Secondary:   book a session (soft, at the very bottom only).
+ *
+ * See LANDING-PAGE-SCOPE.md.
+ */
+import LandingLayout from '@layouts/LandingLayout.astro';
+import TrustStrip from '@components/TrustStrip.astro';
+import TestimonialGrid from '@components/TestimonialGrid.astro';
+import ClosingCTA from '@components/ClosingCTA.astro';
+import Input from '@components/ui/Input.astro';
+import { getSeo } from '@lib/seo';
+import { qhhtService, breadcrumb } from '@lib/schema';
+
+const seo = getSeo({
+  path: '/free-guide',
+  title: 'Free Guide: Before Your First QHHT Session',
+  description:
+    'A short, plain-language guide to your first Quantum Healing Hypnosis session: what the relaxed state feels like, how to shape your questions, what to bring, and what unfolds after. Free from Dodie Kendall, Stuart FL.',
+  noIndex: true,
+});
+
+const schemas = [qhhtService(), breadcrumb([{ name: 'Free guide' }])];
+
+const inside = [
+  {
+    number: '01',
+    title: 'What the relaxed state actually feels like',
+    body: 'Not asleep, not unconscious, not out of control. A plain description of the in-between place, so nothing about session day surprises you.',
+  },
+  {
+    number: '02',
+    title: 'How to shape your three guiding questions',
+    body: 'The single thing that changes a session most. Most people arrive with one big question. This walks you through finding the other two.',
+  },
+  {
+    number: '03',
+    title: 'Day-of: what to eat, wear, and bring',
+    body: 'Small, practical things that make a five-hour session comfortable rather than something you have to endure.',
+  },
+  {
+    number: '04',
+    title: 'What tends to unfold in the week after',
+    body: 'You leave with the audio recording. What people notice in the days that follow, and how to sit with it.',
+  },
+];
+---
+<LandingLayout seo={seo} schemas={schemas}>
+  <!-- ===== HERO: the offer, above the fold. Cover + headline + one field. ===== -->
+  <section class="bg-bg-base pt-12 pb-16 md:pt-16 md:pb-24">
+    <div class="container-default">
+      <div class="grid items-center gap-12 md:grid-cols-[1.15fr,0.85fr] lg:gap-20">
+        <!-- Offer + capture -->
+        <div>
+          <p class="text-xs uppercase tracking-[0.22em] text-brand">
+            Free guide &middot; 4 pages &middot; Yours in one click
+          </p>
+
+          <h1 class="mt-4 font-display text-ink">
+            <span class="block">Most people arrive</span>
+            <span class="block">with one question.</span>
+            <span class="italic-accent block text-brand">This helps you find your three.</span>
+          </h1>
+
+          <p class="mt-6 max-w-prose text-lg leading-relaxed text-ink-secondary">
+            A short, plain-language guide to your first Quantum Healing Hypnosis session.
+            What the deeply relaxed state actually feels like. How to shape the questions
+            you bring. What to eat and wear that day. And what tends to unfold in the week
+            after you go home with the recording.
+          </p>
+
+          <form
+            id="fg-form"
+            action="/api/lead-magnet"
+            method="POST"
+            class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-stretch"
+            novalidate
+          >
+            <div class="flex-1">
+              <Input
+                id="fg-email"
+                name="email"
+                type="email"
+                label="Email address"
+                visuallyHidden
+                required
+                placeholder="you@somewhere.com"
+                autocomplete="email"
+              />
+            </div>
+            <Input
+              id="fg-first-name"
+              name="firstName"
+              label="First name"
+              visuallyHidden
+              ariaHidden
+              tabIndex={-1}
+              inputClass="hidden"
+            />
+            <Input
+              id="fg-trap"
+              name="website"
+              label="Leave blank"
+              visuallyHidden
+              ariaHidden
+              tabIndex={-1}
+              inputClass="hidden"
+            />
+            <input type="hidden" name="consentMarketing" value="true" />
+            <button
+              type="submit"
+              class="cta-glow inline-flex items-center justify-center rounded-pill px-7 py-3.5 text-base font-medium shrink-0"
+            >
+              Send me the guide
+            </button>
+          </form>
+
+          <p class="mt-3 text-xs text-ink-muted">
+            No cost, no session required. We will never share your address, and you can
+            unsubscribe any time.
+          </p>
+          <p id="fg-status" class="mt-4 text-sm" role="status" aria-live="polite"></p>
+        </div>
+
+        <!-- Cover -->
+        <div class="relative mx-auto w-full max-w-xs md:mx-0 md:max-w-sm">
+          <span aria-hidden="true" class="absolute -inset-6 -z-10 rounded-2xl bg-gradient-to-br from-teal/15 via-brand/15 to-transparent blur-2xl"></span>
+          <img
+            src="/lead-magnet-cover.svg"
+            alt="Cover of the free guide: Before your session, preparing for your first QHHT session"
+            width="600"
+            height="780"
+            class="h-auto w-full rotate-[-3deg] rounded-lg shadow-[0_30px_60px_-20px_oklch(0.18_0.018_240_/_0.45)] transition-transform duration-500 hover:rotate-0"
+          />
+          <span class="absolute -left-3 -top-3 rounded-pill bg-brand px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-ink-inverse shadow-md">
+            Free guide
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <TrustStrip
+    items={[
+      'Trained in the Dolores Cannon lineage',
+      'You stay aware & in control',
+      'Audio recording included',
+    ]}
+  />
+
+  <!-- ===== WHAT IS INSIDE ===== -->
+  <section id="inside" class="section-y bg-bg-base">
+    <div class="container-default">
+      <header class="mx-auto mb-14 max-w-2xl text-center">
+        <p class="text-xs uppercase tracking-[0.24em] text-brand">Inside the guide</p>
+        <h2 class="mt-3 font-display text-ink">
+          <span class="block">Four short pages.</span>
+          <span class="italic-accent block text-brand">Nothing you have to decode.</span>
+        </h2>
+        <p class="mt-5 text-lg leading-relaxed text-ink-secondary">
+          Written for someone who has never done this before and is not sure what
+          they are walking into.
+        </p>
+      </header>
+
+      <ol class="grid gap-8 md:grid-cols-2 md:gap-10" role="list">
+        {inside.map((item) => (
+          <li class="relative rounded-lg border border-border-subtle bg-bg-raised p-7 shadow-sm">
+            <p class="font-display text-5xl leading-none text-brand/30">{item.number}</p>
+            <h3 class="mt-4 font-display text-xl leading-snug text-ink">{item.title}</h3>
+            <p class="mt-3 text-sm leading-relaxed text-ink-secondary">{item.body}</p>
+          </li>
+        ))}
+      </ol>
+
+      <div class="mt-12 text-center">
+        <a
+          href="#fg-form"
+          class="cta-glow inline-flex items-center justify-center rounded-pill px-7 py-3.5 text-base font-medium"
+        >
+          Send me the guide
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WHO IT COMES FROM ===== -->
+  <section class="section-y bg-bg-sunken">
+    <div class="container-default">
+      <div class="grid items-center gap-12 md:grid-cols-[0.8fr,1.2fr] lg:gap-16">
+        <div class="mx-auto w-full max-w-[280px] md:mx-0">
+          <img
+            src="/dodie-portrait-portrait.jpg"
+            alt="Dodie Kendall, QHHT practitioner in Stuart, Florida"
+            width="560"
+            height="700"
+            loading="lazy"
+            class="h-auto w-full rounded-lg object-cover shadow-[0_24px_48px_-24px_oklch(0.18_0.018_240_/_0.4)]"
+          />
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.22em] text-brand">Written by</p>
+          <h2 class="mt-3 font-display text-ink">
+            <span class="block">Dodie Kendall,</span>
+            <span class="italic-accent block text-brand">in Stuart, Florida.</span>
+          </h2>
+          <p class="mt-5 max-w-prose text-lg leading-relaxed text-ink-secondary">
+            I am a Quantum Healing Hypnosis practitioner trained in the Dolores Cannon
+            lineage. I wrote this guide because almost everyone who sits down with me
+            says the same thing first: I did not know what to expect. You should not
+            have to walk in wondering.
+          </p>
+          <p class="mt-4 max-w-prose text-lg leading-relaxed text-ink-secondary">
+            Read it, keep it, and if the work is for you, you will know. I am the
+            invitation, not the insistence.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <TestimonialGrid
+    heading="What people say"
+    headingItalic="after a session."
+  />
+
+  <!-- ===== SOFT CLOSE — booking stays secondary on this page ===== -->
+  <ClosingCTA
+    headlineLead="Start with the guide."
+    headlineItalic="The session can wait"
+    headlineTail="until you are ready."
+    subhead="Read it first. When it feels right, a session is five unhurried hours and you take the recording home."
+    cta={{ label: 'Send me the guide', href: '#fg-form' }}
+    trustLine="Stuart, FL · Free · No session required"
+  />
+
+  <!-- Sticky mobile CTA — keeps the offer in the thumb zone -->
+  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-bg-raised/95 p-3 shadow-[0_-8px_24px_-12px_oklch(0.18_0.018_240_/_0.35)] backdrop-blur-sm md:hidden">
+    <a
+      href="#fg-form"
+      class="flex w-full items-center justify-center rounded-pill bg-brand px-5 py-3 text-sm font-medium text-ink-inverse shadow-sm"
+    >
+      Send me the free guide &rarr;
+    </a>
+  </div>
+</LandingLayout>
+
+<script is:inline>
+  (function () {
+    var form = document.getElementById('fg-form');
+    var status = document.getElementById('fg-status');
+    var firstName = document.getElementById('fg-first-name');
+    if (!form || !status || !firstName) return;
+
+    var READY =
+      'Beautiful, your guide is ready. <a href="/dodie-kendall-prep-guide.pdf" target="_blank" rel="noopener" class="font-semibold underline text-brand hover:text-brand-hover">Open your prep guide →</a>';
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var email = form.querySelector('[name="email"]');
+      if (!email || !email.value) {
+        status.textContent = 'Please add your email.';
+        status.className = 'mt-4 text-sm text-error';
+        return;
+      }
+      var fn = firstName.value && firstName.value.trim() ? firstName.value.trim() : 'Friend';
+      status.textContent = 'Sending…';
+      status.className = 'mt-4 text-sm text-ink-muted';
+      try {
+        await fetch('/api/lead-magnet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            firstName: fn,
+            email: email.value,
+            consentMarketing: true,
+            website: '',
+          }),
+        });
+      } catch (err) {
+        /* the guide is still delivered below; capture failures are logged server-side */
+      }
+      status.innerHTML = READY;
+      status.className = 'mt-4 text-sm text-success';
+      form.reset();
+    });
+  })();
+</script>
