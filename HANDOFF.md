@@ -3,7 +3,9 @@
 > Written for a developer who has never seen this project. Read this file top to
 > bottom before touching anything. No secret values appear here — names only.
 >
-> Companion doc for the site owners (non-technical): `docs/Ownership-and-Continuity-Kit.docx`.
+> A companion document for the site owners, written in non-technical language
+> ("Website Ownership and Continuity Kit"), is delivered to Dodie and Clint directly.
+> It is generated from this file and deliberately not tracked in the repo.
 
 ---
 
@@ -95,6 +97,21 @@ npm run build
 npx wrangler deploy      # uploads dist/ + dist/_worker.js/index.js
 ```
 
+**Set the build-time variables before `npm run build`.** `SITE_URL`,
+`PUBLIC_PLAUSIBLE_DOMAIN` and `PUBLIC_FB_PIXEL_ID` are read by Astro/Vite *at build
+time*, not by the Worker at runtime — they are not in `.dev.vars`, and `wrangler
+secret` / `wrangler.toml [vars]` cannot supply them. Build with them present in the
+shell (or a `.env.production`), or the deployed bundle silently ships with no
+analytics and no ad attribution:
+
+```bash
+SITE_URL=https://dodiekendall.com PUBLIC_PLAUSIBLE_DOMAIN=dodiekendall.com \
+  PUBLIC_FB_PIXEL_ID=<the pixel id> npm run build
+grep -rl "plausible.io" dist | head -1    # sanity check: the tag made it into the build
+```
+
+Everything else in §5 is a Worker runtime binding, read via `locals.runtime.env`.
+
 Verify in the Cloudflare dashboard under the Worker's **Overview → Versions**
 list (each version shows the commit), or by curling the site and grepping for
 your change. The Worker also serves at its `*.workers.dev` subdomain, which is
@@ -144,6 +161,22 @@ values.
 | `BOOKING_CALENDAR_FALLBACK_URL` | no | Worker var (optional) | Direct calendar link shown if the booking iframe fails |
 | `SENTRY_DSN` | secret | not provisioned | Reserved for future error monitoring |
 | `LOGFLARE_API_KEY` | secret | not provisioned | Reserved for future log shipping |
+
+### GoHighLevel identifiers that are NOT environment variables
+
+Three GHL bindings are hard-coded in source, so a move to a different GHL subaccount
+must change these too or those leads keep flowing to the old tenant:
+
+| Where | What is hard-coded |
+| --- | --- |
+| `src/pages/contact.astro` | the GHL **form id** (appears as `data-form-id`, `id` and `data-layout-iframe-id` on the iframe) — this iframe, not `/api/contact`, is the live contact form |
+| `src/components/ChatWidget.astro` | the GHL **chat widget id** (`data-widget-id`) and the practice phone number |
+| `src/pages/api/*.ts` | nothing hard-coded — these read the variables above |
+
+`/api/contact` is currently **unused by any page**; it exists to back a future
+chat/AI path. `/api/quiz` and `/api/lead-magnet` are live. When migrating tenants,
+verify every lead surface: booking iframe, contact iframe, chat widget, quiz, and
+lead magnet.
 
 `PUBLIC_*` variables are inlined into the client bundle at build time — never put
 anything sensitive behind that prefix. Everything else is read server-side via
@@ -200,6 +233,13 @@ put` it, redeploy, then revoke the old one.
 | Variable inventory with purposes | `ENV.md` |
 | Compliance language limits (QHHT is hypnosis, not medicine) | `COMPLIANCE.md`, `LEGAL-DISCLAIMERS.md` |
 | Launch/rollback and routine upkeep | `LAUNCH-CHECKLIST.md`, `MAINTENANCE-GUIDE.md` |
+
+> **Those older docs predate the move to Cloudflare Workers.** `README.md`, `ENV.md`,
+> `TECH-SPEC.md`, `LAUNCH-CHECKLIST.md`, `CLAUDE.md` and `ADR/ADR-001` still describe
+> Cloudflare **Pages** with push-to-deploy, and `wrangler.toml` carries a comment from
+> that era saying every push triggers a deploy. That Git-integrated build pipeline is
+> dead — it has not run successfully since an early wrangler-3 failure. §4 of this file
+> is the authoritative deploy procedure; where those files disagree, this one wins.
 
 Two standing rules worth repeating: **no medical or therapeutic claims** anywhere
 in copy or metadata, and **no lead data routed anywhere but Dodie's own GHL
