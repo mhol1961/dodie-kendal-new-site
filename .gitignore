@@ -70,3 +70,9 @@ _to_delete/
 
 # Client proposals — pricing, not for a public repo
 IntellaGrow-Kendall-Proposal-*
+
+# claude-mem drops an empty CLAUDE.md into public/, which Astro publishes to the live site
+public/CLAUDE.md
+
+# Client-facing Word deliverables — generated, not source
+docs/*.docx

@@ -1,110 +1,206 @@
 # HANDOFF — dodiekendall.com
 
-> Client handoff doc — used at transition from build to retainer, or to a future agency.
-> Status: **STUB — fill at launch.**
+> Written for a developer who has never seen this project. Read this file top to
+> bottom before touching anything. No secret values appear here — names only.
+>
+> Companion doc for the site owners (non-technical): `docs/Ownership-and-Continuity-Kit.docx`.
 
 ---
 
-## 1. What you have
+## 1. What this site is
 
-A complete website at `https://dodiekendall.com` consisting of:
+`dodiekendall.com` is the marketing and booking site for **Dodie Kendall**, a
+Quantum Healing Hypnosis Technique (QHHT) practitioner in Stuart, Florida.
+It replaces an older GoHighLevel-hosted site. GoHighLevel (GHL) is now used
+purely as the CRM/booking backend — no page building, no hosting.
 
-- 7 primary pages (Home, About, QHHT, Book, Contact, FAQ, Insights index)
-- N blog posts under `/insights/[slug]`
-- Privacy Policy and Terms & Conditions pages
-- A booking flow that uses your existing GoHighLevel calendar
-- A lead-magnet email gate that delivers your pre-session prep guide
-- A contact form that creates contacts in your GHL subaccount
+**Owners:** Dodie and Clint Kendall.
+**Built and maintained by:** Mark Holland / IntellaGrow.
 
-The site is built with Astro (a modern static-site framework), hosted on Cloudflare Pages.
+Pages live under `src/pages/`: home, about, QHHT explainer, book, contact, FAQ,
+testimonials, resources, videos, insights (blog), free-guide + three paid-traffic
+landing pages, privacy, terms. Server endpoints live in `src/pages/api/`
+(`contact`, `lead-magnet`, `quiz`, `videos.json`, `health`).
 
-## 2. What you own
+**Sister site:** `guidingwinds-unplug.com` — same client, different brand,
+**separate repository**. It is mentioned here only because its deploy path
+differs (see §4).
 
-- **Your domain** (`dodiekendall.com`) — registered in your name.
-- **Your GHL subaccount** — contains all contacts, automations, and the calendar that powers booking.
-- **The website code** — this repository.
-- **All content** — copy, images, blog posts, the prep guide PDF.
-- **Your analytics data** — Plausible account.
-- **All third-party accounts** (Google Search Console, Bing Webmaster, etc.) under your email.
+---
 
-## 3. What IntellaGrow holds (operational)
+## 2. Stack
 
-- The deployment pipeline (Cloudflare Pages project bound to the GitHub repo).
-- The GitHub repository (you have admin access; we maintain).
-- The fallback transactional email account (Resend or Postmark) — your domain, our agency-managed account; transferable on request.
+| Layer | Choice |
+| --- | --- |
+| Framework | Astro (latest 4.x line), `output: 'hybrid'` — static pages plus SSR for `/book` and `/api/*` |
+| Styling | Tailwind CSS + a small hand-ported subset of shadcn/ui primitives |
+| Language | TypeScript (strict) |
+| Content | Astro Content Collections (`src/content/insights`, `src/content/testimonials`), Markdown/MDX |
+| Hosting | Cloudflare Workers (Workers Assets serves `dist/`; the Worker handles SSR routes) |
+| Adapter | `@astrojs/cloudflare` |
+| Node | 20.x–22.x (see `engines` in `package.json` and `.nvmrc`) |
 
-## 4. Access keys / credentials
+Config files: `astro.config.mjs`, `tailwind.config.mjs`, `wrangler.toml`,
+`tsconfig.json`.
 
-> ⚠️ **TODO:** fill at launch.
+Do not introduce a client-side framework runtime. Interactivity is plain
+progressive-enhancement JS inside `.astro` components.
 
-| Service | Account | Who has it |
-| --- | --- | --- |
-| GoHighLevel | Dodie's subaccount | Dodie (primary); IntellaGrow (delegated user with limited scope) |
-| Cloudflare Pages | dodiekendall-com project | IntellaGrow (operations); Dodie (read access via shared org) |
-| Cloudflare DNS | dodiekendall.com zone | Dodie (registrant); IntellaGrow (admin user) |
-| GitHub repo | IntellaGrow org | IntellaGrow (maintainer); Dodie (admin invite) |
-| Plausible | dodiekendall.com property | Dodie + IntellaGrow |
-| Google Search Console | dodiekendall.com property | Dodie (owner) + IntellaGrow (delegated) |
-| Bing Webmaster | dodiekendall.com property | Dodie (owner) + IntellaGrow (delegated) |
-| Resend / Postmark | TBD | IntellaGrow (managed) |
+---
 
-## 5. Operating instructions
+## 3. Running it locally
 
-### To publish a new blog post (with IntellaGrow on retainer)
+```bash
+git clone https://github.com/mhol1961/dodie-kendal-new-site.git
+cd dodie-kendal-new-site
+npm install
 
-You write the rough idea or a few notes; send to Mark. We draft per `BRAND-VOICE.md`, run the self-critique trio, and ship.
+cp .dev.vars.example .dev.vars   # fill in real values; .dev.vars is gitignored
+npm run dev                      # http://localhost:5400
+```
 
-### To publish a new blog post (after retainer ends, optional Phase 2 path)
+`.dev.vars` (not `.env`) is what the Cloudflare `platformProxy` reads in dev, so
+the `/api/*` endpoints see the same variables they will see in production. A
+missing value does not crash the dev server — the endpoints return a
+configuration error instead.
 
-If you've opted into the headless CMS layer, log in at `cms.dodiekendall.com`, click "New post," type the post, click "Publish." (Setup required — Phase 2 candidate.)
+Other scripts:
 
-### To update a static page (About, FAQ, etc.)
+```bash
+npm run build       # → ./dist  (plus a postbuild step writing dist/.assetsignore)
+npm run preview     # serve the production build locally
+npm run typecheck   # astro check
+npm run lint
+npm run test:feed   # unit test for the YouTube feed parser
+npm run test:e2e    # Playwright
+```
 
-With retainer: send Mark the change.
-Without retainer: requires a developer or the CMS layer above.
+If you are developing on a Windows drive mounted into WSL (`/mnt/c/...`), file
+watching does not work; run dev with `WATCHPACK_POLLING=true` or expect stale
+bundles.
 
-### To check site health
+---
 
-- Status: Cloudflare Pages dashboard.
-- Traffic: Plausible dashboard.
-- Search: Google Search Console + Bing Webmaster.
+## 4. How a change gets published
 
-### To rotate the GHL token
+### dodiekendall.com — Cloudflare Workers, via `wrangler deploy`
 
-(Per `ENV.md`.) Generate a new Private Integration Token in GHL → update in Cloudflare Pages env vars → redeploy. Document in `CHANGELOG.md`.
+**A GitHub push alone does NOT publish this site.** The Cloudflare "Builds" tab
+in the dashboard is a dead pipeline stuck on an old failure — ignore it. The
+live site updates only when a new Worker Version is uploaded:
 
-## 6. Recurring obligations
+```bash
+git push origin main
+npm run build
+npx wrangler deploy      # uploads dist/ + dist/_worker.js/index.js
+```
 
-| Task | Cadence | Owner | Why |
+Verify in the Cloudflare dashboard under the Worker's **Overview → Versions**
+list (each version shows the commit), or by curling the site and grepping for
+your change. The Worker also serves at its `*.workers.dev` subdomain, which is
+useful for verifying before the custom domain is checked.
+
+Deploy target details are in `wrangler.toml`: Worker name, `main`, the `[assets]`
+block (`directory = "./dist"`, binding `ASSETS`, `run_worker_first = true`), and
+the non-secret `[vars]`.
+
+> Important: every `wrangler deploy` **resets plain-text variables set in the
+> dashboard** but preserves Secrets. Therefore non-secret runtime vars must live
+> in `wrangler.toml [vars]`, and secrets must be set with `wrangler secret put`
+> (or the dashboard's Secrets section) — never in the toml.
+
+### guidingwinds-unplug.com — Cloudflare Pages, via GitHub push
+
+The sister site (separate repo) is on **Cloudflare Pages** bound to its GitHub
+repository: pushing to `main` triggers a build and publishes automatically. Pull
+requests get preview deployments. No `wrangler` step is needed there.
+
+### Branching
+
+`main` is deployable. Feature branches off `main`, squash-merge back.
+Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`).
+
+---
+
+## 5. Environment variables and secrets — names only
+
+No values appear in this repo or this file. `ENV.md` carries the same inventory
+with purposes; `.env.example` and `.dev.vars.example` carry the names with empty
+values.
+
+| Name | Secret? | Where it lives in production | Purpose |
 | --- | --- | --- | --- |
-| Cloudflare Pages hosting | Free tier (current usage) | Dodie/IntellaGrow | Hosting |
-| Domain renewal | Annually | Dodie | Don't let this lapse. |
-| SSL renewal | Auto (Cloudflare) | Cloudflare | No action. |
-| Plausible subscription | Monthly | Dodie/IntellaGrow | Analytics. |
-| Resend/Postmark | As-used | IntellaGrow | Fallback email. |
-| Counsel review of legal docs | Annually | Dodie + counsel | Compliance. |
-| GHL subscription | Monthly | Dodie | CRM. |
+| `GHL_PRIVATE_INTEGRATION_TOKEN` | **secret** | Cloudflare Worker **Secret** (`wrangler secret put`) | Auth for every GoHighLevel API call from `src/lib/ghl.ts` |
+| `GHL_LOCATION_ID` | no | `wrangler.toml [vars]` | Dodie's GHL subaccount (location) id |
+| `GHL_CALENDAR_ID` | no | `wrangler.toml [vars]` | The QHHT booking calendar embedded on `/book` |
+| `GHL_WORKFLOW_LEAD_MAGNET_ID` | no | `wrangler.toml [vars]` (when used) | Workflow that delivers the prep-guide PDF |
+| `GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID` | no | `wrangler.toml [vars]` (when used) | Contact-form auto-responder workflow |
+| `SITE_URL` | no | build environment (defaults to the canonical URL in `astro.config.mjs`) | Canonicals, OG tags, sitemap, JSON-LD |
+| `PUBLIC_PLAUSIBLE_DOMAIN` | no | build environment | Enables the Plausible tag in `Base.astro` (production builds only) |
+| `PUBLIC_FB_PIXEL_ID` | no | build environment | Enables `MetaPixel.astro`. Blank renders nothing. **If you change tracking, update `/privacy` in the same commit.** |
+| `RESEND_API_KEY` | **secret** | Cloudflare Worker Secret (optional; currently not provisioned) | Fallback transactional email if the GHL write path fails |
+| `FALLBACK_EMAIL_TO` | no | Worker var (optional) | Recipient for that fallback |
+| `FALLBACK_EMAIL_FROM` | no | Worker var (optional) | Verified sender for that fallback |
+| `BOOKING_CALENDAR_FALLBACK_URL` | no | Worker var (optional) | Direct calendar link shown if the booking iframe fails |
+| `SENTRY_DSN` | secret | not provisioned | Reserved for future error monitoring |
+| `LOGFLARE_API_KEY` | secret | not provisioned | Reserved for future log shipping |
 
-## 7. Where to find documentation
+`PUBLIC_*` variables are inlined into the client bundle at build time — never put
+anything sensitive behind that prefix. Everything else is read server-side via
+`locals.runtime.env`.
 
-Every aspect of the site is documented in this repo:
-
-- Vision/business: `PRD.md`
-- Technical: `TECH-SPEC.md`, `CLAUDE.md`, `ADR/`, `ENV.md`
-- Visual: `DESIGN.md`
-- Voice: `BRAND-VOICE.md`, `COPY-DECK.md`
-- SEO: `SEO-PLAN.md`, `KEYWORDS.md`, `SCHEMA.md`
-- Integrations: `GHL-INTEGRATION.md`
-- Compliance: `COMPLIANCE.md`, `LEGAL-DISCLAIMERS.md`, `INTAKE-FORMS.md`, `PRIVACY-NOTES.md`
-- Operations: `MAINTENANCE-GUIDE.md`, `POST-LAUNCH-PLAN.md`, `QA-CHECKLIST.md`, `LAUNCH-CHECKLIST.md`
-- History: `CHANGELOG.md`, `ROADMAP.md`, `BACKLOG.md`
-
-If anyone — any future developer, any future agency, you yourself — needs to make a change, they should be able to read the relevant doc and proceed without needing to interview the original team.
-
-## 8. Contact for build-related questions
-
-Mark Holland · IntellaGrow · mhollandanalyst@gmail.com
+Rotation: rotate the GHL token roughly every 6 months or on any staffing change —
+issue a new Private Integration Token in Dodie's GHL subaccount, `wrangler secret
+put` it, redeploy, then revoke the old one.
 
 ---
 
-*Last updated: 2026-05-17 — STUB. Fill at launch with actual credentials and current state.*
+## 6. External services this site depends on
+
+| Service | What it does here | Notes |
+| --- | --- | --- |
+| **Cloudflare** | Hosting (Workers + Workers Assets for this site; Pages for the sister site), DNS, TLS | The whole site is down if this account is down |
+| **GitHub** (`mhol1961/dodie-kendal-new-site`) | Source of truth for the code | Not in the serving path — the live site keeps running if GitHub is unreachable |
+| **GoHighLevel** | CRM, contact records, the booking calendar embedded on `/book`, the contact form iframe on `/contact`, the chat widget, automation workflows, prep-guide email delivery | Embeds are served from `api.leadconnectorhq.com` and `widgets.leadconnectorhq.com`. Must be **Dodie's own subaccount** — never an agency subaccount |
+| **YouTube** | The `/videos` "Latest Videos" section reads the channel RSS feed via `/api/videos.json`; thumbnails are a click-to-play facade so no YouTube JS loads until clicked | Feed failure degrades gracefully |
+| **Meta (Facebook) Pixel** | Ad conversion tracking, active only when `PUBLIC_FB_PIXEL_ID` is set | Whatever is live must be reflected on `/privacy` |
+| **Plausible** | Privacy-first analytics, production builds only | No cookies |
+| **Google Search Console / Bing Webmaster** | Search indexing and diagnostics | Registered under the owners' email |
+| **Stripe** | **Not used.** No Stripe code, keys, or checkout exist in this repo | Booking deposits are collected inside GoHighLevel, not by this site |
+
+---
+
+## 7. Domain and DNS
+
+- `dodiekendall.com` is the canonical domain; the zone is managed in **Cloudflare
+  DNS**, and the registrar is held by the owners.
+- The apex record points at the Cloudflare Worker (CNAME with flattening at the
+  apex); `www` redirects to the apex. TLS is Cloudflare-issued; there is nothing
+  to renew manually.
+- Custom-domain binding lives on the Worker itself (Cloudflare dashboard →
+  the Worker → Domains & Routes). The `*.workers.dev` subdomain stays available
+  as a verification URL.
+- The site was cut over from the old GHL-hosted site; `LAUNCH-CHECKLIST.md`
+  records the cutover sequence and the rollback (repoint DNS at the previous GHL
+  targets, wait ~5 minutes).
+- The sister site's domain is a separate Cloudflare zone pointed at its
+  Cloudflare Pages project.
+
+---
+
+## 8. Where to look next
+
+| Question | File |
+| --- | --- |
+| Conventions, hard rules, which skills to run | `CLAUDE.md` |
+| Design tokens and component system | `DESIGN.md` |
+| Requirements and page hierarchy | `PRD.md` |
+| Technical detail, form schemas | `TECH-SPEC.md` |
+| GHL endpoints, form + calendar wiring | `GHL-INTEGRATION.md` |
+| Variable inventory with purposes | `ENV.md` |
+| Compliance language limits (QHHT is hypnosis, not medicine) | `COMPLIANCE.md`, `LEGAL-DISCLAIMERS.md` |
+| Launch/rollback and routine upkeep | `LAUNCH-CHECKLIST.md`, `MAINTENANCE-GUIDE.md` |
+
+Two standing rules worth repeating: **no medical or therapeutic claims** anywhere
+in copy or metadata, and **no lead data routed anywhere but Dodie's own GHL
+subaccount**.
