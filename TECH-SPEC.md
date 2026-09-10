@@ -2,6 +2,8 @@
 
 > Technical specification for the Astro + Tailwind + shadcn/ui rebuild.
 > Pair with `PRD.md` (what) and `BUILD-PROMPTS.md` (how, sequenced).
+>
+> **Deploy procedure: see `HANDOFF.md` section 4.** (This file's Cloudflare Pages / push-to-deploy references predate the move to Cloudflare Workers.)
 
 ---
 

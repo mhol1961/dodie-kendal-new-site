@@ -6,7 +6,7 @@ This is a rebuild of an existing GoHighLevel-hosted site. The new build lives on
 
 ## Quick facts
 
-- **Stack:** Astro + Tailwind CSS + a hand-curated subset of shadcn/ui, deployed to Cloudflare Pages.
+- **Stack:** Astro + Tailwind CSS + a hand-curated subset of shadcn/ui, deployed to Cloudflare Workers.
 - **Booking:** Existing GHL 5-hour / $300 / $50-deposit calendar, embedded inside the new design.
 - **Sister site:** [guidingwinds-unplug.com](https://guidingwinds-unplug.com) — same client, separate brand and codebase.
 - **Reference site:** [shiftedsouls.com](https://shiftedsouls.com) — prior QHHT build by the same agency (visual + IA reference).
@@ -39,7 +39,7 @@ Supporting docs:
 npm install
 
 # Run dev server
-npm run dev          # http://localhost:4321
+npm run dev          # http://localhost:5400
 
 # Production build
 npm run build        # outputs ./dist
@@ -50,13 +50,25 @@ npm run preview
 
 ## Environment variables
 
-See [ENV.md](./ENV.md) for the full list (names + purpose, no values). Copy `.env.example` to `.env.local` for development. **Never commit `.env*` files containing secrets.**
+See [ENV.md](./ENV.md) for the full list (names + purpose, no values). For local development copy `.dev.vars.example` to `.dev.vars` — that is what the Cloudflare platform proxy reads, so the `/api/*` endpoints see the same variables they get in production. **Never commit `.dev.vars` or `.env*` files containing secrets.**
 
 ## Deployment
 
-- **Production:** Cloudflare Pages, branch `main`, auto-deploy on push.
-- **Preview:** Cloudflare Pages preview deployments on PRs.
-- **Domain cutover from GHL → CF Pages:** see [LAUNCH-CHECKLIST.md](./LAUNCH-CHECKLIST.md).
+**A GitHub push does not publish this site.** The live site updates only when a new
+Worker version is uploaded:
+
+```bash
+git push origin main
+npm run build        # set SITE_URL, PUBLIC_PLAUSIBLE_DOMAIN, PUBLIC_FB_PIXEL_ID first
+npx wrangler deploy  # uploads dist/ + dist/_worker.js/index.js
+```
+
+- **Production:** Cloudflare Workers, static assets served from `dist/` via Workers Assets; the Worker handles the SSR routes (`/book`, `/api/*`). Target config lives in `wrangler.toml`.
+- **Verifying a deploy:** the Worker's **Overview → Versions** list in the Cloudflare dashboard, or curl the site and grep for your change. The dashboard's "Builds" tab is a dead Git-integrated pipeline — ignore it.
+- **Full procedure, including secrets and build-time variables:** [HANDOFF.md](./HANDOFF.md) section 4.
+- **Domain cutover from GHL:** see [LAUNCH-CHECKLIST.md](./LAUNCH-CHECKLIST.md).
+
+> The sister site, guidingwinds-unplug.com, is a separate repo on Cloudflare Pages, where pushing to `main` *does* publish. Don't carry that habit over to this one.
 
 ## Contributing
 

@@ -2,6 +2,8 @@
 
 > Project context, conventions, and skill invocations for AI agents working on this codebase.
 > If you're an AI assistant opening this repo: **read this file first**, then `DESIGN.md`, then `PRD.md`.
+>
+> **Deploy procedure: see `HANDOFF.md` section 4.** (This file's Cloudflare Pages / push-to-deploy references predate the move to Cloudflare Workers.)
 
 ---
 

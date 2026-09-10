@@ -2,6 +2,8 @@
 
 > Retainer-phase operating manual. What gets done weekly, monthly, quarterly.
 > Covers the $250–$500/month maintenance retainer scope (final pricing decided in the separate `proposal-generator-pipeline` output).
+>
+> **Deploy procedure: see `HANDOFF.md` section 4.** (This file's Cloudflare Pages / push-to-deploy references predate the move to Cloudflare Workers.)
 
 ---
 

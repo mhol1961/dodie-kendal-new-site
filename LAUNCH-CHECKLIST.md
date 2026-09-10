@@ -2,6 +2,8 @@
 
 > Day-of launch sequence: DNS, SSL, analytics, search consoles, smoke tests.
 > Run after `QA-CHECKLIST.md` is all green.
+>
+> **Deploy procedure: see `HANDOFF.md` section 4.** (This file's Cloudflare Pages / push-to-deploy references predate the move to Cloudflare Workers.)
 
 ---
 

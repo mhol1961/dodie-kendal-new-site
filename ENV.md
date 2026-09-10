@@ -1,15 +1,17 @@
 # ENV — dodiekendall.com
 
 > Environment variable inventory: names and purposes ONLY. No values, no secrets.
-> Actual values live in Cloudflare Pages env settings (production + preview) and developer `.env.local` files (never committed).
+> Actual values live in `wrangler.toml` `[vars]` (non-secret runtime), Cloudflare Worker Secrets (secret runtime), the build shell (build-time `SITE_URL` / `PUBLIC_*`), and developer `.dev.vars` files (never committed).
+>
+> Deploy procedure: see `HANDOFF.md` section 4.
 
 ---
 
-## 1. Required (production + preview)
+## 1. Required (production)
 
 | Variable | Type | Purpose | Owner |
 | --- | --- | --- | --- |
-| `GHL_PRIVATE_INTEGRATION_TOKEN` | secret | Dodie's GHL Private Integration Token. Used by `src/lib/ghl.ts` for all GHL API calls. | Dodie (issued from her GHL subaccount). |
+| `GHL_PRIVATE_INTEGRATION_TOKEN` | secret | Dodie's GHL Private Integration Token. Used by `src/lib/ghl.ts` for all GHL API calls. Set as a Worker Secret. | Dodie (issued from her GHL subaccount). |
 | `GHL_LOCATION_ID` | non-secret | Dodie's GHL location/subaccount ID. Required by some GHL endpoints. | Dodie. |
 | `GHL_CALENDAR_ID` | non-secret | ID of Dodie's 5-hour QHHT booking calendar. Used in the `/book` iframe URL. | Dodie. |
 | `GHL_WORKFLOW_LEAD_MAGNET_ID` | non-secret | Workflow ID for the lead-magnet PDF delivery + nurture sequence. | Dodie (created in her GHL UI). |
@@ -38,10 +40,12 @@ Decided in ADR-003 (forthcoming). One of:
 
 ## 4. Development conventions
 
-- **Local development:** copy `.env.example` to `.env.local`, fill values, never commit.
+- **Local development:** copy `.dev.vars.example` to `.dev.vars`, fill values, never commit. The Cloudflare platform proxy reads `.dev.vars`, so `/api/*` sees the same variables it gets in production.
 - **Sandbox values:** use Dodie's sandbox/staging subaccount values during build. Swap to production at launch per `LAUNCH-CHECKLIST.md`.
-- **Preview deploys:** use sandbox values; verify before promoting to production.
-- **Production:** values set in Cloudflare Pages → Settings → Environment Variables (encrypted at rest).
+- **Production — non-secret runtime:** `wrangler.toml` `[vars]`. These must live in the toml, not the dashboard: every `wrangler deploy` resets dashboard-set plain-text variables (Secrets are preserved).
+- **Production — secrets:** Cloudflare Worker Secrets, set with `wrangler secret put` or the dashboard. Never in `wrangler.toml`.
+- **Production — build-time:** `SITE_URL`, `PUBLIC_PLAUSIBLE_DOMAIN` and `PUBLIC_FB_PIXEL_ID` are inlined by Astro during `npm run build` and must be present in the build shell. Neither `wrangler.toml` nor Worker Secrets can supply them; a build without them ships with no analytics and no ad attribution.
+- **`PUBLIC_` prefix:** inlined into the client bundle. Never put anything sensitive behind it.
 
 ## 5. Rotation policy
 
@@ -53,7 +57,7 @@ Decided in ADR-003 (forthcoming). One of:
 
 ## 6. Never commit
 
-- `.env`, `.env.local`, `.env.*.local` are git-ignored (`.gitignore` covers this).
+- `.dev.vars`, `.env`, `.env.local`, `.env.*.local` are git-ignored (`.gitignore` covers this).
 - No secrets in commit history. If a secret is accidentally committed, rotate it immediately and force-push a scrubbed history; document the incident in `CHANGELOG.md`.
 
 ---
