@@ -70,8 +70,12 @@ created in GHL and added to `FIELD_IDS` first. Fields in use: `your_message`
 (pre-existing "Your Message"), `consent_marketing`, `consent_transactional` (created
 via API 2026-10-03, large text).
 
-Remaining design choice: consent is **single opt-in** (recorded on submission, no
-email-confirmation link), like most newsletter forms.
+**Free guide = double opt-in** (2026-10-03). Sign-up records `consent_marketing` as
+`Pending email confirmation | ...` and tags `optin_pending`. The guide email's button is a
+signed confirm link (`/api/confirm-optin`) that writes `Yes | ... confirmed by email link`,
+tags `optin_confirmed`, removes `optin_pending`, and opens the guide. GHL marketing
+workflows must skip contacts tagged `optin_pending` (workflow filters are GHL-UI only).
+The quiz and contact forms stay single opt-in (explicit checkbox).
 
 Consent fields hold an auditable record: `Yes | <form> | <ISO time> | "<exact wording shown>"`.
 

@@ -155,6 +155,7 @@ values.
 | `GHL_LOCATION_ID` | no | `wrangler.toml [vars]` | Dodie's GHL subaccount (location) id |
 | `GHL_CALENDAR_ID` | no | `wrangler.toml [vars]` | The QHHT booking calendar embedded on `/book` |
 | `LEAD_DB` | no | `wrangler.toml [[d1_databases]]` (schema: `migrations/`) | Free-guide abuse limits (per-address daily email, per-IP hourly cap) |
+| `OPTIN_SECRET` | **secret** | Cloudflare Worker Secret | Signs double opt-in confirm links for the free guide |
 | `TURNSTILE_SECRET_KEY` | **secret** | Cloudflare Worker Secret | Spam check on the free-guide sign-up; without it every sign-up is rejected |
 | `PUBLIC_TURNSTILE_SITE_KEY` | no | build environment (`.env.production`) | Turnstile widget site key; the build fails without it |
 | `GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID` | no | `wrangler.toml [vars]` (when used) | Contact-form auto-responder workflow |

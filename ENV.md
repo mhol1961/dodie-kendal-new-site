@@ -15,6 +15,7 @@
 | `GHL_LOCATION_ID` | non-secret | Dodie's GHL location/subaccount ID. Required by some GHL endpoints. | Dodie. |
 | `GHL_CALENDAR_ID` | non-secret | ID of Dodie's 5-hour QHHT booking calendar. Used in the `/book` iframe URL. | Dodie. |
 | `LEAD_DB` | D1 binding (in `wrangler.toml`; schema in `migrations/`) | Free-guide abuse limits: one guide email per address per day, 5 sign-ups per IP per hour. Missing binding = no guide emails sent (logged). Apply schema: `npx wrangler d1 migrations apply dodie-lead-limits --remote`. | Agency. |
+| `OPTIN_SECRET` | secret | Signs the free-guide double opt-in confirm links (`src/lib/optin.ts`). Rotating it invalidates unclicked confirm links (they still open the guide). Set as a Worker Secret. | Agency. |
 | `TURNSTILE_SECRET_KEY` | secret | Cloudflare Turnstile secret for the free-guide sign-up. `/api/lead-magnet` rejects every sign-up without it. Set as a Worker Secret. | Agency (Cloudflare widget "Dodie Kendall QHHT - free guide sign-up"). |
 | `PUBLIC_TURNSTILE_SITE_KEY` | non-secret, **build-time** | Turnstile site key (`0x4AAAAAAFM2euvUYEivwvlo`), inlined by `TurnstileWidget.astro`. Lives in the gitignored `.env.production` on the build machine; the production build fails without it. | Agency. |
 | `GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID` | non-secret | Workflow ID for the contact-form auto-responder. | Dodie. |
