@@ -16,6 +16,7 @@ import { z } from 'zod';
 import { upsertContact, applyTag, addNote, sendContactEmail, consentRecord, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
 import { verifyRequest } from '@lib/turnstile';
+import { optinToken, confirmUrl } from '@lib/optin';
 import { allowIp, claimGuideEmail, releaseGuideEmail, type D1Like } from '@lib/guide-limits';
 
 export const prerender = false;
@@ -124,11 +125,14 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   }
 
   // Step 1 — capture. Only a failure HERE means the lead is lost (→ fallback).
-  const consent = consentRecord(true, `free-guide sign-up (${data.form})`, CONSENT_TEXT[data.form], submittedAt);
+  // Double opt-in: recorded as pending until the emailed confirm link is clicked
+  // (/api/confirm-optin). First-write-only, so an existing record is never replaced.
+  const consent = consentRecord('pending', `free-guide sign-up (${data.form})`, CONSENT_TEXT[data.form], submittedAt);
   let contactId: string;
   let emailDnd: boolean | null;
+  let tags: string[];
   try {
-    ({ id: contactId, emailDnd } = await upsertContact(
+    ({ id: contactId, emailDnd, tags } = await upsertContact(
       {
         firstName,
         email: data.email,
@@ -161,13 +165,14 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
 
   // Step 2 — tags are best-effort enrichment (as in quiz.ts): the lead is captured,
   // so a tag failure must not skip the guide email or trigger the fallback.
-  for (const tag of ['site_lead_magnet', 'site_v2']) {
+  const confirmed = tags.includes('optin_confirmed');
+  for (const tag of ['site_lead_magnet', 'site_v2', ...(confirmed ? [] : ['optin_pending'])]) {
     await applyTag(contactId, tag, { GHL_PRIVATE_INTEGRATION_TOKEN: token }).catch((err) =>
       console.error(`[lead-magnet] applyTag ${tag} failed (contact ${contactId} captured)`, err)
     );
   }
 
-  await addNote(contactId, `Free-guide sign-up. Consent: ${consent}`, {
+  await addNote(contactId, `Free-guide sign-up${confirmed ? ' (email already confirmed)' : ''}. Consent: ${consent}`, {
     GHL_PRIVATE_INTEGRATION_TOKEN: token,
   }).catch((err) => console.error('[lead-magnet] consent note failed (contact captured)', err));
 
@@ -187,11 +192,20 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   }
   if (claim === null) return json(200, { ok: true, captured: true, emailed: false, reason: 'recent' });
 
+  // Unconfirmed: the button is the signed confirm link, which records consent and
+  // then opens the guide. Already confirmed (or no secret configured): straight to it.
+  let buttonUrl = GUIDE_URL;
+  if (!confirmed && env.OPTIN_SECRET) {
+    buttonUrl = confirmUrl('https://dodiekendall.com', contactId, await optinToken(env.OPTIN_SECRET, contactId, data.email));
+  } else if (!confirmed) {
+    console.error('[lead-magnet] OPTIN_SECRET missing — sending the guide without a confirm link');
+  }
+
   // NOT retried (a replay would duplicate the email). The page still offers the link.
   try {
     await sendContactEmail(
       contactId,
-      { subject: GUIDE_SUBJECT, html: guideEmailHtml(firstName) },
+      { subject: GUIDE_SUBJECT, html: guideEmailHtml(firstName, buttonUrl, !confirmed && buttonUrl !== GUIDE_URL) },
       { GHL_PRIVATE_INTEGRATION_TOKEN: token }
     );
   } catch (err) {
@@ -213,15 +227,20 @@ function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function guideEmailHtml(firstName?: string): string {
+function guideEmailHtml(firstName: string | undefined, buttonUrl: string, needsConfirm: boolean): string {
+  const button = needsConfirm ? 'Confirm &amp; open your guide' : 'Open your free prep guide';
+  const confirmLine = needsConfirm
+    ? `<p style="font-size:14px;color:#5b5760;">Tapping the button confirms your email address, so Dodie can send you an occasional note. You can unsubscribe any time.</p>`
+    : '';
   return `<div style="font-family:Georgia,serif;font-size:16px;line-height:1.6;color:#3a2f28;max-width:560px;">
     <p>Hi ${firstName ? esc(firstName) : 'there'},</p>
     <p>Thank you for asking for the guide. Here it is:</p>
-    <p><a href="${GUIDE_URL}" style="display:inline-block;background:#c2604f;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:999px;font-family:system-ui,sans-serif;font-size:15px;">Open your free prep guide</a></p>
+    <p><a href="${buttonUrl}" style="display:inline-block;background:#c2604f;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:999px;font-family:system-ui,sans-serif;font-size:15px;">${button}</a></p>
+    ${confirmLine}
     <p>It walks through what the deeply relaxed state feels like, how to shape the three questions you bring, what to eat, wear and bring on the day, and what tends to unfold in the week after.</p>
     <p>Read it at your own pace. If questions come up, you can simply reply to this email. And when it feels right, you can book a session at
       <a href="https://dodiekendall.com/book" style="color:#c2604f;">dodiekendall.com/book</a>.</p>
     <p>With warmth,<br/>Dodie Kendall<br/>QHHT Practitioner · Stuart, FL</p>
-    <p style="font-size:13px;color:#7a6e66;">If the button does not work, copy this link into your browser: ${GUIDE_URL}</p>
+    <p style="font-size:13px;color:#7a6e66;">If the button does not work, copy this link into your browser: ${buttonUrl}</p>
   </div>`;
 }

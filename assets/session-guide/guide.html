@@ -1,0 +1,83 @@
+<!doctype html>
+<!--
+  Source for public/dodie/qhht-pre-session-prep-guide.pdf, Dodie's "Pre-session
+  Integration Guide" emailed to clients who book a session. Rebuilt 2026-10-03 from
+  her Canva PDF, wording unchanged except the greeting and two em dashes (now colons) ("Welcome, John!" ->
+  "Welcome, beautiful soul!", as Dodie chose). Same PRINT-SAFE RULES as
+  assets/prep-guide/guide.html: no shadows/blur/transparency, static fonts, and the
+  logo is flattened onto white (no alpha).
+  Build: node scripts/build-prep-guide.mjs public/dodie/qhht-pre-session-prep-guide.pdf assets/session-guide/guide.html
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Pre-session Integration Guide: Dodie Kendall QHHT</title>
+<style>
+  @font-face { font-family: 'Inter'; src: url('../prep-guide/fonts/Inter-Regular.ttf'); font-weight: 400; }
+  @font-face { font-family: 'Inter'; src: url('../prep-guide/fonts/Inter-Medium.ttf'); font-weight: 500; }
+  @font-face { font-family: 'Inter'; src: url('../prep-guide/fonts/Inter-SemiBold.ttf'); font-weight: 600; }
+
+  @page { size: 595.5pt 842pt; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter'; color: #151515; background: #ffffff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 595.5pt; height: 842pt; padding: 86pt 52pt 0; background: #ffffff; page-break-after: always; overflow: hidden; }
+  .page:last-child { page-break-after: auto; }
+  .logo { display: block; width: 151.5pt; margin: 0 auto 26pt; }
+  h1 { font-weight: 600; font-size: 32pt; line-height: 38pt; color: #000000; letter-spacing: -0.01em; }
+  h2 { font-weight: 500; font-size: 13.5pt; line-height: 18pt; color: #000000; margin: 18pt 0 8pt; }
+  p, li { font-size: 11.2pt; line-height: 15.2pt; }
+  p + p { margin-top: 10pt; }
+  .greet { margin-top: 14pt; }
+  ul { margin: 9pt 0 0 20pt; }
+  li { margin-bottom: 2pt; padding-left: 2pt; }
+  li b { font-weight: 500; }
+  .p2 { padding-top: 60pt; }
+</style>
+</head>
+<body>
+
+<section class="page">
+  <img class="logo" src="logo.png" alt="Dodie Kendall" />
+  <h1>Pre-session Integration Guide</h1>
+  <p class="greet">Welcome, beautiful soul!</p>
+  <p>You’ve taken a powerful step on your journey of self-discovery and healing by scheduling a Quantum Hypnotherapy Healing (QHHT) session. This guide is here to help you prepare your energy field, set clear intentions, and clear your expectations so you can have the most profound and meaningful experience possible.</p>
+
+  <h2>1. Preparing Your Energy Field</h2>
+  <p>Your energy field is like a radio receiver: the clearer it is, the clearer the message.</p>
+  <ul>
+    <li><b>Hydrate:</b> Drink plenty of water in the days leading up to your session. Your body is a conductor, and water helps energy flow smoothly.</li>
+    <li><b>Nourish:</b> Eat light, clean foods. Avoid heavy meals, caffeine, and alcohol for at least 24 hours before your session.</li>
+    <li><b>Rest:</b> Get good sleep the night before. A well-rested body and mind are more receptive.</li>
+    <li><b>Disconnect:</b> Take a break from screens and noise. Spend time in nature, meditate, or simply sit in silence.</li>
+    <li><b>Ground:</b> Walk barefoot on grass or earth. Imagine roots growing from your feet into the ground, anchoring your energy.</li>
+    <li><b>Cleanse:</b> Take a salt bath or shower with the intention of washing away any heavy or stagnant energy.</li>
+  </ul>
+
+  <h2>2. Setting Your Intentions</h2>
+  <p>Intentions are like a compass: they guide your journey.</p>
+  <ul>
+    <li><b>Write it down:</b> On a piece of paper, write down 3-5 questions you want to ask your Higher Self during the session.</li>
+    <li><b>Be specific:</b> Instead of "What's my purpose?", try "What steps can I take right now to align with my highest purpose?"</li>
+    <li><b>Focus on healing:</b> Frame your questions around healing, clarity, and growth.</li>
+  </ul>
+</section>
+
+<section class="page p2">
+  <ul style="margin-top:0">
+    <li><b>Trust the process:</b> Be open to receiving answers in unexpected ways. Your Higher Self knows what you need most.</li>
+    <li><b>Past Life Belief Neutrality:</b> You do not need to believe in past lives for this process to be effective. The journey is about accessing your inner wisdom and symbolic memory, regardless of how you interpret it.</li>
+  </ul>
+
+  <h2>3. Clearing Your Expectations</h2>
+  <p>Let go of the need for a specific outcome.</p>
+  <ul>
+    <li><b>Every session is unique:</b> Your experience will be exactly what your soul needs at this moment.</li>
+    <li><b>It's not always dramatic:</b> Some sessions are gentle, others are profound. All are meaningful.</li>
+    <li><b>Trust your guide:</b> I am here to hold a safe and neutral space for your journey.</li>
+    <li><b>You are in control:</b> You can pause, adjust, or end the session at any time.</li>
+    <li><b>Integration takes time:</b> Insights may unfold over days or weeks. Be patient and kind to yourself.</li>
+  </ul>
+</section>
+
+</body>
+</html>

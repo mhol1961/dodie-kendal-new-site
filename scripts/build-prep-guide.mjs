@@ -1,4 +1,4 @@
-// Builds public/dodie-kendall-prep-guide.pdf from assets/prep-guide/guide.html.
+// Builds the guide PDFs from their HTML sources (assets/prep-guide, assets/session-guide).
 //
 //   npx -y -p playwright@1 node scripts/build-prep-guide.mjs     (no install needed)
 //   npx playwright install chromium                              (first time only)
@@ -8,7 +8,7 @@
 // guide.html before editing: Chrome effects (shadows, blur, transparency) turn into
 // solid boxes in Apple's PDF viewer.
 import { createRequire } from 'node:module';
-import { join, dirname } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const repo = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -16,10 +16,13 @@ const load = (from) => { try { return createRequire(join(from, 'x.js'))('playwri
 const pw = load(process.cwd()) ?? load(repo) ?? (await import('playwright').catch(() => null));
 if (!pw) throw new Error('playwright not found: run with `npx -y -p playwright@1 node scripts/build-prep-guide.mjs`');
 
+// Args: [out.pdf] [source.html]. Defaults build the free guide. The session guide:
+//   node scripts/build-prep-guide.mjs public/dodie/qhht-pre-session-prep-guide.pdf assets/session-guide/guide.html
 const out = process.argv[2] ?? join(repo, 'public', 'dodie-kendall-prep-guide.pdf');
+const src = process.argv[3] ? resolve(process.argv[3]) : join(repo, 'assets', 'prep-guide', 'guide.html');
 const browser = await pw.chromium.launch();
 const page = await browser.newPage();
-await page.goto(pathToFileURL(join(repo, 'assets', 'prep-guide', 'guide.html')).href, { waitUntil: 'networkidle' });
+await page.goto(pathToFileURL(src).href, { waitUntil: 'networkidle' });
 await page.evaluate(() => document.fonts.ready);
 await page.pdf({ path: out, preferCSSPageSize: true, printBackground: true, tagged: true });
 await browser.close();

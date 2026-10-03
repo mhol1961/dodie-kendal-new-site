@@ -43,6 +43,7 @@ test('consentRecord captures answer, form, time and wording', () => {
   const at = new Date('2026-10-03T12:00:00Z');
   assert.equal(consentRecord(true, 'quiz', 'I agree.', at), 'Yes | quiz | 2026-10-03T12:00:00.000Z | "I agree."');
   assert.match(consentRecord(false, 'x', 'y'), /^No \| x \| /);
+  assert.match(consentRecord('pending', 'x', 'y'), /^Pending email confirmation \| x \| /);
 });
 
 type Call = { method: string; url: string; body: Record<string, unknown> | null };
@@ -78,14 +79,14 @@ test('a sparse upsert reply is ignored: decisions come from the full GET record'
     get: { id: 'c1', firstName: 'Ann', source: 'booking', dndSettings: { Email: { status: 'active' } } },
   });
   const out = await upsertContact({ email: 'a@b.co', firstName: 'Mallory', source: 'web' }, ENV);
-  assert.deepEqual(out, { id: 'c1', isNew: false, emailDnd: true });
+  assert.deepEqual(out, { id: 'c1', isNew: false, emailDnd: true, tags: [] });
   assert.equal(calls.filter((c) => c.method === 'PUT').length, 0, 'nothing may be overwritten');
 });
 
 test('if the full record cannot be read, email status is unknown (null) and nothing is written', async (t) => {
   const calls = stubGhl(t, { upsert: { new: false, contact: { id: 'c1' } }, get: 404 });
   const out = await upsertContact({ email: 'a@b.co', firstName: 'Ann', source: 'web' }, ENV);
-  assert.deepEqual(out, { id: 'c1', isNew: false, emailDnd: null });
+  assert.deepEqual(out, { id: 'c1', isNew: false, emailDnd: null, tags: [] });
   assert.equal(calls.filter((c) => c.method === 'PUT').length, 0);
 });
 

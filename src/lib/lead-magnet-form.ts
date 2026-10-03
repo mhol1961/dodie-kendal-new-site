@@ -27,7 +27,7 @@ export function outcomeFor(status: number | null, body: Body): Outcome {
 const MESSAGES: Record<Outcome, { html: string; ok: boolean }> = {
   emailed: {
     ok: true,
-    html: 'Beautiful, your guide is ready, and a copy is in your inbox or on its way (check spam too).' + GUIDE_LINK,
+    html: 'Beautiful, your guide is ready, and a copy is in your inbox or on its way (check spam too). If the email asks, tap Confirm so Dodie can keep in touch.' + GUIDE_LINK,
   },
   ready: { ok: true, html: 'Beautiful, your guide is ready.' + GUIDE_LINK },
   'not-captured': {

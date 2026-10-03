@@ -72,8 +72,9 @@ async function withIdempotentRetry<T>(fn: () => Promise<T>): Promise<T> {
  * Auditable consent value for the `consent_marketing` / `consent_transactional`
  * custom fields: answer, which form, when, and the exact wording shown.
  */
-export function consentRecord(granted: boolean, form: string, text: string, at = new Date()): string {
-  return `${granted ? 'Yes' : 'No'} | ${form} | ${at.toISOString()} | "${text}"`;
+export function consentRecord(granted: boolean | 'pending', form: string, text: string, at = new Date()): string {
+  const answer = granted === 'pending' ? 'Pending email confirmation' : granted ? 'Yes' : 'No';
+  return `${answer} | ${form} | ${at.toISOString()} | "${text}"`;
 }
 
 type Identity = Partial<Pick<ContactPayload, 'firstName' | 'lastName' | 'phone' | 'source'>>;
@@ -82,6 +83,8 @@ const IDENTITY_KEYS = ['firstName', 'lastName', 'phone', 'source'] as const;
 /** A contact as GET /contacts/{id} returns it (empty fields are omitted). */
 export type FullContact = Identity & {
   id: string;
+  email?: string;
+  tags?: string[];
   dnd?: boolean;
   dndSettings?: { Email?: { status?: string } };
   customFields?: { id: string; value?: unknown }[];
@@ -111,7 +114,7 @@ export function emailOptedOut(contact: FullContact): boolean {
   return contact.dnd === true || contact.dndSettings?.Email?.status === 'active';
 }
 
-async function getContact(contactId: string, env: { GHL_PRIVATE_INTEGRATION_TOKEN: string }): Promise<FullContact> {
+export async function getContact(contactId: string, env: { GHL_PRIVATE_INTEGRATION_TOKEN: string }): Promise<FullContact> {
   return withIdempotentRetry(async () => {
     const res = await fetch(`${GHL_BASE}/contacts/${contactId}`, {
       signal: AbortSignal.timeout(GHL_TIMEOUT_MS),
@@ -124,7 +127,7 @@ async function getContact(contactId: string, env: { GHL_PRIVATE_INTEGRATION_TOKE
   });
 }
 
-async function updateContact(
+export async function updateContact(
   contactId: string,
   patch: Record<string, unknown>,
   env: { GHL_PRIVATE_INTEGRATION_TOKEN: string }
@@ -156,7 +159,7 @@ async function updateContact(
 export async function upsertContact(payload: ContactPayload, env: {
   GHL_PRIVATE_INTEGRATION_TOKEN: string;
   GHL_LOCATION_ID: string;
-}): Promise<{ id: string; isNew: boolean; emailDnd: boolean | null }> {
+}): Promise<{ id: string; isNew: boolean; emailDnd: boolean | null; tags: string[] }> {
   const email = payload.email.trim().toLowerCase();
   const { id, isNew } = await withIdempotentRetry(async () => {
     const res = await fetch(`${GHL_BASE}/contacts/upsert`, {
@@ -178,7 +181,7 @@ export async function upsertContact(payload: ContactPayload, env: {
     contact = await getContact(id, env);
   } catch (err) {
     console.error('[ghl] getContact failed — enrichment skipped, email status unknown', id, err);
-    return { id, isNew, emailDnd: null };
+    return { id, isNew, emailDnd: null, tags: [] };
   }
 
   const patch = enrichmentPatch(payload, contact);
@@ -195,7 +198,7 @@ export async function upsertContact(payload: ContactPayload, env: {
     }
   }
 
-  return { id, isNew, emailDnd: emailOptedOut(contact) };
+  return { id, isNew, emailDnd: emailOptedOut(contact), tags: contact.tags ?? [] };
 }
 
 /** Add a note to a contact (keeps every contact-form message, not just the latest). */
@@ -230,6 +233,24 @@ export async function applyTag(
     });
     if (!res.ok) {
       throw new GhlError(res.status, `applyTag failed: ${await res.text()}`);
+    }
+  });
+}
+
+export async function removeTag(
+  contactId: string,
+  tag: string,
+  env: { GHL_PRIVATE_INTEGRATION_TOKEN: string }
+): Promise<void> {
+  await withIdempotentRetry(async () => {
+    const res = await fetch(`${GHL_BASE}/contacts/${contactId}/tags`, {
+      method: 'DELETE',
+      signal: AbortSignal.timeout(GHL_TIMEOUT_MS),
+      headers: authHeaders(env.GHL_PRIVATE_INTEGRATION_TOKEN),
+      body: JSON.stringify({ tags: [tag] }),
+    });
+    if (!res.ok) {
+      throw new GhlError(res.status, `removeTag failed: ${await res.text()}`);
     }
   });
 }
