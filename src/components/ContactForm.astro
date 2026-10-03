@@ -5,6 +5,7 @@
  * Progressive enhancement: works without JS (form action posts).
  */
 import Input from '@components/ui/Input.astro';
+import TurnstileWidget from '@components/TurnstileWidget.astro';
 ---
 <form
   id="contact-form"
@@ -62,6 +63,8 @@ import Input from '@components/ui/Input.astro';
     By submitting, you agree to our <a href="/privacy" class="text-brand underline">Privacy Policy</a> and <a href="/terms" class="text-brand underline">Terms</a>.
   </p>
 
+  <TurnstileWidget />
+
   <button
     type="submit"
     class="inline-flex items-center justify-center rounded-pill bg-brand px-7 py-3 font-medium text-ink-inverse shadow-md transition-all hover:bg-brand-hover hover:shadow-glow"
@@ -89,7 +92,13 @@ import Input from '@components/ui/Input.astro';
         consentMarketing: fd.get('consentMarketing') === 'true',
         consentTransactional: fd.get('consentTransactional') === 'true',
         website: String(fd.get('website') ?? ''),
+        'cf-turnstile-response': String(fd.get('cf-turnstile-response') ?? ''),
       };
+      if (!payload['cf-turnstile-response']) {
+        status.textContent = 'Please complete the security check above, then send again.';
+        status.className = 'text-sm text-error';
+        return;
+      }
 
       if (!payload.consentTransactional) {
         status.textContent = 'Please confirm the required communication consent.';
@@ -115,6 +124,10 @@ import Input from '@components/ui/Input.astro';
           status.textContent = 'Thank you — your note is on its way. Dodie will write back personally within 24–48 hours.';
           status.className = 'text-sm text-success';
           form.reset();
+        } else if (res.status === 400) {
+          status.textContent = 'Please complete the security check above, then send again.';
+          status.className = 'text-sm text-error';
+          if (window.turnstile) window.turnstile.reset(form.querySelector('.cf-turnstile'));
         } else {
           status.textContent = 'Something went wrong on our end. You can also email dodiekendall@gmail.com directly — that always works.';
           status.className = 'text-sm text-error';

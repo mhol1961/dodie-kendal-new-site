@@ -63,3 +63,20 @@ export async function verifyTurnstile({ secret, token, ip, hostnames }: VerifyOp
     return false;
   }
 }
+
+/** verifyTurnstile for an incoming request: tokens must be minted on this site's
+ *  apex/www host (plus Cloudflare's test host in dev). Shared by every public form endpoint. */
+export function verifyRequest(
+  request: Request,
+  env: Record<string, unknown>,
+  token: string | undefined
+): Promise<boolean> {
+  const hostnames = allowedHostnames(import.meta.env.SITE);
+  if (import.meta.env.DEV) hostnames.push('example.com');
+  return verifyTurnstile({
+    secret: typeof env.TURNSTILE_SECRET_KEY === 'string' ? env.TURNSTILE_SECRET_KEY : undefined,
+    token,
+    ip: request.headers.get('CF-Connecting-IP'),
+    hostnames,
+  });
+}

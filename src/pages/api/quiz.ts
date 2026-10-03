@@ -14,6 +14,7 @@ import type { APIRoute } from 'astro';
 import { z } from 'zod';
 import { upsertContact, applyTag, addNote, sendContactEmail, sendContactSms, consentRecord, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
+import { verifyRequest } from '@lib/turnstile';
 import { QUIZ_VALUES, answersToTags } from '@lib/quiz';
 
 export const prerender = false;
@@ -35,6 +36,7 @@ const payloadSchema = z.object({
   phone: z.string().max(40).optional(),
   consentMarketing: z.literal(true),
   answers: answersSchema,
+  'cf-turnstile-response': z.string().max(2048).optional(),
 });
 
 const honeypotKey = 'website';
@@ -150,6 +152,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const env = ((locals as any)?.runtime?.env ?? process.env) as Record<string, string | undefined>;
+
+  // Spam check before anything reaches GHL or alerts Dodie (each quiz texts + emails her).
+  if (!(await verifyRequest(request, env, data['cf-turnstile-response']))) {
+    return isFormPost
+      ? htmlPage(400, { heading: 'One more step', message: 'This quiz needs JavaScript turned on for its security check. Please enable it and try again, or email dodiekendall@gmail.com.', primary: { href: '/landing-page-1#quiz', label: 'Return to the quiz' } })
+      : jsonResponse(400, { error: 'turnstile' });
+  }
   const token = env.GHL_PRIVATE_INTEGRATION_TOKEN;
   const locationId = env.GHL_LOCATION_ID;
 

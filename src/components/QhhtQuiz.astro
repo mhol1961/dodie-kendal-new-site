@@ -13,6 +13,7 @@
  * submit that swaps in the in-place success state.
  */
 import { QUIZ_QUESTIONS } from '@lib/quiz';
+import TurnstileWidget from '@components/TurnstileWidget.astro';
 
 const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
 ---
@@ -85,6 +86,7 @@ const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
               <input type="checkbox" name="consentMarketing" value="true" required class="mt-1 h-4 w-4 shrink-0 rounded border-border-strong text-brand focus-visible:ring-2 focus-visible:ring-brand" />
               <span>I'd like Dodie to reach out about my answers and QHHT. I can unsubscribe anytime.</span>
             </label>
+            <TurnstileWidget />
           </div>
         </fieldset>
 
@@ -232,7 +234,13 @@ const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
         phone: (fd.get('phone') as string) || undefined,
         consentMarketing: fd.get('consentMarketing') === 'true',
         answers,
+        'cf-turnstile-response': (fd.get('cf-turnstile-response') as string) || '',
       };
+      // Spam check not finished (or blocked by a browser add-on): don't send yet.
+      if (!payload['cf-turnstile-response']) {
+        if (status) status.textContent = 'Please complete the security check above, then submit again.';
+        return;
+      }
       if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending…'; }
       if (status) status.textContent = '';
       try {
@@ -246,6 +254,13 @@ const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
           if (progress) progress.classList.add('hidden');
           if (success) success.hidden = false;
           success?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (res.status === 400) {
+          // Tokens are single-use: get a fresh one for the retry.
+          const widget = form.querySelector('.cf-turnstile');
+          const ts = (window as { turnstile?: { reset: (el: Element) => void } }).turnstile;
+          if (widget && ts) ts.reset(widget);
+          if (status) status.textContent = 'Please complete the security check above, then submit again.';
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'See my result'; }
         } else {
           throw new Error('Bad status ' + res.status);
         }

@@ -15,7 +15,7 @@ import type { APIRoute } from 'astro';
 import { z } from 'zod';
 import { upsertContact, applyTag, addNote, sendContactEmail, consentRecord, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
-import { allowedHostnames, verifyTurnstile } from '@lib/turnstile';
+import { verifyRequest } from '@lib/turnstile';
 import { allowIp, claimGuideEmail, releaseGuideEmail, type D1Like } from '@lib/guide-limits';
 
 export const prerender = false;
@@ -40,11 +40,6 @@ const payloadSchema = z.object({
 });
 
 const honeypotKey = 'website';
-
-// Tokens must come from our own site. Cloudflare's test keys report
-// example.com, so local dev with those keys still works.
-const TURNSTILE_HOSTS = allowedHostnames(import.meta.env.SITE);
-if (import.meta.env.DEV) TURNSTILE_HOSTS.push('example.com');
 
 const json = (status: number, body: Record<string, unknown>) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
@@ -86,12 +81,7 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   const db = env.LEAD_DB;
   if (!db) console.error('[lead-magnet] LEAD_DB not bound — abuse limits are OFF, guide emails NOT sent');
 
-  const human = await verifyTurnstile({
-    secret: env.TURNSTILE_SECRET_KEY,
-    token: data['cf-turnstile-response'],
-    ip,
-    hostnames: TURNSTILE_HOSTS,
-  });
+  const human = await verifyRequest(request, env, data['cf-turnstile-response']);
   if (!human) {
     return json(400, { error: 'turnstile', message: 'Please complete the security check and try again.' });
   }

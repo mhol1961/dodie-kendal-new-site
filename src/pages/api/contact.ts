@@ -5,6 +5,7 @@ import type { APIRoute } from 'astro';
 import { z } from 'zod';
 import { upsertContact, applyTag, addNote, consentRecord, triggerWorkflow, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
+import { verifyRequest } from '@lib/turnstile';
 
 export const prerender = false;
 
@@ -15,6 +16,7 @@ const payloadSchema = z.object({
   message: z.string().min(10).max(2000),
   consentMarketing: z.boolean().default(false),
   consentTransactional: z.literal(true),
+  'cf-turnstile-response': z.string().max(2048).optional(),
 });
 
 const honeypotKey = 'website';
@@ -55,6 +57,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
   // Env from Cloudflare runtime — `locals.runtime.env` on CF, fallback to process.env in dev
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const env = ((locals as any)?.runtime?.env ?? process.env) as Record<string, string | undefined>;
+
+  // Spam check before anything reaches GHL.
+  if (!(await verifyRequest(request, env, data['cf-turnstile-response']))) {
+    return new Response(JSON.stringify({ error: 'turnstile' }), { status: 400 });
+  }
+
   const token = env.GHL_PRIVATE_INTEGRATION_TOKEN;
   const locationId = env.GHL_LOCATION_ID;
 
