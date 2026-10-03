@@ -14,6 +14,9 @@ GHL_LOCATION_ID = "6pOamCMOsrYqjbufLI5y"
 GHL_CALENDAR_ID = "BMH5KWMN8ncgnlLupep5"
 # Free 30-min discovery call, offered first on /book (2026-10-03).
 GHL_DISCOVERY_CALENDAR_ID = "aeFKFAVilVygKrvPuocJ"
+# "QHHT Long-Term Nurture" (monthly marketing). It enrolls EVERY new contact; new
+# free-guide sign-ups are held out of it until they confirm their email (double opt-in).
+GHL_WORKFLOW_LONG_TERM_NURTURE_ID = "0e2090b8-f9a1-46b4-ae4e-dee2e2eb9f8c"
 
 # Free-guide abuse limits (src/lib/guide-limits.ts): one guide email per address
 # per day, and a per-IP sign-up cap. D1 (SQLite) so each claim is one atomic

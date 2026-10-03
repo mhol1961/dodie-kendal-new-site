@@ -9,7 +9,7 @@
 // that shows up in the notes.
 
 import type { APIRoute } from 'astro';
-import { getContact, updateContact, applyTag, removeTag, addNote, consentRecord, FIELD_IDS } from '@lib/ghl';
+import { getContact, updateContact, applyTag, removeTag, addNote, consentRecord, triggerWorkflow, FIELD_IDS } from '@lib/ghl';
 import { verifyOptinToken } from '@lib/optin';
 
 export const prerender = false;
@@ -45,6 +45,12 @@ export const GET: APIRoute = async ({ url, locals, redirect }) => {
     await removeTag(contactId, 'optin_pending', auth).catch((err) =>
       console.error('[confirm-optin] removeTag optin_pending failed', contactId, err)
     );
+    // Sign-ups held out of the nurture workflow until now (lead-magnet.ts) go back in.
+    if (contact.tags?.includes('optin_nurture_held') && env.GHL_WORKFLOW_LONG_TERM_NURTURE_ID) {
+      await triggerWorkflow(contactId, env.GHL_WORKFLOW_LONG_TERM_NURTURE_ID, auth)
+        .then(() => removeTag(contactId, 'optin_nurture_held', auth))
+        .catch((err) => console.error('[confirm-optin] nurture re-enroll failed', contactId, err));
+    }
     await addNote(contactId, `Marketing consent confirmed by email link. Consent: ${record}`, auth).catch((err) =>
       console.error('[confirm-optin] note failed', contactId, err)
     );

@@ -1,0 +1,5 @@
+# Guides must never be served stale (phones cache PDFs hard): always revalidate.
+/dodie-kendall-prep-guide.pdf
+  Cache-Control: no-cache
+/dodie/*
+  Cache-Control: no-cache

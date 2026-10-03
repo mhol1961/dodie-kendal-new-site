@@ -293,6 +293,23 @@ export async function removeTag(
   });
 }
 
+/** Take a contact out of a workflow (public API). Idempotent, so retried. */
+export async function removeFromWorkflow(
+  contactId: string,
+  workflowId: string,
+  env: { GHL_PRIVATE_INTEGRATION_TOKEN: string }
+): Promise<void> {
+  await withIdempotentRetry(async () => {
+    const res = await fetch(`${GHL_BASE}/contacts/${contactId}/workflow/${workflowId}`, {
+      method: 'DELETE',
+      signal: AbortSignal.timeout(GHL_TIMEOUT_MS),
+      headers: authHeaders(env.GHL_PRIVATE_INTEGRATION_TOKEN),
+      body: '{}',
+    });
+    if (!res.ok) throw new GhlError(res.status, `removeFromWorkflow failed: ${await res.text()}`);
+  });
+}
+
 export async function triggerWorkflow(
   contactId: string,
   workflowId: string,

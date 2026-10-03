@@ -13,7 +13,7 @@
 
 import type { APIRoute } from 'astro';
 import { z } from 'zod';
-import { upsertContact, applyTag, addNote, sendContactEmail, consentRecord, GhlError } from '@lib/ghl';
+import { upsertContact, applyTag, addNote, sendContactEmail, consentRecord, removeFromWorkflow, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
 import { verifyRequest } from '@lib/turnstile';
 import { attributionSchema, attributionFields, attributionLine, isFacebookOrInstagram, FB_IG_TAG } from '@lib/attribution';
@@ -133,8 +133,9 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   let contactId: string;
   let emailDnd: boolean | null;
   let tags: string[];
+  let isNew: boolean;
   try {
-    ({ id: contactId, emailDnd, tags } = await upsertContact(
+    ({ id: contactId, emailDnd, tags, isNew } = await upsertContact(
       {
         firstName,
         email: data.email,
@@ -173,6 +174,33 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   for (const tag of ['site_lead_magnet', 'site_v2', ...extraTags]) {
     await applyTag(contactId, tag, { GHL_PRIVATE_INTEGRATION_TOKEN: token }).catch((err) =>
       console.error(`[lead-magnet] applyTag ${tag} failed (contact ${contactId} captured)`, err)
+    );
+  }
+
+  // Double opt-in: Dodie's Long-Term Nurture workflow enrolls every NEW contact and
+  // sends marketing (held for its sending window, hours later). A brand-new,
+  // unconfirmed sign-up is taken back out and marked; /api/confirm-optin re-enrolls
+  // them on confirm. Existing contacts keep whatever they already had.
+  const nurtureId = env.GHL_WORKFLOW_LONG_TERM_NURTURE_ID;
+  if (isNew && !confirmed && nurtureId) {
+    const auth = { GHL_PRIVATE_INTEGRATION_TOKEN: token };
+    const hold = () => removeFromWorkflow(contactId, nurtureId, auth);
+    try {
+      await hold();
+      await applyTag(contactId, 'optin_nurture_held', auth);
+    } catch (err) {
+      console.error('[lead-magnet] could not hold new contact out of nurture', contactId, err);
+    }
+    // GHL enrolls new contacts a second or two after creation, possibly after the
+    // call above; repeat it after the response (Workers allow ~30 s of waitUntil).
+    // ponytail: timed retries; a GHL-side "skip optin_pending" filter is the full fix.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const ctx = (locals as any)?.runtime?.ctx as { waitUntil?: (p: Promise<unknown>) => void } | undefined;
+    const later = (ms: number) => new Promise((r) => setTimeout(r, ms)).then(hold);
+    ctx?.waitUntil?.(
+      Promise.allSettled([later(10_000), later(25_000)]).then((rs) =>
+        rs.forEach((r) => r.status === 'rejected' && console.error('[lead-magnet] delayed nurture hold failed', contactId, r.reason))
+      )
     );
   }
 

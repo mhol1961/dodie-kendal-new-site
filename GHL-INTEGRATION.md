@@ -73,8 +73,13 @@ via API 2026-10-03, large text).
 **Free guide = double opt-in** (2026-10-03). Sign-up records `consent_marketing` as
 `Pending email confirmation | ...` and tags `optin_pending`. The guide email's button is a
 signed confirm link (`/api/confirm-optin`) that writes `Yes | ... confirmed by email link`,
-tags `optin_confirmed`, removes `optin_pending`, and opens the guide. GHL marketing
-workflows must skip contacts tagged `optin_pending` (workflow filters are GHL-UI only).
+tags `optin_confirmed`, removes `optin_pending`, and opens the guide.
+Dodie's "QHHT Long-Term Nurture" workflow (`GHL_WORKFLOW_LONG_TERM_NURTURE_ID`) enrolls
+EVERY new contact (trigger: Contact Created, or tag `qhht-cold`) and sends monthly marketing
+inside its sending window. A brand-new unconfirmed guide sign-up is removed from it
+(immediately, then again ~10 s and ~25 s later because enrollment is async) and tagged
+`optin_nurture_held`; the confirm link re-enrolls it. Workflow triggers were read on
+2026-10-03 via GHL's internal API; none were changed.
 The quiz and contact forms stay single opt-in (explicit checkbox).
 
 Consent fields hold an auditable record: `Yes | <form> | <ISO time> | "<exact wording shown>"`.
