@@ -13,6 +13,15 @@ compatibility_flags = ["nodejs_compat"]
 GHL_LOCATION_ID = "6pOamCMOsrYqjbufLI5y"
 GHL_CALENDAR_ID = "BMH5KWMN8ncgnlLupep5"
 
+# Free-guide abuse limits (src/lib/guide-limits.ts): one guide email per address
+# per day, and a per-IP sign-up cap. D1 (SQLite) so each claim is one atomic
+# statement. Schema: migrations/ — apply with
+#   npx wrangler d1 migrations apply dodie-lead-limits --remote
+[[d1_databases]]
+binding = "LEAD_DB"
+database_name = "dodie-lead-limits"
+database_id = "70ae85b6-dd3e-472c-9d48-f9e1db0aa489"
+
 # Static assets directory. Cloudflare Workers Assets serves files from /dist
 # directly from the edge. The Worker (above) handles SSR routes that have
 # `export const prerender = false` — namely /book and /api/*.

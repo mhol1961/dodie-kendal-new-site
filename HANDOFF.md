@@ -93,9 +93,13 @@ live site updates only when a new Worker Version is uploaded:
 
 ```bash
 git push origin main
-npm run build
-npx wrangler deploy      # uploads dist/ + dist/_worker.js/index.js
+npm run deploy   # build → apply D1 migrations → verify D1 tables → wrangler deploy
 ```
+
+`npm run deploy` stops before publishing if the D1 schema (`migrations/`) can't be
+applied or its tables are missing. Without them the free-guide form still captures
+leads but sends **no** guide emails (logged as `limit-unavailable`). Don't run a bare
+`wrangler deploy` after adding a migration.
 
 **Set the build-time variables before `npm run build`.** `SITE_URL`,
 `PUBLIC_PLAUSIBLE_DOMAIN` and `PUBLIC_FB_PIXEL_ID` are read by Astro/Vite *at build
@@ -150,7 +154,9 @@ values.
 | `GHL_PRIVATE_INTEGRATION_TOKEN` | **secret** | Cloudflare Worker **Secret** (`wrangler secret put`) | Auth for every GoHighLevel API call from `src/lib/ghl.ts` |
 | `GHL_LOCATION_ID` | no | `wrangler.toml [vars]` | Dodie's GHL subaccount (location) id |
 | `GHL_CALENDAR_ID` | no | `wrangler.toml [vars]` | The QHHT booking calendar embedded on `/book` |
-| `GHL_WORKFLOW_LEAD_MAGNET_ID` | no | `wrangler.toml [vars]` (when used) | Workflow that delivers the prep-guide PDF |
+| `LEAD_DB` | no | `wrangler.toml [[d1_databases]]` (schema: `migrations/`) | Free-guide abuse limits (per-address daily email, per-IP hourly cap) |
+| `TURNSTILE_SECRET_KEY` | **secret** | Cloudflare Worker Secret | Spam check on the free-guide sign-up; without it every sign-up is rejected |
+| `PUBLIC_TURNSTILE_SITE_KEY` | no | build environment (`.env.production`) | Turnstile widget site key; the build fails without it |
 | `GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID` | no | `wrangler.toml [vars]` (when used) | Contact-form auto-responder workflow |
 | `SITE_URL` | no | build environment (defaults to the canonical URL in `astro.config.mjs`) | Canonicals, OG tags, sitemap, JSON-LD |
 | `PUBLIC_PLAUSIBLE_DOMAIN` | no | build environment | Enables the Plausible tag in `Base.astro` (production builds only) |

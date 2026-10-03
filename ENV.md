@@ -14,7 +14,9 @@
 | `GHL_PRIVATE_INTEGRATION_TOKEN` | secret | Dodie's GHL Private Integration Token. Used by `src/lib/ghl.ts` for all GHL API calls. Set as a Worker Secret. | Dodie (issued from her GHL subaccount). |
 | `GHL_LOCATION_ID` | non-secret | Dodie's GHL location/subaccount ID. Required by some GHL endpoints. | Dodie. |
 | `GHL_CALENDAR_ID` | non-secret | ID of Dodie's 5-hour QHHT booking calendar. Used in the `/book` iframe URL. | Dodie. |
-| `GHL_WORKFLOW_LEAD_MAGNET_ID` | non-secret | Workflow ID for the lead-magnet PDF delivery + nurture sequence. | Dodie (created in her GHL UI). |
+| `LEAD_DB` | D1 binding (in `wrangler.toml`; schema in `migrations/`) | Free-guide abuse limits: one guide email per address per day, 5 sign-ups per IP per hour. Missing binding = no guide emails sent (logged). Apply schema: `npx wrangler d1 migrations apply dodie-lead-limits --remote`. | Agency. |
+| `TURNSTILE_SECRET_KEY` | secret | Cloudflare Turnstile secret for the free-guide sign-up. `/api/lead-magnet` rejects every sign-up without it. Set as a Worker Secret. | Agency (Cloudflare widget "Dodie Kendall QHHT - free guide sign-up"). |
+| `PUBLIC_TURNSTILE_SITE_KEY` | non-secret, **build-time** | Turnstile site key (`0x4AAAAAAFM2euvUYEivwvlo`), inlined by `TurnstileWidget.astro`. Lives in the gitignored `.env.production` on the build machine; the production build fails without it. | Agency. |
 | `GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID` | non-secret | Workflow ID for the contact-form auto-responder. | Dodie. |
 | `SITE_URL` | non-secret | Canonical site URL (e.g., `https://dodiekendall.com`). Used in canonicals, OG tags, schema. | Agency. |
 | `PUBLIC_PLAUSIBLE_DOMAIN` | non-secret | Plausible domain (e.g., `dodiekendall.com`). Used by analytics tag in `Base.astro`. | Agency. |
@@ -44,7 +46,7 @@ Decided in ADR-003 (forthcoming). One of:
 - **Sandbox values:** use Dodie's sandbox/staging subaccount values during build. Swap to production at launch per `LAUNCH-CHECKLIST.md`.
 - **Production — non-secret runtime:** `wrangler.toml` `[vars]`. These must live in the toml, not the dashboard: every `wrangler deploy` resets dashboard-set plain-text variables (Secrets are preserved).
 - **Production — secrets:** Cloudflare Worker Secrets, set with `wrangler secret put` or the dashboard. Never in `wrangler.toml`.
-- **Production — build-time:** `SITE_URL`, `PUBLIC_PLAUSIBLE_DOMAIN` and `PUBLIC_FB_PIXEL_ID` are inlined by Astro during `npm run build` and must be present in the build shell. Neither `wrangler.toml` nor Worker Secrets can supply them; a build without them ships with no analytics and no ad attribution.
+- **Production — build-time:** `SITE_URL`, `PUBLIC_PLAUSIBLE_DOMAIN`, `PUBLIC_FB_PIXEL_ID` and `PUBLIC_TURNSTILE_SITE_KEY` are inlined by Astro during `npm run build` and must be present in the build shell. Neither `wrangler.toml` nor Worker Secrets can supply them; a build without them ships with no analytics and no ad attribution.
 - **`PUBLIC_` prefix:** inlined into the client bundle. Never put anything sensitive behind it.
 
 ## 5. Rotation policy

@@ -1,9 +1,11 @@
 ---
 /**
  * LeadMagnetGate — PDF cover preview + email form, side by side on desktop.
- * Posts to /api/lead-magnet. Progressive enhancement (works without JS).
+ * Posts to /api/lead-magnet behind a Turnstile check. Rendered above the footer on
+ * every Base page (see Base.astro `leadMagnet` prop) and mid-page on the homepage.
  */
 import Input from '@components/ui/Input.astro';
+import TurnstileWidget from '@components/TurnstileWidget.astro';
 
 interface Props {
   heading?: string;
@@ -48,48 +50,44 @@ void Astro.props.heading;
 
         <form
           id="lead-magnet-form"
+          data-status="lead-magnet-status"
+          data-form="gate"
           action="/api/lead-magnet"
           method="POST"
-          class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-stretch"
+          class="mt-8"
           novalidate
         >
-          <div class="flex-1">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-stretch">
+            <div class="flex-1">
+              <Input
+                id="lead-email"
+                name="email"
+                type="email"
+                label="Email address"
+                visuallyHidden
+                required
+                placeholder="you@somewhere.com"
+                autocomplete="email"
+              />
+            </div>
             <Input
-              id="lead-email"
-              name="email"
-              type="email"
-              label="Email address"
+              id="lead-trap"
+              name="website"
+              label="Leave blank"
               visuallyHidden
-              required
-              placeholder="you@somewhere.com"
-              autocomplete="email"
+              ariaHidden
+              tabIndex={-1}
+              inputClass="hidden"
             />
+            <input type="hidden" name="consentMarketing" value="true" />
+            <button
+              type="submit"
+              class="cta-glow inline-flex items-center justify-center rounded-pill px-7 py-3.5 font-medium text-base shrink-0"
+            >
+              {buttonLabel}
+            </button>
           </div>
-          <Input
-            id="lead-first-name"
-            name="firstName"
-            label="First name"
-            visuallyHidden
-            ariaHidden
-            tabIndex={-1}
-            inputClass="hidden"
-          />
-          <Input
-            id="lead-trap"
-            name="website"
-            label="Leave blank"
-            visuallyHidden
-            ariaHidden
-            tabIndex={-1}
-            inputClass="hidden"
-          />
-          <input type="hidden" name="consentMarketing" value="true" />
-          <button
-            type="submit"
-            class="cta-glow inline-flex items-center justify-center rounded-pill px-7 py-3.5 font-medium text-base shrink-0"
-          >
-            {buttonLabel}
-          </button>
+          <TurnstileWidget />
         </form>
         <p class="mt-3 text-xs text-ink-muted">
           We'll never share your address. Unsubscribe any time.
@@ -100,49 +98,7 @@ void Astro.props.heading;
   </div>
 </section>
 
-<script is:inline>
-  (function () {
-    const form = document.getElementById('lead-magnet-form');
-    const status = document.getElementById('lead-magnet-status');
-    const firstName = document.getElementById('lead-first-name');
-    if (!form || !status || !firstName) return;
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = form.querySelector('[name="email"]');
-      if (!email || !email.value) {
-        status.textContent = 'Please add your email.';
-        status.className = 'mt-4 text-sm text-error';
-        return;
-      }
-      const fn = firstName.value && firstName.value.trim() ? firstName.value.trim() : 'Friend';
-      status.textContent = 'Sending…';
-      status.className = 'mt-4 text-sm text-ink-muted';
-      try {
-        const res = await fetch('/api/lead-magnet', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            firstName: fn,
-            email: email.value,
-            consentMarketing: true,
-            website: '',
-          }),
-        });
-        if (res.ok || res.status === 202) {
-          status.innerHTML = 'Beautiful — your guide is ready. <a href="/dodie-kendall-prep-guide.pdf" target="_blank" rel="noopener" class="font-semibold underline text-brand hover:text-brand-hover">Open your prep guide \u2192</a>';
-          status.className = 'mt-4 text-sm text-success';
-          form.reset();
-        } else {
-          status.innerHTML = 'Beautiful — your guide is ready. <a href="/dodie-kendall-prep-guide.pdf" target="_blank" rel="noopener" class="font-semibold underline text-brand hover:text-brand-hover">Open your prep guide \u2192</a>';
-          status.className = 'mt-4 text-sm text-success';
-          form.reset();
-        }
-      } catch (err) {
-        status.innerHTML = 'Beautiful — your guide is ready. <a href="/dodie-kendall-prep-guide.pdf" target="_blank" rel="noopener" class="font-semibold underline text-brand hover:text-brand-hover">Open your prep guide \u2192</a>';
-        status.className = 'mt-4 text-sm text-success';
-        form.reset();
-      }
-    });
-  })();
+<script>
+  import { wireLeadMagnetForm } from '@lib/lead-magnet-form';
+  wireLeadMagnetForm(document.querySelector<HTMLFormElement>('#lead-magnet-form'));
 </script>

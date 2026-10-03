@@ -3,13 +3,13 @@
 
 import type { APIRoute } from 'astro';
 import { z } from 'zod';
-import { upsertContact, applyTag, triggerWorkflow, GhlError } from '@lib/ghl';
+import { upsertContact, applyTag, addNote, consentRecord, triggerWorkflow, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
 
 export const prerender = false;
 
 const payloadSchema = z.object({
-  fullName: z.string().min(2).max(120),
+  fullName: z.string().trim().min(2).max(120),
   email: z.string().email().transform((s) => s.toLowerCase()),
   phone: z.string().min(7).max(20).optional(),
   message: z.string().min(10).max(2000),
@@ -18,6 +18,12 @@ const payloadSchema = z.object({
 });
 
 const honeypotKey = 'website';
+
+// Exact checkbox wording from ContactForm.astro, stored with each consent answer.
+const TRANSACTIONAL_TEXT =
+  'I consent to receive non-marketing text messages and email from Dodie Kendall QHHT about my session preparation, notifications, appointments, and reminders.';
+const MARKETING_TEXT =
+  'I consent to receive marketing text messages and email from Dodie Kendall QHHT about special offers, new updates, and Insights posts.';
 
 export const POST: APIRoute = async ({ request, locals }) => {
   let body: Record<string, unknown> = {};
@@ -80,22 +86,46 @@ export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const { id } = await upsertContact(
       {
-        firstName: firstName ?? 'Friend',
+        firstName,
         lastName,
         email: data.email,
         phone: data.phone,
         source: 'website_contact_form',
+        // Only fills fields the contact doesn't have yet (see enrichmentPatch);
+        // the note below keeps every message + consent as an append-only record.
         customField: {
-          contact_message: data.message,
-          consent_marketing: data.consentMarketing,
-          consent_transactional: data.consentTransactional,
+          your_message: data.message,
+          // Only record a grant: an unticked optional box must not overwrite a
+          // "Yes" given elsewhere (revoking is done by unsubscribing).
+          ...(data.consentMarketing && {
+            consent_marketing: consentRecord(true, 'contact form', MARKETING_TEXT),
+          }),
+          consent_transactional: consentRecord(data.consentTransactional, 'contact form', TRANSACTIONAL_TEXT),
         },
       },
       { GHL_PRIVATE_INTEGRATION_TOKEN: token, GHL_LOCATION_ID: locationId }
     );
 
-    await applyTag(id, 'site_contact', { GHL_PRIVATE_INTEGRATION_TOKEN: token });
-    await applyTag(id, 'site_v2', { GHL_PRIVATE_INTEGRATION_TOKEN: token });
+    // Tags are best-effort enrichment: the contact is captured, so a tag failure
+    // must not send this lead down the lost-lead fallback path.
+    for (const tag of ['site_contact', 'site_v2']) {
+      await applyTag(id, tag, { GHL_PRIVATE_INTEGRATION_TOKEN: token }).catch((err) =>
+        console.error(`[contact] applyTag ${tag} failed (contact ${id} captured)`, err)
+      );
+    }
+
+    // `your_message` holds only the latest message; the note keeps every one.
+    try {
+      const consentLines = [
+        consentRecord(data.consentTransactional, 'contact form', TRANSACTIONAL_TEXT),
+        consentRecord(data.consentMarketing, 'contact form', MARKETING_TEXT),
+      ].join('\n');
+      await addNote(id, `Website contact form (${formPayload.submittedAt}):\n\n${data.message}\n\nConsent:\n${consentLines}`, {
+        GHL_PRIVATE_INTEGRATION_TOKEN: token,
+      });
+    } catch (err) {
+      console.error('[contact] addNote failed (message still in your_message)', err);
+    }
 
     if (env.GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID) {
       try {
@@ -111,7 +141,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
   } catch (err) {
-    console.error('[contact] GHL upsert/tag failed', err);
+    console.error('[contact] GHL upsert failed — lead NOT captured', err);
     const sent = await sendFallbackEmail(
       {
         formName: 'Contact form',

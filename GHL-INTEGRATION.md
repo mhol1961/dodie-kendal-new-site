@@ -48,35 +48,72 @@ Version: 2021-07-28  /* lock to a known API version; bump deliberately */
 
 ## 4. Field mappings
 
+All writes go through `upsertContact` in `src/lib/ghl.ts`, in three steps:
+
+1. `POST /contacts/upsert` with the **email only**. Name and phone never take part in
+   matching: GHL can also deduplicate on phone, so an untrusted phone could merge a new
+   email into someone else's contact.
+2. `GET /contacts/{id}` for the full record. The upsert reply isn't guaranteed to include
+   every field; an omitted field is treated as unknown, never blank. If this read fails,
+   email opt-out status is unknown and **no guide email is sent**.
+3. `PUT /contacts/{id}` with **only the fields the contact doesn't have yet**: identity
+   (`firstName`, `lastName`, `phone`, `source`) and custom fields. Anyone can type someone
+   else's email, so a public form never renames, re-attributes, or replaces an existing
+   consent or message. Best-effort; a phone GHL rejects is retried without it.
+
+Every submission is also stored as an **append-only contact note** (message + consent
+records), so the full history survives even though fields are first-write-only.
+
+Custom fields are written by id from `FIELD_IDS` in `src/lib/ghl.ts` (typed keys).
+GHL **silently drops unknown custom-field keys** with a 200, so a new field must be
+created in GHL and added to `FIELD_IDS` first. Fields in use: `your_message`
+(pre-existing "Your Message"), `consent_marketing`, `consent_transactional` (created
+via API 2026-10-03, large text).
+
+Remaining design choice: consent is **single opt-in** (recorded on submission, no
+email-confirmation link), like most newsletter forms.
+
+Consent fields hold an auditable record: `Yes | <form> | <ISO time> | "<exact wording shown>"`.
+
 ### Contact form → GHL contact
 
 | Form field | GHL field | Notes |
 | --- | --- | --- |
-| Full Name | `firstName` + `lastName` | Split on first whitespace. |
+| Full Name | `firstName` + `lastName` | Trimmed, split on first whitespace. |
 | Email | `email` | Required; lowercased server-side. |
-| Phone (optional) | `phone` | E.164 normalization if supplied. |
-| Message | `customField.contact_message` | Custom field; provision in GHL UI before launch. |
-| Consent: marketing | `customField.consent_marketing` | Boolean. |
-| Consent: transactional | `customField.consent_transactional` | Boolean. Required. |
+| Phone (optional) | `phone` | As entered. |
+| Message | `your_message` + a contact **note** | Field holds the latest message; the note keeps every one. |
+| Consent: marketing | `consent_marketing` | Consent record (Yes/No). |
+| Consent: transactional | `consent_transactional` | Consent record. Required. |
 | Source | `source` | `"website_contact_form"`. |
 | Tags | applied via secondary call | `["site_contact", "site_v2"]`. |
 
-### Lead-magnet form → GHL contact
+### Lead-magnet (free guide) form → GHL contact
 
 | Form field | GHL field | Notes |
 | --- | --- | --- |
-| First Name | `firstName` | Required. |
-| Email | `email` | Required; lowercased. |
-| Consent: marketing | `customField.consent_marketing` | Required: `true`. |
-| Source | `source` | `"website_lead_magnet"`. |
+| Email | `email` | Required; trimmed + lowercased. No name is asked. |
+| Consent: marketing | `consent_marketing` | Consent record naming the form (`gate` or `free-guide`) and its wording. |
+| Source | `source` | `"website_lead_magnet"` (only if the contact had none). |
 | Tags | applied via secondary call | `["site_lead_magnet", "site_v2"]`. |
+
+Guide email: sent by the endpoint itself, at most once per address per 24h, skipped for
+contacts who opted out of email. Per-IP cap: 5 sign-ups/hour (counted after Turnstile).
+Both limits live in the `LEAD_DB` D1 database (`src/lib/guide-limits.ts`, schema in
+`migrations/`), each as one atomic SQLite upsert. If D1 is down the IP cap fails open and
+the guide email is not sent (the page still shows the link). Tags are best-effort: only
+a failed upsert counts as a lost lead.
+
+### QHHT quiz → GHL contact
+
+`consent_marketing` holds the quiz's consent record; everything else is in `src/pages/api/quiz.ts`.
 
 ## 5. Workflows (provisioned in GHL, referenced by ID)
 
 | Workflow | Trigger | What it does | Env var |
 | --- | --- | --- | --- |
 | Contact-form auto-responder | Site → `/api/contact` | Sends Dodie an internal email with the message; sends sender a "I'll write back within 24–48 hours" confirmation. | `GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID` |
-| Lead-magnet delivery | Site → `/api/lead-magnet` | Sends sender the pre-session prep guide PDF; enrolls in 14-day, 4-touch nurture sequence. | `GHL_WORKFLOW_LEAD_MAGNET_ID` |
+| Lead-magnet delivery | Site → `/api/lead-magnet` | Not a workflow: the endpoint upserts the contact, tags `site_lead_magnet` + `site_v2`, then emails the guide link itself via the GHL conversations API (subject "Your free QHHT prep guide is here"), on every sign-up including returning contacts. | n/a |
 | Booking confirmation (existing) | GHL calendar booking | Dodie's existing workflow; we don't change it. | n/a (managed in GHL) |
 
 ## 6. Tag taxonomy

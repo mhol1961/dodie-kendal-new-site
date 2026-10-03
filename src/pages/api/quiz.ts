@@ -12,7 +12,7 @@
 
 import type { APIRoute } from 'astro';
 import { z } from 'zod';
-import { upsertContact, applyTag, sendContactEmail, sendContactSms, GhlError } from '@lib/ghl';
+import { upsertContact, applyTag, addNote, sendContactEmail, sendContactSms, consentRecord, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
 import { QUIZ_VALUES, answersToTags } from '@lib/quiz';
 
@@ -30,7 +30,7 @@ const answersSchema = z.object(
 );
 
 const payloadSchema = z.object({
-  firstName: z.string().min(1).max(80),
+  firstName: z.string().trim().min(1).max(80),
   email: z.string().email().transform((s) => s.toLowerCase()),
   phone: z.string().max(40).optional(),
   consentMarketing: z.literal(true),
@@ -178,6 +178,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   // --- Step 1: create/upsert the contact. THIS is the lead capture. If it fails,
   //     the lead is genuinely not captured → fall back to email.
+  // Exact checkbox wording from QhhtQuiz.astro.
+  const consent = consentRecord(
+    data.consentMarketing,
+    'QHHT quiz',
+    "I'd like Dodie to reach out about my answers and QHHT. I can unsubscribe anytime."
+  );
   let contactId: string;
   try {
     ({ id: contactId } = await upsertContact(
@@ -186,6 +192,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
         email: data.email,
         phone: data.phone,
         source: 'website_qhht_quiz',
+        customField: {
+          // Only set if the contact has no consent record yet; the note keeps every one.
+          consent_marketing: consent,
+        },
       },
       { GHL_PRIVATE_INTEGRATION_TOKEN: token, GHL_LOCATION_ID: locationId }
     ));
@@ -207,6 +217,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
       ? htmlPage(502, { heading: 'We couldn’t save that just now', message: 'Please try again shortly, or email dodiekendall@gmail.com directly.' })
       : jsonResponse(502, { error: 'CRM and fallback email both unavailable; please email dodiekendall@gmail.com directly.' });
   }
+
+  await addNote(contactId, `QHHT quiz completed. Consent: ${consent}`, {
+    GHL_PRIVATE_INTEGRATION_TOKEN: token,
+  }).catch((err) => console.error('[quiz] consent note failed (contact captured)', err));
 
   // --- Step 2: tagging is best-effort enrichment. The lead is ALREADY captured,
   //     so a tag failure must NOT trigger the lost-lead fallback or report

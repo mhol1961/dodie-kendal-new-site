@@ -1,0 +1,29 @@
+---
+/**
+ * Cloudflare Turnstile (managed) for the free-guide forms. Place inside the
+ * <form>: the widget adds a hidden cf-turnstile-response field, checked by
+ * /api/lead-magnet. The site key is inlined at build time from
+ * PUBLIC_TURNSTILE_SITE_KEY (see ENV.md). Dev uses Cloudflare's always-pass
+ * test key, paired with the test secret in .dev.vars.
+ */
+const siteKey =
+  import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || (import.meta.env.DEV ? '1x00000000000000000000AA' : '');
+if (!siteKey) {
+  throw new Error(
+    'PUBLIC_TURNSTILE_SITE_KEY is not set: every free-guide sign-up would be rejected. Add it to .env.production (see ENV.md).'
+  );
+}
+---
+<div
+  class="cf-turnstile mt-4"
+  data-sitekey={siteKey}
+  data-theme="light"
+  data-error-callback="onLeadMagnetTurnstileError"
+></div>
+<noscript>
+  <p class="mt-4 text-sm text-ink-secondary">
+    This sign-up needs JavaScript. You can still
+    <a href="/dodie-kendall-prep-guide.pdf" class="font-semibold underline text-brand">open the guide directly</a>.
+  </p>
+</noscript>
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

@@ -8,14 +8,16 @@
     "dev": "astro dev --port 5400 --host",
     "start": "astro dev --port 5400 --host",
     "build": "astro build",
-    "postbuild": "node -e \"require('fs').writeFileSync('dist/.assetsignore', '_worker.js\\n_routes.json\\n')\"",
+    "postbuild": "node scripts/strip-claude-pages.mjs && node -e \"require('fs').writeFileSync('dist/.assetsignore', '_worker.js\\n_routes.json\\n')\"",
     "preview": "astro preview",
+    "deploy": "npm run build && wrangler d1 migrations apply dodie-lead-limits --remote && wrangler d1 execute dodie-lead-limits --remote --command \"SELECT 1 FROM guide_sends LIMIT 1; SELECT 1 FROM ip_hits LIMIT 1\" && wrangler deploy",
     "astro": "astro",
     "typecheck": "astro check",
     "lint": "eslint . --ext .js,.ts,.astro",
     "format": "prettier --write \"**/*.{js,ts,astro,md,json}\"",
     "test:e2e": "playwright test",
-    "test:feed": "node --experimental-strip-types --test test/youtube-feed.test.mjs"
+    "test:feed": "node --experimental-strip-types --test test/youtube-feed.test.mjs",
+    "test:unit": "node --experimental-strip-types --test test/*.test.ts"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^11.0.0",

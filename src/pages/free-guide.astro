@@ -21,6 +21,7 @@ import TrustStrip from '@components/TrustStrip.astro';
 import TestimonialGrid from '@components/TestimonialGrid.astro';
 import ClosingCTA from '@components/ClosingCTA.astro';
 import Input from '@components/ui/Input.astro';
+import TurnstileWidget from '@components/TurnstileWidget.astro';
 import { getSeo } from '@lib/seo';
 import { qhhtService, breadcrumb } from '@lib/schema';
 
@@ -83,48 +84,44 @@ const inside = [
 
           <form
             id="fg-form"
+            data-status="fg-status"
+            data-form="free-guide"
             action="/api/lead-magnet"
             method="POST"
-            class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-stretch"
+            class="mt-8"
             novalidate
           >
-            <div class="flex-1">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-stretch">
+              <div class="flex-1">
+                <Input
+                  id="fg-email"
+                  name="email"
+                  type="email"
+                  label="Email address"
+                  visuallyHidden
+                  required
+                  placeholder="you@somewhere.com"
+                  autocomplete="email"
+                />
+              </div>
               <Input
-                id="fg-email"
-                name="email"
-                type="email"
-                label="Email address"
+                id="fg-trap"
+                name="website"
+                label="Leave blank"
                 visuallyHidden
-                required
-                placeholder="you@somewhere.com"
-                autocomplete="email"
+                ariaHidden
+                tabIndex={-1}
+                inputClass="hidden"
               />
+              <input type="hidden" name="consentMarketing" value="true" />
+              <button
+                type="submit"
+                class="cta-glow inline-flex items-center justify-center rounded-pill px-7 py-3.5 text-base font-medium shrink-0"
+              >
+                Send me the guide
+              </button>
             </div>
-            <Input
-              id="fg-first-name"
-              name="firstName"
-              label="First name"
-              visuallyHidden
-              ariaHidden
-              tabIndex={-1}
-              inputClass="hidden"
-            />
-            <Input
-              id="fg-trap"
-              name="website"
-              label="Leave blank"
-              visuallyHidden
-              ariaHidden
-              tabIndex={-1}
-              inputClass="hidden"
-            />
-            <input type="hidden" name="consentMarketing" value="true" />
-            <button
-              type="submit"
-              class="cta-glow inline-flex items-center justify-center rounded-pill px-7 py-3.5 text-base font-medium shrink-0"
-            >
-              Send me the guide
-            </button>
+            <TurnstileWidget />
           </form>
 
           <p class="mt-3 text-xs text-ink-muted">
@@ -257,44 +254,7 @@ const inside = [
   </div>
 </LandingLayout>
 
-<script is:inline>
-  (function () {
-    var form = document.getElementById('fg-form');
-    var status = document.getElementById('fg-status');
-    var firstName = document.getElementById('fg-first-name');
-    if (!form || !status || !firstName) return;
-
-    var READY =
-      'Beautiful, your guide is ready. <a href="/dodie-kendall-prep-guide.pdf" target="_blank" rel="noopener" class="font-semibold underline text-brand hover:text-brand-hover">Open your prep guide →</a>';
-
-    form.addEventListener('submit', async function (e) {
-      e.preventDefault();
-      var email = form.querySelector('[name="email"]');
-      if (!email || !email.value) {
-        status.textContent = 'Please add your email.';
-        status.className = 'mt-4 text-sm text-error';
-        return;
-      }
-      var fn = firstName.value && firstName.value.trim() ? firstName.value.trim() : 'Friend';
-      status.textContent = 'Sending…';
-      status.className = 'mt-4 text-sm text-ink-muted';
-      try {
-        await fetch('/api/lead-magnet', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            firstName: fn,
-            email: email.value,
-            consentMarketing: true,
-            website: '',
-          }),
-        });
-      } catch (err) {
-        /* the guide is still delivered below; capture failures are logged server-side */
-      }
-      status.innerHTML = READY;
-      status.className = 'mt-4 text-sm text-success';
-      form.reset();
-    });
-  })();
+<script>
+  import { wireLeadMagnetForm } from '@lib/lead-magnet-form';
+  wireLeadMagnetForm(document.querySelector<HTMLFormElement>('#fg-form'));
 </script>
