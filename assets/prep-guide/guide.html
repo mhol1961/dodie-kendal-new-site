@@ -1,0 +1,260 @@
+<!doctype html>
+<!--
+  Source for public/dodie-kendall-prep-guide.pdf ("Before your session").
+  Build: see scripts/build-prep-guide.mjs.
+
+  PRINT-SAFE RULES (Apple's PDF viewer, Preview and others don't do Chrome's
+  effects; they turn them into solid boxes or blank areas):
+  - NO box-shadow, text-shadow, filter, blur, backdrop-filter, opacity, rgba/alpha
+    colors or transparent gradient stops. Flat colors, thin borders, and fully
+    opaque gradients only.
+  - Static (non-variable) TTF fonts only: Chrome embeds variable fonts as Type 3,
+    which some viewers draw blank. Fonts in ./fonts are static instances of the
+    site's fonts.
+  - No glyphs the fonts lack (✓ ✕ →): those pull in a fallback font. Draw them as SVG.
+  - No em or en dashes in the copy.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Before your session: Dodie Kendall QHHT preparation guide</title>
+<style>
+  @font-face { font-family: 'Fraunces'; src: url('fonts/Fraunces-SemiBold.ttf'); font-weight: 600; font-style: normal; }
+  @font-face { font-family: 'Fraunces'; src: url('fonts/Fraunces-SemiBoldItalic.ttf'); font-weight: 600; font-style: italic; }
+  @font-face { font-family: 'Inter'; src: url('fonts/Inter-Regular.ttf'); font-weight: 400; }
+  @font-face { font-family: 'Inter'; src: url('fonts/Inter-Medium.ttf'); font-weight: 500; }
+  @font-face { font-family: 'Inter'; src: url('fonts/Inter-SemiBold.ttf'); font-weight: 600; }
+  @font-face { font-family: 'Cormorant'; src: url('fonts/CormorantGaramond-Medium.ttf'); font-weight: 500; }
+
+  @page { size: 612pt 792pt; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 612pt; }
+  body { font-family: 'Inter'; color: #5b5760; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  a { color: inherit; text-decoration: none; }
+
+  .page { position: relative; width: 612pt; height: 792pt; overflow: hidden; background: #faf5ef; page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+  .inner { padding-top: 52pt; }
+  .inner > * + * { margin-top: 28pt; }
+  .abs { position: absolute; }
+
+  /* ---------- cover ---------- */
+  .cover { background: #f4e8dd; }
+  /* Soft corner glows: each is a fully opaque radial gradient that ends in the
+     cover color before its own edge, so the boxes never show. */
+  .glow { position: absolute; }
+  .glow-tl { left: -170pt; top: -170pt; width: 520pt; height: 520pt;
+    background: radial-gradient(circle closest-side, #cbe0dc 0%, #dde7e0 35%, #ebe9e2 62%, #f4e8dd 100%); }
+  .glow-tr { left: 330pt; top: -150pt; width: 420pt; height: 420pt;
+    background: radial-gradient(circle closest-side, #efe1cf 0%, #f2e4d5 55%, #f4e8dd 100%); }
+  .glow-br { left: 300pt; top: 470pt; width: 520pt; height: 520pt;
+    background: radial-gradient(circle closest-side, #e2b6ab 0%, #e9c9bf 40%, #f0dcd1 70%, #f4e8dd 100%); }
+
+  .brand { left: 65pt; top: 58pt; font-family: 'Cormorant'; font-size: 30pt; color: #234f4f; line-height: 1.2; }
+  .tagline { left: 67pt; top: 106pt; font-size: 8.5pt; color: #8a848f; letter-spacing: 0.32em; line-height: 1; }
+  .pill { left: 64pt; top: 280pt; width: 178pt; height: 21pt; border-radius: 10.5pt; background: #c8736a;
+    color: #ffffff; font-weight: 600; font-size: 8.5pt; letter-spacing: 0.24em; display: flex; align-items: center; justify-content: center; }
+  .hero { left: 62pt; top: 312pt; font-family: 'Fraunces'; font-weight: 600; font-size: 62pt; line-height: 65pt; color: #2c2a2e; letter-spacing: -0.01em; }
+  .hero em { display: block; font-style: italic; color: #a9564e; }
+  .lede { left: 65pt; top: 466pt; width: 368pt; font-family: 'Cormorant'; font-size: 19pt; line-height: 26.5pt; color: #234f4f; }
+  .site { left: 65pt; top: 709pt; font-size: 9.5pt; letter-spacing: 0.24em; color: #5b5760; line-height: 1; }
+  .rule { left: 182pt; top: 714.5pt; width: 370pt; height: 1pt; background: linear-gradient(90deg, #c9a46d 0%, #dcc09a 55%, #eccfc1 100%); }
+
+  /* ---------- inner pages ---------- */
+  .foot { left: 58pt; right: 58pt; top: 750pt; display: flex; justify-content: space-between; font-size: 8pt; letter-spacing: 0.2em; color: #8a848f; }
+
+  .intro { margin-left: 58pt; width: 496pt; padding-left: 19pt; border-left: 2pt solid #c2995d;
+    font-family: 'Cormorant'; font-size: 16pt; line-height: 24pt; color: #234f4f; }
+
+  .step { position: relative; margin-left: 58pt; width: 496pt; }
+  .num { position: absolute; left: 0; top: 0; width: 33pt; height: 33pt; border-radius: 50%; color: #ffffff;
+    font-family: 'Fraunces'; font-weight: 600; font-size: 14pt; display: flex; align-items: center; justify-content: center; }
+  .coral { background: #c8736a; } .teal { background: #2e6e6e; } .gold { background: #c2995d; } .sage { background: #8aa88b; }
+  .body { margin-left: 46pt; }
+  .eyebrow { font-size: 8.5pt; letter-spacing: 0.2em; color: #8a848f; font-weight: 500; line-height: 1; padding-top: 1pt; }
+  h2 { font-family: 'Fraunces'; font-weight: 600; font-size: 20pt; line-height: 24pt; color: #2c2a2e; margin-top: 3pt; }
+  p.t { font-size: 10.6pt; line-height: 17.4pt; color: #5b5760; margin-top: 7pt; letter-spacing: -0.012em; }
+  p.t + p.t { margin-top: 6.5pt; }
+  .callout { margin: 10pt 0 12pt; padding-left: 14pt; border-left: 2pt solid #7ebebd;
+    font-family: 'Cormorant'; font-size: 20pt; line-height: 26pt; color: #2e6e6e; }
+
+  .avoid { margin-top: 14pt; background: #f6e7e2; border: 0.75pt solid #e6c8c1; border-radius: 7pt; padding: 13pt 18pt 12pt; }
+  .avoid h3 { font-size: 8.5pt; letter-spacing: 0.24em; color: #a9564e; font-weight: 600; line-height: 1; }
+  .avoid ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; column-gap: 18pt; row-gap: 9pt; margin-top: 10pt; }
+  .avoid li { display: flex; gap: 8pt; font-size: 9.8pt; line-height: 13pt; color: #2c2a2e; }
+  .avoid li small { font-size: 8.2pt; color: #5b5760; }
+  .avoid svg { flex: none; width: 9pt; height: 9pt; margin-top: 2.5pt; }
+
+  .bring { list-style: none; margin-top: 9pt; }
+  .bring li { display: flex; gap: 9pt; align-items: flex-start; font-size: 10.4pt; line-height: 14pt; color: #2c2a2e; margin-bottom: 5pt; }
+  .bring li small { font-size: 8.4pt; color: #5b5760; }
+  .box { flex: none; width: 15pt; height: 15pt; border-radius: 3pt; background: #e3f0ed; border: 0.75pt solid #2e6e6e;
+    display: flex; align-items: center; justify-content: center; }
+  .box svg { width: 9pt; height: 9pt; }
+
+  .ritual { list-style: none; margin-top: 10pt; }
+  .ritual li { display: flex; gap: 13pt; align-items: center; margin-bottom: 11pt; font-size: 11.4pt; line-height: 15pt; color: #2c2a2e; }
+  .ritual li b { font-weight: 600; }
+  .sq { flex: none; width: 28pt; height: 28pt; border-radius: 7pt; background: #e3f0ed; color: #234f4f;
+    font-family: 'Fraunces'; font-weight: 600; font-size: 12pt; display: flex; align-items: center; justify-content: center; }
+  .note { margin-left: 41pt; }
+  em.q { font-style: italic; }
+
+  .last { margin-left: 58pt; width: 496pt; border-radius: 9pt; padding: 18pt 21pt 19pt;
+    background: #e6f0ec; }
+  .last h3 { font-family: 'Fraunces'; font-weight: 600; font-size: 15pt; line-height: 18pt; color: #234f4f; }
+  .last p { font-size: 10.6pt; line-height: 17.4pt; color: #3f5a58; margin-top: 5pt; letter-spacing: -0.012em; }
+
+  .inner > .close { margin-top: 24pt; } .close { margin-left: 58pt; width: 496pt; font-family: 'Cormorant'; font-size: 15pt; line-height: 20pt; color: #5b5760; }
+  .close a.url { color: #a9564e; }
+  .inner > .btn { margin-top: 12pt; } .btn { margin-left: 58pt; width: 162pt; height: 34pt; border-radius: 17pt; background: #c8736a; color: #ffffff;
+    font-weight: 600; font-size: 11pt; display: flex; align-items: center; justify-content: center; gap: 7pt; }
+  .btn svg { width: 10pt; height: 10pt; }
+  .inner > .sig { margin-top: 14pt; } .sig { margin-left: 58pt; font-family: 'Cormorant'; font-size: 19pt; color: #a9564e; }
+</style>
+</head>
+<body>
+
+<!-- ===================== PAGE 1: COVER ===================== -->
+<section class="page cover">
+  <div class="glow glow-tl"></div>
+  <div class="glow glow-tr"></div>
+  <div class="glow glow-br"></div>
+
+  <!-- Sun: coral ring + gold rays, all flat strokes -->
+  <svg class="abs" style="left:0;top:0" width="612pt" height="792pt" viewBox="0 0 612 792">
+    <circle cx="539.5" cy="71.5" r="62.3" fill="none" stroke="#c8736a" stroke-width="2.25" />
+    <g stroke="#c2995d" stroke-width="1.87" stroke-linecap="round" fill="none">
+      <line x1="379" y1="6" x2="446" y2="30" />
+      <line x1="367" y1="72" x2="438" y2="72" />
+      <line x1="379" y1="137" x2="446" y2="113" />
+      <line x1="409" y1="202" x2="461" y2="150" />
+      <line x1="474" y1="232" x2="498" y2="165" />
+      <line x1="540" y1="173" x2="540" y2="244" />
+      <line x1="605" y1="232" x2="581" y2="165" />
+    </g>
+  </svg>
+
+  <div class="abs brand">Dodie Kendall</div>
+  <div class="abs tagline">Q · H · H · T &nbsp;·&nbsp; STUART, FLORIDA</div>
+  <div class="abs pill">YOUR PREPARATION GUIDE</div>
+  <h1 class="abs hero">Before<em>your session.</em></h1>
+  <p class="abs lede">A few small, unhurried things that help your first Quantum Healing session become all that it can be.</p>
+  <div class="abs site">dodiekendall.com</div>
+  <div class="abs rule"></div>
+</section>
+
+<!-- ===================== PAGE 2 ===================== -->
+<section class="page inner">
+  <p class="intro">Preparing for a QHHT session is mostly internal, not logistical. There's no special diet, no incense to burn, no mantra to memorize. But a few small things in the days before make a real difference in what your session can do.</p>
+
+  <div class="step">
+    <div class="num coral">1</div>
+    <div class="body">
+      <div class="eyebrow">A WEEK BEFORE</div>
+      <h2>Live with your questions</h2>
+      <p class="t">QHHT is a conversation with the deepest part of you. It works because <em class="q">you</em> set the agenda: the questions you bring are the doorways through which the Subconscious speaks.</p>
+      <p class="callout">This is the single most important thing.</p>
+      <p class="t">A few days before our pre-session call, write down every question you'd ask if you knew you had a long, uninterrupted conversation with the part of yourself that holds all the answers. Don't filter. Let it be messy. Then set the list down for a day. Come back. Edit. Cross some off. Add others.</p>
+      <p class="t">By the time we talk, you'll have five to ten questions that <em class="q">feel</em> right, and together we'll narrow them to the three or four that matter most.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num teal">2</div>
+    <div class="body">
+      <div class="eyebrow">THE NIGHT BEFORE</div>
+      <h2>Sleep</h2>
+      <p class="t">Real, full sleep: aim for eight hours if you can. The Theta brainwave state you'll rest in for most of the session is already deeply restful, so arriving tired risks dropping all the way to sleep instead of staying in that productive threshold.</p>
+      <p class="t">If you're a poor sleeper, that's completely fine. We work with what you have. But if you can give yourself one good night's rest, let this be the night.</p>
+    </div>
+  </div>
+
+  <div class="abs foot"><span>BEFORE YOUR SESSION</span><span>DODIE KENDALL · QHHT</span></div>
+</section>
+
+<!-- ===================== PAGE 3 ===================== -->
+<section class="page inner">
+  <div class="step">
+    <div class="num gold">3</div>
+    <div class="body">
+      <div class="eyebrow">THE MORNING OF</div>
+      <h2>Light food &amp; water</h2>
+      <p class="t">Eat something nourishing but light: fruit, oatmeal, eggs, toast. A heavy meal slows the body and makes the Theta state harder to enter cleanly. And hydrate: drink water in the hour or two before, since you'll be lying still for a long while and won't want to start out thirsty.</p>
+      <div class="avoid">
+        <h3>GENTLY AVOID THE DAY OF</h3>
+        <ul>
+          <li><svg viewBox="0 0 10 10"><path d="M1.5 1.5 8.5 8.5M8.5 1.5 1.5 8.5" stroke="#c9736b" stroke-width="1.5" stroke-linecap="round"/></svg><span>Caffeine: <small>it interferes with the brain-wave shift</small></span></li>
+          <li><svg viewBox="0 0 10 10"><path d="M1.5 1.5 8.5 8.5M8.5 1.5 1.5 8.5" stroke="#c9736b" stroke-width="1.5" stroke-linecap="round"/></svg><span>Alcohol the night before: <small>longer half-life than you think</small></span></li>
+          <li><svg viewBox="0 0 10 10"><path d="M1.5 1.5 8.5 8.5M8.5 1.5 1.5 8.5" stroke="#c9736b" stroke-width="1.5" stroke-linecap="round"/></svg><span>Heavy meals</span></li>
+          <li><svg viewBox="0 0 10 10"><path d="M1.5 1.5 8.5 8.5M8.5 1.5 1.5 8.5" stroke="#c9736b" stroke-width="1.5" stroke-linecap="round"/></svg><span>Recreational substances</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num sage">4</div>
+    <div class="body">
+      <div class="eyebrow">COMFORT</div>
+      <h2>What to wear</h2>
+      <p class="t">Comfortable clothes, with layers if you tend to run cold. Nothing tight at the waist or neck, and slip-on shoes you can kick off. If you wear glasses, bring them but expect to take them off. Same for any jewelry that might press against you while you're reclining.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num teal">5</div>
+    <div class="body">
+      <div class="eyebrow">FOR AN IN-PERSON SESSION</div>
+      <h2>What to bring</h2>
+      <ul class="bring">
+        <li><span class="box"><svg viewBox="0 0 10 10"><path d="M1.8 5.3 4 7.5 8.4 2.6" fill="none" stroke="#2e6e6e" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Your written question list, <small>or just your phone with the list on it</small></span></li>
+        <li><span class="box"><svg viewBox="0 0 10 10"><path d="M1.8 5.3 4 7.5 8.4 2.6" fill="none" stroke="#2e6e6e" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>A water bottle</span></li>
+        <li><span class="box"><svg viewBox="0 0 10 10"><path d="M1.8 5.3 4 7.5 8.4 2.6" fill="none" stroke="#2e6e6e" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>A light snack for after: <small>your blood sugar may want it</small></span></li>
+        <li><span class="box"><svg viewBox="0 0 10 10"><path d="M1.8 5.3 4 7.5 8.4 2.6" fill="none" stroke="#2e6e6e" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Anything that grounds you: <small>a small stone, a photo, a journal. Optional.</small></span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="abs foot"><span>BEFORE YOUR SESSION</span><span>DODIE KENDALL · QHHT</span></div>
+</section>
+
+<!-- ===================== PAGE 4 ===================== -->
+<section class="page inner">
+  <div class="step">
+    <div class="num coral">6</div>
+    <div class="body">
+      <div class="eyebrow">THE MORNING OF, IF YOU HAVE TIME</div>
+      <h2>A short grounding ritual</h2>
+      <ol class="ritual">
+        <li><span class="sq">1</span><span><b>Sit quietly for five minutes.</b><br />Close your eyes. Breathe.</span></li>
+        <li><span class="sq">2</span><span><b>Bring each top question to mind, one at a time.</b><br />Don't try to answer them. Just hold each one for thirty seconds.</span></li>
+        <li><span class="sq">3</span><span><b>Notice which feels heaviest, warmest, or most alive.</b><br />That's likely the one your Higher Self has been waiting for.</span></li>
+      </ol>
+      <p class="t note">You don't have to do this. But many clients say it shifts the session from <em class="q">"I hope something happens"</em> to <em class="q">"I'm ready to listen."</em></p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num teal">7</div>
+    <div class="body">
+      <div class="eyebrow">RIGHT AFTER</div>
+      <h2>Let it land</h2>
+      <p class="t">You'll feel like you woke from a long, vivid nap. Some clients are energized; some are quiet and want to drive home in silence. Both are perfectly fine. Drink water, eat something, and don't make any big decisions that day. Your audio recording will be ready shortly after, and most clients listen back over the following weeks, since insights often arrive on a delay.</p>
+    </div>
+  </div>
+
+  <div class="last">
+    <h3>One last thing</h3>
+    <p>Trust your own pace. There's no right way to enter this. If you arrive nervous, we'll work with nervous. If you arrive eager, we'll work with eager. The Subconscious doesn't care about your prep score. It cares that you're here, and that you've brought it questions worth answering.</p>
+  </div>
+
+  <p class="close">When you're ready, you can book your session at <a class="url" href="https://dodiekendall.com/book">dodiekendall.com/book</a>.</p>
+  <a class="btn" href="https://dodiekendall.com/book">Book your session<svg viewBox="0 0 10 10"><path d="M1.5 5h7M5.5 2 8.5 5 5.5 8" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  <div class="sig">Dodie</div>
+
+  <div class="abs foot"><span>BEFORE YOUR SESSION</span><span>DODIE KENDALL · QHHT</span></div>
+</section>
+
+</body>
+</html>
