@@ -1,0 +1,26 @@
+---
+/**
+ * Captures utm_source / utm_medium / utm_campaign / utm_content / utm_term / fbclid
+ * from the landing URL into sessionStorage, so they survive the visit and every form
+ * can send them to GHL (src/lib/attribution.ts). A later ad click in the same visit
+ * replaces them. Inline + early so it runs before anything navigates away.
+ */
+---
+<script is:inline>
+  (function () {
+    try {
+      var p = new URLSearchParams(location.search);
+      var keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid'];
+      var a = {};
+      var found = false;
+      keys.forEach(function (k) {
+        var v = p.get(k);
+        if (v) { a[k] = v.slice(0, 300); found = true; }
+      });
+      if (found) {
+        a.landing_page = location.pathname;
+        sessionStorage.setItem('dk_attr', JSON.stringify(a));
+      }
+    } catch (e) { /* storage blocked: forms just send no attribution */ }
+  })();
+</script>

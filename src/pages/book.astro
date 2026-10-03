@@ -11,6 +11,7 @@ export const prerender = false;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const env = ((Astro.locals as any)?.runtime?.env ?? process.env) as Record<string, string | undefined>;
 const calendarId = env.GHL_CALENDAR_ID;
+const discoveryCalendarId = env.GHL_DISCOVERY_CALENDAR_ID;
 const fallbackUrl = env.BOOKING_CALENDAR_FALLBACK_URL;
 
 const seo = getSeo({
@@ -51,6 +52,25 @@ const next = [
     <div class="container-default max-w-4xl">
       <p class="text-xs uppercase tracking-wider text-ink-muted">Booking</p>
       <h1 class="mt-2 font-display">Select a time that feels right.</h1>
+      <p class="mt-4 max-w-prose text-lg leading-relaxed text-ink-secondary">
+        There are two ways to begin. If you're new to QHHT or still deciding, start with a free call. If you already know, reserve your session below.
+      </p>
+
+      {discoveryCalendarId && (
+        <div class="mt-10 rounded-lg border border-border-subtle bg-bg-sunken p-5 md:p-8">
+          <p class="text-xs uppercase tracking-wider text-brand">New to QHHT? Start here</p>
+          <h2 class="mt-2 font-display">A free 30-minute call.</h2>
+          <p class="mt-4 max-w-prose text-lg leading-relaxed text-ink-secondary">
+            We'll talk about what's drawing you to QHHT, what a session looks like, and whether it feels right for you. No cost and no commitment.
+          </p>
+          <div class="mt-8">
+            <BookingEmbed calendarId={discoveryCalendarId} title="Book a free 30-minute discovery call with Dodie Kendall" />
+          </div>
+        </div>
+      )}
+
+      <p class="mt-16 text-xs uppercase tracking-wider text-ink-muted">Ready for your session?</p>
+      <h2 class="mt-2 font-display">Reserve your QHHT session.</h2>
 
       <div class="mt-8 grid gap-8 md:grid-cols-3">
         <div class="rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm">

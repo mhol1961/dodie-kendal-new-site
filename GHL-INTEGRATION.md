@@ -108,6 +108,17 @@ Both limits live in the `LEAD_DB` D1 database (`src/lib/guide-limits.ts`, schema
 the guide email is not sent (the page still shows the link). Tags are best-effort: only
 a failed upsert counts as a lost lead.
 
+### Ad attribution (all three forms)
+
+`AttributionCapture.astro` stores `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`,
+`utm_term` and `fbclid` from the landing URL for the visit; every form sends them.
+- Written to GHL custom fields with **exactly those keys** (Text fields), looked up by key
+  at runtime, first touch wins (blank fields only). **None exist yet**: until they are
+  created in GHL, the values are only in the contact's note ("Ad source: ...").
+- Tag `source_facebook_instagram` when there's an fbclid or utm_source names
+  Facebook/Instagram.
+- Successful submissions fire Meta `Lead` (no-op until `PUBLIC_FB_PIXEL_ID` is set).
+
 ### QHHT quiz → GHL contact
 
 `consent_marketing` holds the quiz's consent record; everything else is in `src/pages/api/quiz.ts`.
@@ -155,7 +166,7 @@ export interface GhlClient {
 
 - The website never persists contact data anywhere except by sending it to GHL.
 - No website-side database, no localStorage of PII, no third-party form services.
-- Plausible analytics is the only third-party script — and it sees only anonymized event data.
+- Third-party scripts: Cloudflare Turnstile (spam check), Cloudflare Web Analytics and the Meta Pixel (each only when its build variable is set), and the GHL chat widget.
 
 ## 10. Sandbox / staging
 

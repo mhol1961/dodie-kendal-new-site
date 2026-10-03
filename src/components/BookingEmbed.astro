@@ -10,9 +10,10 @@
 interface Props {
   calendarId?: string;
   fallbackUrl?: string;
+  title?: string;
 }
 
-const { calendarId, fallbackUrl = '' } = Astro.props;
+const { calendarId, fallbackUrl = '', title = 'Book a QHHT session with Dodie Kendall' } = Astro.props;
 
 const embedUrl = calendarId
   ? `https://api.leadconnectorhq.com/widget/booking/${calendarId}`
@@ -22,7 +23,7 @@ const embedUrl = calendarId
   {embedUrl ? (
     <iframe
       src={embedUrl}
-      title="Book a QHHT session with Dodie Kendall"
+      title={title}
       loading="lazy"
       referrerpolicy="strict-origin-when-cross-origin"
       style="width: 100%; min-height: 720px; border: 0;"

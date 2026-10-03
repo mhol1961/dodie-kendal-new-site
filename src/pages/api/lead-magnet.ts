@@ -16,6 +16,7 @@ import { z } from 'zod';
 import { upsertContact, applyTag, addNote, sendContactEmail, consentRecord, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
 import { verifyRequest } from '@lib/turnstile';
+import { attributionSchema, attributionFields, attributionLine, isFacebookOrInstagram, FB_IG_TAG } from '@lib/attribution';
 import { optinToken, confirmUrl } from '@lib/optin';
 import { allowIp, claimGuideEmail, releaseGuideEmail, type D1Like } from '@lib/guide-limits';
 
@@ -38,6 +39,7 @@ const payloadSchema = z.object({
   consentMarketing: z.literal(true),
   form: z.enum(['gate', 'free-guide']).default('gate'),
   'cf-turnstile-response': z.string().max(2048).optional(),
+  attribution: attributionSchema,
 });
 
 const honeypotKey = 'website';
@@ -137,6 +139,7 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
         firstName,
         email: data.email,
         source: 'website_lead_magnet',
+        attribution: attributionFields(data.attribution),
         // Only set if the contact has no consent record yet; every sign-up is
         // also kept below as an append-only note.
         customField: { consent_marketing: consent },
@@ -166,13 +169,14 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   // Step 2 — tags are best-effort enrichment (as in quiz.ts): the lead is captured,
   // so a tag failure must not skip the guide email or trigger the fallback.
   const confirmed = tags.includes('optin_confirmed');
-  for (const tag of ['site_lead_magnet', 'site_v2', ...(confirmed ? [] : ['optin_pending'])]) {
+  const extraTags = [...(confirmed ? [] : ['optin_pending']), ...(isFacebookOrInstagram(data.attribution) ? [FB_IG_TAG] : [])];
+  for (const tag of ['site_lead_magnet', 'site_v2', ...extraTags]) {
     await applyTag(contactId, tag, { GHL_PRIVATE_INTEGRATION_TOKEN: token }).catch((err) =>
       console.error(`[lead-magnet] applyTag ${tag} failed (contact ${contactId} captured)`, err)
     );
   }
 
-  await addNote(contactId, `Free-guide sign-up${confirmed ? ' (email already confirmed)' : ''}. Consent: ${consent}`, {
+  await addNote(contactId, `Free-guide sign-up${confirmed ? ' (email already confirmed)' : ''}. Consent: ${consent}${attributionLine(data.attribution) ? `\n${attributionLine(data.attribution)}` : ''}`, {
     GHL_PRIVATE_INTEGRATION_TOKEN: token,
   }).catch((err) => console.error('[lead-magnet] consent note failed (contact captured)', err));
 

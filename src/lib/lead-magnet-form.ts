@@ -1,4 +1,5 @@
 // Browser behaviour for the free-guide forms (LeadMagnetGate + /free-guide).
+import { readAttribution, trackLead } from './attribution-client.ts';
 // `outcomeFor` is pure and unit-tested (test/lead-magnet-form.test.ts).
 
 const GUIDE_LINK =
@@ -92,6 +93,7 @@ export function wireLeadMagnetForm(form: HTMLFormElement | null): void {
           email: email.value,
           consentMarketing: true,
           form: form.dataset.form,
+          attribution: readAttribution(),
           website: trap?.value ?? '',
           'cf-turnstile-response': token,
         }),
@@ -101,6 +103,8 @@ export function wireLeadMagnetForm(form: HTMLFormElement | null): void {
       /* network failure: outcomeFor(null) still hands over the guide */
     }
     const outcome = outcomeFor(res?.status ?? null, body);
+    // Saved in GHL (200 captured, or 202 fallback): count it as a lead in Meta.
+    if ((res?.status === 200 && body?.captured) || res?.status === 202) trackLead();
     show(outcome);
     if (MESSAGES[outcome].ok) form.reset();
     resetCheck();

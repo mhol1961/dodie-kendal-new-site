@@ -102,16 +102,16 @@ leads but sends **no** guide emails (logged as `limit-unavailable`). Don't run a
 `wrangler deploy` after adding a migration.
 
 **Set the build-time variables before `npm run build`.** `SITE_URL`,
-`PUBLIC_PLAUSIBLE_DOMAIN` and `PUBLIC_FB_PIXEL_ID` are read by Astro/Vite *at build
+`PUBLIC_CF_BEACON_TOKEN` and `PUBLIC_FB_PIXEL_ID` are read by Astro/Vite *at build
 time*, not by the Worker at runtime — they are not in `.dev.vars`, and `wrangler
 secret` / `wrangler.toml [vars]` cannot supply them. Build with them present in the
 shell (or a `.env.production`), or the deployed bundle silently ships with no
 analytics and no ad attribution:
 
 ```bash
-SITE_URL=https://dodiekendall.com PUBLIC_PLAUSIBLE_DOMAIN=dodiekendall.com \
+SITE_URL=https://dodiekendall.com PUBLIC_CF_BEACON_TOKEN=<token> \
   PUBLIC_FB_PIXEL_ID=<the pixel id> npm run build
-grep -rl "plausible.io" dist | head -1    # sanity check: the tag made it into the build
+grep -rl "cloudflareinsights" dist | head -1    # sanity check: the tag made it into the build
 ```
 
 Everything else in §5 is a Worker runtime binding, read via `locals.runtime.env`.
@@ -160,7 +160,7 @@ values.
 | `PUBLIC_TURNSTILE_SITE_KEY` | no | build environment (`.env.production`) | Turnstile widget site key; the build fails without it |
 | `GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID` | no | `wrangler.toml [vars]` (when used) | Contact-form auto-responder workflow |
 | `SITE_URL` | no | build environment (defaults to the canonical URL in `astro.config.mjs`) | Canonicals, OG tags, sitemap, JSON-LD |
-| `PUBLIC_PLAUSIBLE_DOMAIN` | no | build environment | Enables the Plausible tag in `Base.astro` (production builds only) |
+| `PUBLIC_CF_BEACON_TOKEN` | no | build environment (`.env.production`) | Enables Cloudflare Web Analytics (production builds only) |
 | `PUBLIC_FB_PIXEL_ID` | no | build environment | Enables `MetaPixel.astro`. Blank renders nothing. **If you change tracking, update `/privacy` in the same commit.** |
 | `RESEND_API_KEY` | **secret** | Cloudflare Worker Secret (optional; currently not provisioned) | Fallback transactional email if the GHL write path fails |
 | `FALLBACK_EMAIL_TO` | no | Worker var (optional) | Recipient for that fallback |
@@ -204,7 +204,7 @@ put` it, redeploy, then revoke the old one.
 | **GoHighLevel** | CRM, contact records, the booking calendar embedded on `/book`, the contact form iframe on `/contact`, the chat widget, automation workflows, prep-guide email delivery | Embeds are served from `api.leadconnectorhq.com` and `widgets.leadconnectorhq.com`. Must be **Dodie's own subaccount** — never an agency subaccount |
 | **YouTube** | The `/videos` "Latest Videos" section reads the channel RSS feed via `/api/videos.json`; thumbnails are a click-to-play facade so no YouTube JS loads until clicked | Feed failure degrades gracefully |
 | **Meta (Facebook) Pixel** | Ad conversion tracking, active only when `PUBLIC_FB_PIXEL_ID` is set | Whatever is live must be reflected on `/privacy` |
-| **Plausible** | Privacy-first analytics, production builds only | No cookies |
+| **Cloudflare Web Analytics** | Privacy-first analytics, production builds only, when `PUBLIC_CF_BEACON_TOKEN` is set | No cookies |
 | **Google Search Console / Bing Webmaster** | Search indexing and diagnostics | Registered under the owners' email |
 | **Stripe** | **Not used.** No Stripe code, keys, or checkout exist in this repo | Booking deposits are collected inside GoHighLevel, not by this site |
 

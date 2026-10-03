@@ -93,6 +93,7 @@ import TurnstileWidget from '@components/TurnstileWidget.astro';
         consentTransactional: fd.get('consentTransactional') === 'true',
         website: String(fd.get('website') ?? ''),
         'cf-turnstile-response': String(fd.get('cf-turnstile-response') ?? ''),
+        attribution: (function () { try { return JSON.parse(sessionStorage.getItem('dk_attr') || 'null') || undefined; } catch (e) { return undefined; } })(),
       };
       if (!payload['cf-turnstile-response']) {
         status.textContent = 'Please complete the security check above, then send again.';
@@ -121,6 +122,7 @@ import TurnstileWidget from '@components/TurnstileWidget.astro';
           body: JSON.stringify(payload),
         });
         if (res.ok || res.status === 202) {
+          if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
           status.textContent = 'Thank you — your note is on its way. Dodie will write back personally within 24–48 hours.';
           status.className = 'text-sm text-success';
           form.reset();

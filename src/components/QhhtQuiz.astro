@@ -141,6 +141,7 @@ const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
 </style>
 
 <script>
+  import { readAttribution, trackLead } from '@lib/attribution-client';
   const form = document.getElementById('qhht-quiz') as HTMLFormElement | null;
   if (form) {
     const steps = Array.from(form.querySelectorAll<HTMLElement>('.quiz-step'));
@@ -235,6 +236,7 @@ const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
         consentMarketing: fd.get('consentMarketing') === 'true',
         answers,
         'cf-turnstile-response': (fd.get('cf-turnstile-response') as string) || '',
+        attribution: readAttribution(),
       };
       // Spam check not finished (or blocked by a browser add-on): don't send yet.
       if (!payload['cf-turnstile-response']) {
@@ -250,6 +252,7 @@ const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
           body: JSON.stringify(payload),
         });
         if (res.ok || res.status === 202) {
+          trackLead();
           form.hidden = true;
           if (progress) progress.classList.add('hidden');
           if (success) success.hidden = false;

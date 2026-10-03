@@ -20,7 +20,7 @@
 | `PUBLIC_TURNSTILE_SITE_KEY` | non-secret, **build-time** | Turnstile site key (`0x4AAAAAAFM2euvUYEivwvlo`), inlined by `TurnstileWidget.astro`. Lives in the gitignored `.env.production` on the build machine; the production build fails without it. | Agency. |
 | `GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID` | non-secret | Workflow ID for the contact-form auto-responder. | Dodie. |
 | `SITE_URL` | non-secret | Canonical site URL (e.g., `https://dodiekendall.com`). Used in canonicals, OG tags, schema. | Agency. |
-| `PUBLIC_PLAUSIBLE_DOMAIN` | non-secret | Plausible domain (e.g., `dodiekendall.com`). Used by analytics tag in `Base.astro`. | Agency. |
+| `PUBLIC_CF_BEACON_TOKEN` | non-secret, **build-time** | Cloudflare Web Analytics token (cookie-free). Blank = no analytics tag. Used by `Base.astro` + `LandingLayout.astro`. | Agency. |
 
 ## 2. Required for fallback email
 
@@ -47,7 +47,7 @@ Decided in ADR-003 (forthcoming). One of:
 - **Sandbox values:** use Dodie's sandbox/staging subaccount values during build. Swap to production at launch per `LAUNCH-CHECKLIST.md`.
 - **Production — non-secret runtime:** `wrangler.toml` `[vars]`. These must live in the toml, not the dashboard: every `wrangler deploy` resets dashboard-set plain-text variables (Secrets are preserved).
 - **Production — secrets:** Cloudflare Worker Secrets, set with `wrangler secret put` or the dashboard. Never in `wrangler.toml`.
-- **Production — build-time:** `SITE_URL`, `PUBLIC_PLAUSIBLE_DOMAIN`, `PUBLIC_FB_PIXEL_ID` and `PUBLIC_TURNSTILE_SITE_KEY` are inlined by Astro during `npm run build` and must be present in the build shell. Neither `wrangler.toml` nor Worker Secrets can supply them; a build without them ships with no analytics and no ad attribution.
+- **Production — build-time:** `SITE_URL`, `PUBLIC_CF_BEACON_TOKEN`, `PUBLIC_FB_PIXEL_ID` and `PUBLIC_TURNSTILE_SITE_KEY` are inlined by Astro during `npm run build` and must be present in the build shell. Neither `wrangler.toml` nor Worker Secrets can supply them; a build without them ships with no analytics and no ad attribution.
 - **`PUBLIC_` prefix:** inlined into the client bundle. Never put anything sensitive behind it.
 
 ## 5. Rotation policy

@@ -1,6 +1,8 @@
 // GHL API client. Server-side only — never bundled to the client.
 // See GHL-INTEGRATION.md for endpoint and field mapping reference.
 
+import type { AttributionKey } from './attribution';
+
 const GHL_BASE = 'https://services.leadconnectorhq.com';
 const GHL_API_VERSION = '2021-07-28';
 // The conversations/messages endpoint is versioned differently from contacts.
@@ -29,6 +31,9 @@ export interface ContactPayload {
   source: string;
   /** Only written where the contact has no value yet (see enrichmentPatch). */
   customField?: Partial<Record<FieldKey, string>>;
+  /** Ad attribution (utm_* / fbclid). Written to same-named GHL custom fields if they
+   *  exist, looked up by key at runtime; first touch wins (blank fields only). */
+  attribution?: Partial<Record<AttributionKey, string>>;
 }
 
 export class GhlError extends Error {
@@ -96,18 +101,44 @@ export type FullContact = Identity & {
  * re-attribute, or replace consent/messages on an existing contact (every
  * submission is also kept as an append-only note by the callers). Pure; tested.
  */
-export function enrichmentPatch(payload: ContactPayload, existing: FullContact): Record<string, unknown> {
+export function enrichmentPatch(
+  payload: ContactPayload,
+  existing: FullContact,
+  /** fieldKey (without "contact.") -> id, for attribution fields that exist in GHL */
+  attributionFieldIds: Record<string, string> = {}
+): Record<string, unknown> {
   const patch: Record<string, unknown> = {};
   for (const key of IDENTITY_KEYS) {
     const value = payload[key]?.trim();
     if (value && !existing[key]?.trim()) patch[key] = value;
   }
   const has = new Set((existing.customFields ?? []).filter((f) => String(f.value ?? '').trim()).map((f) => f.id));
-  const fields = Object.entries(payload.customField ?? {})
-    .filter(([key, value]) => value?.trim() && !has.has(FIELD_IDS[key as FieldKey]))
-    .map(([key, value]) => ({ id: FIELD_IDS[key as FieldKey], field_value: value }));
+  const wanted: [string | undefined, string | undefined][] = [
+    ...Object.entries(payload.customField ?? {}).map(([k, v]) => [FIELD_IDS[k as FieldKey], v] as [string, string | undefined]),
+    ...Object.entries(payload.attribution ?? {}).map(([k, v]) => [attributionFieldIds[k], v] as [string | undefined, string | undefined]),
+  ];
+  const fields = wanted
+    .filter(([id, value]) => id && value?.trim() && !has.has(id))
+    .map(([id, value]) => ({ id: id as string, field_value: value as string }));
   if (fields.length) patch.customFields = fields;
   return patch;
+}
+
+// ponytail: per-isolate cache; fields created later in GHL are picked up on the next
+// cold start (minutes). Fetch every time if that ever matters.
+let fieldIdCache: Record<string, string> | null = null;
+
+/** All contact custom fields in the location, fieldKey (without "contact.") -> id. */
+async function locationFieldIds(env: { GHL_PRIVATE_INTEGRATION_TOKEN: string; GHL_LOCATION_ID: string }): Promise<Record<string, string>> {
+  if (fieldIdCache) return fieldIdCache;
+  const res = await fetch(`${GHL_BASE}/locations/${env.GHL_LOCATION_ID}/customFields`, {
+    signal: AbortSignal.timeout(GHL_TIMEOUT_MS),
+    headers: authHeaders(env.GHL_PRIVATE_INTEGRATION_TOKEN),
+  });
+  if (!res.ok) throw new GhlError(res.status, `customFields failed: ${await res.text()}`);
+  const json = (await res.json()) as { customFields?: { id: string; fieldKey: string }[] };
+  fieldIdCache = Object.fromEntries((json.customFields ?? []).map((f) => [f.fieldKey.replace(/^contact\./, ''), f.id]));
+  return fieldIdCache;
 }
 
 export function emailOptedOut(contact: FullContact): boolean {
@@ -184,7 +215,14 @@ export async function upsertContact(payload: ContactPayload, env: {
     return { id, isNew, emailDnd: null, tags: [] };
   }
 
-  const patch = enrichmentPatch(payload, contact);
+  const hasAttribution = Object.values(payload.attribution ?? {}).some(Boolean);
+  const attributionIds = hasAttribution
+    ? await locationFieldIds(env).catch((err) => {
+        console.error('[ghl] custom-field lookup failed; attribution kept in the note only', err);
+        return {};
+      })
+    : {};
+  const patch = enrichmentPatch(payload, contact, attributionIds);
   if (Object.keys(patch).length) {
     try {
       await updateContact(id, patch, env);

@@ -8,7 +8,8 @@
  *   - Full <head> SEO/OG/Twitter + self-hosted fonts + JSON-LD business/person
  *   - Meta (Facebook) Pixel  ← essential: these pages exist to receive FB/IG ad
  *     traffic; the pixel powers conversion tracking + retargeting audiences
- *   - Plausible analytics (production only)
+ *   - Cloudflare Web Analytics (production only, when PUBLIC_CF_BEACON_TOKEN is set)
+ *   - Always noindex (landing pages stay out of search results)
  *
  * What it DROPS:
  *   - Header primary nav (no menu — one page, one job)
@@ -20,6 +21,7 @@
  */
 import '@styles/global.css';
 import MetaPixel from '@components/shared/MetaPixel.astro';
+import AttributionCapture from '@components/AttributionCapture.astro';
 import type { PageSeo } from '@lib/seo';
 import { localBusiness, person } from '@lib/schema';
 
@@ -31,7 +33,7 @@ interface Props {
 }
 
 const { seo, schemas = [], showPhone = true } = Astro.props;
-const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN;
+const cfBeaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
 const isProd = import.meta.env.PROD;
 const year = new Date().getFullYear();
 ---
@@ -45,7 +47,8 @@ const year = new Date().getFullYear();
     <title>{seo.title}</title>
     <meta name="description" content={seo.description} />
     <link rel="canonical" href={seo.canonical} />
-    {seo.noIndex && <meta name="robots" content="noindex, nofollow" />}
+    {/* Paid-traffic landing pages are ALWAYS kept out of search results, whatever the page passes. */}
+    <meta name="robots" content="noindex, nofollow" />
 
     <!-- Open Graph -->
     <meta property="og:title" content={seo.title} />
@@ -79,15 +82,16 @@ const year = new Date().getFullYear();
     ))}
 
     <!-- Meta (Facebook) Pixel — only renders when PUBLIC_FB_PIXEL_ID is set -->
+    <AttributionCapture />
     <MetaPixel />
 
-    <!-- Analytics: Plausible (privacy-first) — production only -->
-    {isProd && plausibleDomain && (
+    <!-- Analytics: Cloudflare Web Analytics (cookie-free) — production only, when the token is set -->
+    {isProd && cfBeaconToken && (
       <script
         is:inline
         defer
-        data-domain={plausibleDomain}
-        src="https://plausible.io/js/script.js"
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={JSON.stringify({ token: cfBeaconToken })}
       />
     )}
   </head>

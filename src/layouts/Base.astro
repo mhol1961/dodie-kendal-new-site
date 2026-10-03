@@ -5,6 +5,7 @@ import Footer from '@components/Footer.astro';
 import ChatWidget from '@components/ChatWidget.astro';
 import LeadMagnetGate from '@components/LeadMagnetGate.astro';
 import MetaPixel from '@components/shared/MetaPixel.astro';
+import AttributionCapture from '@components/AttributionCapture.astro';
 import type { PageSeo } from '@lib/seo';
 import { localBusiness, person } from '@lib/schema';
 
@@ -18,7 +19,7 @@ interface Props {
 }
 
 const { seo, schemas = [], leadMagnet = true } = Astro.props;
-const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN;
+const cfBeaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
 const isProd = import.meta.env.PROD;
 ---
 
@@ -65,16 +66,18 @@ const isProd = import.meta.env.PROD;
       <script type="application/ld+json" is:inline set:html={JSON.stringify(s)} />
     ))}
 
+    <AttributionCapture />
+
     <!-- Meta (Facebook) Pixel — only renders when PUBLIC_FB_PIXEL_ID is set -->
     <MetaPixel />
 
-    <!-- Analytics: Plausible (privacy-first) — production only -->
-    {isProd && plausibleDomain && (
+    <!-- Analytics: Cloudflare Web Analytics (cookie-free) — production only, when the token is set -->
+    {isProd && cfBeaconToken && (
       <script
         is:inline
         defer
-        data-domain={plausibleDomain}
-        src="https://plausible.io/js/script.js"
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={JSON.stringify({ token: cfBeaconToken })}
       />
     )}
   </head>

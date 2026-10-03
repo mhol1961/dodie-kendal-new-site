@@ -15,6 +15,7 @@ import { z } from 'zod';
 import { upsertContact, applyTag, addNote, sendContactEmail, sendContactSms, consentRecord, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
 import { verifyRequest } from '@lib/turnstile';
+import { attributionSchema, attributionFields, attributionLine, isFacebookOrInstagram, FB_IG_TAG } from '@lib/attribution';
 import { QUIZ_VALUES, answersToTags } from '@lib/quiz';
 
 export const prerender = false;
@@ -37,6 +38,7 @@ const payloadSchema = z.object({
   consentMarketing: z.literal(true),
   answers: answersSchema,
   'cf-turnstile-response': z.string().max(2048).optional(),
+  attribution: attributionSchema,
 });
 
 const honeypotKey = 'website';
@@ -201,6 +203,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         email: data.email,
         phone: data.phone,
         source: 'website_qhht_quiz',
+        attribution: attributionFields(data.attribution),
         customField: {
           // Only set if the contact has no consent record yet; the note keeps every one.
           consent_marketing: consent,
@@ -227,7 +230,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       : jsonResponse(502, { error: 'CRM and fallback email both unavailable; please email dodiekendall@gmail.com directly.' });
   }
 
-  await addNote(contactId, `QHHT quiz completed. Consent: ${consent}`, {
+  await addNote(contactId, `QHHT quiz completed. Consent: ${consent}${attributionLine(data.attribution) ? `\n${attributionLine(data.attribution)}` : ''}`, {
     GHL_PRIVATE_INTEGRATION_TOKEN: token,
   }).catch((err) => console.error('[quiz] consent note failed (contact captured)', err));
 
@@ -235,7 +238,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   //     so a tag failure must NOT trigger the lost-lead fallback or report
   //     failure to the client. Log partial failures for follow-up instead.
   const failedTags: string[] = [];
-  for (const tag of tags) {
+  for (const tag of [...tags, ...(isFacebookOrInstagram(data.attribution) ? [FB_IG_TAG] : [])]) {
     try {
       await applyTag(contactId, tag, { GHL_PRIVATE_INTEGRATION_TOKEN: token });
     } catch (err) {

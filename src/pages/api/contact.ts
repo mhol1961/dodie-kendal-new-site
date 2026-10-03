@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { upsertContact, applyTag, addNote, consentRecord, triggerWorkflow, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
 import { verifyRequest } from '@lib/turnstile';
+import { attributionSchema, attributionFields, attributionLine, isFacebookOrInstagram, FB_IG_TAG } from '@lib/attribution';
 
 export const prerender = false;
 
@@ -17,6 +18,7 @@ const payloadSchema = z.object({
   consentMarketing: z.boolean().default(false),
   consentTransactional: z.literal(true),
   'cf-turnstile-response': z.string().max(2048).optional(),
+  attribution: attributionSchema,
 });
 
 const honeypotKey = 'website';
@@ -99,6 +101,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         email: data.email,
         phone: data.phone,
         source: 'website_contact_form',
+        attribution: attributionFields(data.attribution),
         // Only fills fields the contact doesn't have yet (see enrichmentPatch);
         // the note below keeps every message + consent as an append-only record.
         customField: {
@@ -116,7 +119,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Tags are best-effort enrichment: the contact is captured, so a tag failure
     // must not send this lead down the lost-lead fallback path.
-    for (const tag of ['site_contact', 'site_v2']) {
+    for (const tag of ['site_contact', 'site_v2', ...(isFacebookOrInstagram(data.attribution) ? [FB_IG_TAG] : [])]) {
       await applyTag(id, tag, { GHL_PRIVATE_INTEGRATION_TOKEN: token }).catch((err) =>
         console.error(`[contact] applyTag ${tag} failed (contact ${id} captured)`, err)
       );
@@ -128,7 +131,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         consentRecord(data.consentTransactional, 'contact form', TRANSACTIONAL_TEXT),
         consentRecord(data.consentMarketing, 'contact form', MARKETING_TEXT),
       ].join('\n');
-      await addNote(id, `Website contact form (${formPayload.submittedAt}):\n\n${data.message}\n\nConsent:\n${consentLines}`, {
+      await addNote(id, `Website contact form (${formPayload.submittedAt}):\n\n${data.message}\n\nConsent:\n${consentLines}${attributionLine(data.attribution) ? `\n${attributionLine(data.attribution)}` : ''}`, {
         GHL_PRIVATE_INTEGRATION_TOKEN: token,
       });
     } catch (err) {
