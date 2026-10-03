@@ -10,7 +10,7 @@ const seo = getSeo({
 });
 
 const schemas = [breadcrumb([{ name: 'Home', href: '/' }, { name: 'Privacy' }])];
-const lastUpdated = '2026-07-16';
+const lastUpdated = '2026-10-03';
 ---
 <Base seo={seo} schemas={schemas}>
   <section class="section-y bg-bg-base">
@@ -34,7 +34,8 @@ const lastUpdated = '2026-07-16';
           <p class="mt-3">We collect only what we need to respond to you and to coordinate sessions:</p>
           <ul class="mt-3 list-disc space-y-2 pl-6">
             <li><strong>Contact-form submissions.</strong> Your name, email, optional phone number, your message, and your communication consents.</li>
-            <li><strong>Lead-magnet opt-in.</strong> Your first name, email, and your consent to receive our pre-session prep guide.</li>
+            <li><strong>Free guide sign-up.</strong> Your email address and your consent. We email you the guide with a link to confirm your address; we send occasional notes only after you confirm.</li>
+            <li><strong>Ad source details.</strong> If you arrive through an ad or a tracked link, the campaign details in that link (utm_source, utm_medium, utm_campaign, utm_content, utm_term and Facebook's fbclid) are kept in your browser for that visit and saved with any form you submit, so we know which ad or link brought you.</li>
             <li><strong>Booking details.</strong> Your name, email, phone, and deposit information are collected by our calendar partner (GoHighLevel) on the booking page.</li>
             <li><strong>Chat and voice assistant interactions.</strong> If you use the on-site assistant, we and our provider (LeadConnector / GoHighLevel) collect the messages you type and, if you use the voice option, the transcript of that conversation, along with any name, email, or phone number you share, so we can answer your questions and follow up.</li>
             <li><strong>Analytics events.</strong> Anonymized page-view data through Cloudflare Web Analytics: no cookies, no cross-site tracking, no personal identifiers.</li>
@@ -71,6 +72,7 @@ const lastUpdated = '2026-07-16';
             <li><strong>Cloudflare Web Analytics</strong>: privacy-first analytics from our hosting provider. No cookies, no personal data.</li>
             <li><strong>Meta (Facebook)</strong> — advertising pixel for ad measurement and audience building. Sets third-party cookies on facebook.com. Their privacy policy and your Facebook ad-preferences page apply.</li>
             <li><strong>Cloudflare</strong> — hosting and DNS. Standard hosting agreement.</li>
+            <li><strong>Cloudflare Turnstile</strong>: the security check on our forms that keeps out spam bots. It checks your browser without advertising cookies. Cloudflare's privacy policy applies.</li>
             <li><strong>Resend</strong> — transactional email fallback when our primary CRM is unavailable.</li>
           </ul>
           <p class="mt-3">We do not sell or rent your information.</p>

@@ -129,7 +129,6 @@ import TurnstileWidget from '@components/TurnstileWidget.astro';
         } else if (res.status === 400) {
           status.textContent = 'Please complete the security check above, then send again.';
           status.className = 'text-sm text-error';
-          if (window.turnstile) window.turnstile.reset(form.querySelector('.cf-turnstile'));
         } else {
           status.textContent = 'Something went wrong on our end. You can also email dodiekendall@gmail.com directly — that always works.';
           status.className = 'text-sm text-error';
@@ -138,6 +137,8 @@ import TurnstileWidget from '@components/TurnstileWidget.astro';
         status.textContent = 'Network error. You can also email dodiekendall@gmail.com directly — that always works.';
         status.className = 'text-sm text-error';
       }
+      // Turnstile tokens are single-use: always fetch a fresh one for the next send.
+      if (window.turnstile) window.turnstile.reset(form.querySelector('.cf-turnstile'));
     });
   })();
 </script>

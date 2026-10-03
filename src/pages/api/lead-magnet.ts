@@ -13,7 +13,7 @@
 
 import type { APIRoute } from 'astro';
 import { z } from 'zod';
-import { upsertContact, applyTag, addNote, sendContactEmail, consentRecord, removeFromWorkflow, GhlError } from '@lib/ghl';
+import { upsertContact, applyTag, addNote, sendContactEmail, consentRecord, removeFromWorkflow, getContact, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
 import { verifyRequest } from '@lib/turnstile';
 import { attributionSchema, attributionFields, attributionLine, isFacebookOrInstagram, FB_IG_TAG } from '@lib/attribution';
@@ -185,18 +185,21 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   if (isNew && !confirmed && nurtureId) {
     const auth = { GHL_PRIVATE_INTEGRATION_TOKEN: token };
     const hold = () => removeFromWorkflow(contactId, nurtureId, auth);
-    try {
-      await hold();
-      await applyTag(contactId, 'optin_nurture_held', auth);
-    } catch (err) {
-      console.error('[lead-magnet] could not hold new contact out of nurture', contactId, err);
-    }
+    // Mark first, so confirm-optin always re-enrolls them even if a hold below fails.
+    await applyTag(contactId, 'optin_nurture_held', auth).catch((err) =>
+      console.error('[lead-magnet] optin_nurture_held tag failed', contactId, err)
+    );
+    await hold().catch((err) => console.error('[lead-magnet] nurture hold failed', contactId, err));
     // GHL enrolls new contacts a second or two after creation, possibly after the
     // call above; repeat it after the response (Workers allow ~30 s of waitUntil).
     // ponytail: timed retries; a GHL-side "skip optin_pending" filter is the full fix.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ctx = (locals as any)?.runtime?.ctx as { waitUntil?: (p: Promise<unknown>) => void } | undefined;
-    const later = (ms: number) => new Promise((r) => setTimeout(r, ms)).then(hold);
+    // Skip if they confirmed in the meantime: confirm-optin has re-enrolled them.
+    const later = (ms: number) =>
+      new Promise((r) => setTimeout(r, ms))
+        .then(() => getContact(contactId, auth))
+        .then((c) => (c.tags?.includes('optin_confirmed') ? undefined : hold()));
     ctx?.waitUntil?.(
       Promise.allSettled([later(10_000), later(25_000)]).then((rs) =>
         rs.forEach((r) => r.status === 'rejected' && console.error('[lead-magnet] delayed nurture hold failed', contactId, r.reason))
