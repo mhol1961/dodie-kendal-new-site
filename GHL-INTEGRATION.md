@@ -113,8 +113,8 @@ a failed upsert counts as a lost lead.
 `AttributionCapture.astro` stores `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`,
 `utm_term` and `fbclid` from the landing URL for the visit; every form sends them.
 - Written to GHL custom fields with **exactly those keys** (Text fields), looked up by key
-  at runtime, first touch wins (blank fields only). **None exist yet**: until they are
-  created in GHL, the values are only in the contact's note ("Ad source: ...").
+  at runtime, first touch wins (blank fields only). All six created via API 2026-10-03
+  (Text). Every submission's values are also kept in the contact's note ("Ad source: ...").
 - Tag `source_facebook_instagram` when there's an fbclid or utm_source names
   Facebook/Instagram.
 - Successful submissions fire Meta `Lead` (no-op until `PUBLIC_FB_PIXEL_ID` is set).
