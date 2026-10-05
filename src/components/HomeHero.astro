@@ -8,6 +8,8 @@
  *
  * Posters + prefers-reduced-motion fallbacks built in.
  */
+import BgVideo from './BgVideo.astro';
+
 interface Props {
   eyebrow?: string;
   primaryCta?: { label: string; href: string };
@@ -25,19 +27,19 @@ const {
 <section class="relative isolate overflow-hidden bg-bg-base text-ink min-h-[100vh] flex items-center">
   <!-- LAYER 1 — backlit palm tapestry. Warm tropical family as About hero but distinct composition:
        dense backlit fronds (no visible sun), dreamy and impressionistic vs About's sunburst-through-palms. -->
-  <img
-    src="/video/home-backdrop-poster.jpg"
-    alt=""
-    aria-hidden="true"
-    class="absolute inset-0 z-0 h-full w-full object-cover motion-safe:opacity-0"
-  />
-  <video
-    src="/video/home-backdrop.mp4"
-    poster="/video/home-backdrop-poster.jpg"
-    autoplay muted loop playsinline preload="metadata"
-    aria-hidden="true"
-    class="absolute inset-0 z-0 h-full w-full object-cover motion-reduce:hidden"
-  />
+  <picture>
+    <source type="image/avif" srcset="/video/home-backdrop-poster.avif" />
+    <img
+      src="/video/home-backdrop-poster.jpg"
+      alt=""
+      aria-hidden="true"
+      width="1248"
+      height="704"
+      class="absolute inset-0 z-0 h-full w-full object-cover"
+    />
+  </picture>
+  <!-- Desktop + motion only; phones and reduced-motion keep the still above. -->
+  <BgVideo src="/video/home-backdrop.mp4" class="absolute inset-0 z-0 h-full w-full object-cover" />
   <!-- Light veil — anchored to the LEFT text column only, so the tropical backdrop
        stays visible on the right behind the portrait. Aqua teal-glow upper-left;
        gentle bottom lift keeps the trust line legible. No full-screen white wash. -->
@@ -68,14 +70,23 @@ const {
   >
     <!-- Soft halo behind the portrait -->
     <span class="pointer-events-none absolute top-1/2 right-[8%] -translate-y-1/2 w-[80%] aspect-square rounded-full bg-gradient-to-br from-teal-glow/25 via-brand/20 to-transparent blur-3xl"></span>
+    <!-- Still = the cinemagraph's first frame, so phones and reduced motion see the
+         same framing as the video. AVIF only where the still is what shows; desktop
+         with motion keeps the JPG so it shares one download with the video poster. -->
+    <picture class="contents">
+      <source
+        type="image/avif"
+        srcset="/video/dodie-cinemagraph-white-poster.avif"
+        media="(max-width: 767px), (prefers-reduced-motion: reduce)"
+      />
     <img
-      src="/dodie-portrait-white-dress.jpg"
+      src="/video/dodie-cinemagraph-white-poster.jpg"
       alt="Dodie Kendall, QHHT Practitioner"
-      width="1400"
-      height="1750"
+      width="832"
+      height="1120"
       loading="eager"
       fetchpriority="high"
-      class="relative h-full w-auto max-h-[92vh] object-cover object-bottom motion-safe:opacity-0"
+      class="relative h-full w-auto max-h-[92vh] object-cover object-bottom md:motion-safe:opacity-0"
       style="
         -webkit-mask-image:
           linear-gradient(to right, transparent 0%, #000 34%),
@@ -89,12 +100,13 @@ const {
         mask-composite: intersect;
       "
     />
-    <video
+    </picture>
+    <BgVideo
       src="/video/dodie-cinemagraph-white.mp4"
-      poster="/dodie-portrait-white-dress.jpg"
-      autoplay muted loop playsinline preload="metadata"
-      aria-hidden="true"
-      class="absolute right-0 bottom-0 h-full w-auto max-h-[92vh] object-cover object-bottom motion-reduce:hidden"
+      poster="/video/dodie-cinemagraph-white-poster.jpg"
+      width={832}
+      height={1120}
+      class="absolute right-0 bottom-0 h-full w-auto max-h-[92vh] object-cover object-bottom"
       style="
         -webkit-mask-image:
           linear-gradient(to right, transparent 0%, #000 34%),
@@ -117,6 +129,7 @@ const {
         {eyebrow}
       </p>
       <h1 class="mt-8 font-display text-ink">
+        <span class="hero-line line-a mb-3 block font-body text-sm font-medium uppercase tracking-[0.2em] text-brand md:text-base">QHHT in Stuart, FL</span>
         <span class="hero-line line-a block">Get direct answers</span>
         <span class="hero-line line-b italic-accent block text-brand">and deep healing.</span>
       </h1>

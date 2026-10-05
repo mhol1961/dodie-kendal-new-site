@@ -16,11 +16,6 @@ const seo = getSeo({
 
 const faqs = (await getCollection('faq').catch(() => [])).sort((a, b) => a.data.order - b.data.order);
 
-const schemas = [
-  faqPage(faqs.map((f) => ({ question: f.data.question, answer: f.data.answer }))),
-  breadcrumb([{ name: 'Home', href: '/' }, { name: 'FAQ' }]),
-];
-
 type CategoryKey = 'sessions' | 'logistics' | 'practice' | 'aftercare';
 
 interface CategoryMeta {
@@ -81,6 +76,13 @@ function groupItems(category: CategoryKey) {
 function slugify(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
+
+// Same categories + groupItems the page renders from, so the FAQPage questions
+// come out in the exact visible order with the exact visible text.
+const schemas = [
+  faqPage(categories.flatMap((cat) => groupItems(cat.key))),
+  breadcrumb([{ name: 'Home', href: '/' }, { name: 'FAQ' }]),
+];
 ---
 <Base seo={seo} schemas={schemas}>
   <!-- HERO — short, distinct from QHHT/Insights -->

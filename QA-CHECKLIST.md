@@ -12,7 +12,7 @@
 - [ ] Every page has a `<h1>` and only one `<h1>`.
 - [ ] Heading hierarchy is correct (no `<h3>` before `<h2>`, etc.).
 - [ ] No placeholder text remains anywhere (lorem ipsum, "TODO", "XXX").
-- [ ] Phone number is correct on every page: **1-561-201-6918**.
+- [ ] Phone number is correct on every page: **772-247-5534**.
 - [ ] Email is correct on every page: **dodiekendall@gmail.com**.
 - [ ] Pricing is correct on every page: **$300 total, $50 deposit, 5-hour session**.
 - [ ] Studio location is correct on every page: **Stuart, FL**.

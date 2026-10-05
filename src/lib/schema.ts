@@ -1,6 +1,7 @@
 // JSON-LD helpers. See SCHEMA.md for the authoritative shapes.
 
-const SITE_URL = import.meta.env.SITE_URL || 'https://dodiekendall.com';
+// `?.` so the unit tests can import this under plain Node (no import.meta.env there).
+const SITE_URL = import.meta.env?.SITE_URL || 'https://dodiekendall.com';
 
 export function localBusiness() {
   return {
@@ -10,7 +11,7 @@ export function localBusiness() {
     name: 'Dodie Kendall QHHT',
     alternateName: 'Dodie Kendall Quantum Healing Hypnosis',
     url: SITE_URL,
-    telephone: '+1-561-201-6918',
+    telephone: '+1-772-247-5534',
     email: 'dodiekendall@gmail.com',
     image: `${SITE_URL}/og-image.jpg`,
     logo: `${SITE_URL}/dodie-kendall-logo-dark-stars.png`,
@@ -53,7 +54,7 @@ export function person() {
       'Dodie Kendall is a Quantum Healing Hypnosis Technique (QHHT) practitioner based in Stuart, Florida, trained in the Dolores Cannon lineage. She offers in-person QHHT sessions of about five hours.',
     url: `${SITE_URL}/about`,
     image: `${SITE_URL}/dodie-portrait.jpg`,
-    telephone: '+1-561-201-6918',
+    telephone: '+1-772-247-5534',
     email: 'dodiekendall@gmail.com',
     knowsAbout: [
       'Quantum Healing Hypnosis Technique',
@@ -120,12 +121,16 @@ export function faqPage(items: Array<{ question: string; answer: string }>) {
   };
 }
 
+// author/publisher carry the @id of the Person/LocalBusiness nodes Base.astro
+// already emits (so they merge, not duplicate) plus the fields Google reads inline.
 export function blogPosting(opts: {
   title: string;
   description: string;
+  /** Absolute share-image URL. */
   image: string;
-  datePublished: string;
-  dateModified: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  /** Absolute canonical URL, no trailing slash. */
   canonical: string;
 }) {
   return {
@@ -134,11 +139,11 @@ export function blogPosting(opts: {
     headline: opts.title,
     description: opts.description,
     image: opts.image,
-    datePublished: opts.datePublished,
-    dateModified: opts.dateModified,
-    author: { '@id': `${SITE_URL}/#person` },
-    publisher: { '@id': `${SITE_URL}/#business` },
-    mainEntityOfPage: opts.canonical,
+    datePublished: opts.pubDate.toISOString(),
+    dateModified: (opts.updatedDate ?? opts.pubDate).toISOString(),
+    author: { '@type': 'Person', '@id': `${SITE_URL}/#person`, name: 'Dodie Kendall', url: `${SITE_URL}/about` },
+    publisher: { '@id': `${SITE_URL}/#business`, name: 'Dodie Kendall QHHT' },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': opts.canonical },
     url: opts.canonical,
   };
 }

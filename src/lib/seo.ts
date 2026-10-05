@@ -26,6 +26,9 @@ const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.jpg`;
 interface SeoOptions {
   path: string;
   title?: string;
+  /** Use this exact <title> (no brand suffix, no truncation). For titles written
+   *  deliberately for search, e.g. from an SEO audit. */
+  exactTitle?: string;
   description?: string;
   ogImage?: string;
   ogType?: 'website' | 'article';
@@ -37,7 +40,7 @@ export function getSeo(opts: SeoOptions): PageSeo {
     ? `${opts.title} · ${BRAND}`
     : `${BRAND} · Quantum Healing Hypnosis in Stuart, FL`;
   return {
-    title: fullTitle.length > 60 ? fullTitle.slice(0, 57) + '…' : fullTitle,
+    title: opts.exactTitle ?? (fullTitle.length > 60 ? fullTitle.slice(0, 57) + '…' : fullTitle),
     description: (opts.description ?? DEFAULT_DESCRIPTION).slice(0, 155),
     canonical: `${SITE_URL}${opts.path}`,
     ogImage: opts.ogImage ?? DEFAULT_OG_IMAGE,

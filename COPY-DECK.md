@@ -308,7 +308,7 @@ Have a question before you book? Want to know if QHHT is right for what you're w
 
 ### Fallback contact info
 
-**Phone:** 1-561-201-6918
+**Phone:** 772-247-5534
 **Email:** dodiekendall@gmail.com
 **Hours:** Monday–Saturday, 9am–6pm ET
 

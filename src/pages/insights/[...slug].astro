@@ -3,6 +3,7 @@ import Base from '@layouts/Base.astro';
 import { getSeo } from '@lib/seo';
 import { blogPosting, breadcrumb } from '@lib/schema';
 import { getCollection } from 'astro:content';
+import BgVideo from '@components/BgVideo.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('insights', ({ data }) => !data.draft).catch(() => []);
@@ -30,11 +31,14 @@ const heroVideoBySlug: Record<string, string | undefined> = {
 const postHero = heroBySlug[post.slug];
 const postHeroVideo = heroVideoBySlug[post.slug];
 
+// Share image: the post's own frontmatter ogImage, else the one generated at
+// build time by src/pages/og/[slug].png.ts. Always absolute.
 const seo = getSeo({
   path: `/insights/${post.slug}`,
   title: post.data.title,
   description: post.data.description,
   ogType: 'article',
+  ogImage: new URL(post.data.ogImage ?? `/og/${post.slug}.png`, Astro.site).href,
 });
 
 const schemas = [
@@ -42,8 +46,8 @@ const schemas = [
     title: post.data.title,
     description: post.data.description,
     image: seo.ogImage,
-    datePublished: post.data.pubDate.toISOString(),
-    dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(),
+    pubDate: post.data.pubDate,
+    updatedDate: post.data.updatedDate,
     canonical: seo.canonical,
   }),
   breadcrumb([
@@ -71,24 +75,14 @@ const schemas = [
           <div class="relative overflow-hidden rounded-lg">
             <span aria-hidden="true" class="absolute -inset-6 -z-10 bg-gradient-to-br from-teal/20 via-brand/15 to-transparent blur-3xl"></span>
             {postHeroVideo && (
-              <video
-                src={postHeroVideo}
-                poster={postHero}
-                autoplay
-                muted
-                loop
-                playsinline
-                preload="metadata"
-                aria-hidden="true"
-                class="absolute inset-0 z-10 w-full h-full object-cover motion-reduce:hidden"
-              />
+              <BgVideo src={postHeroVideo} class="absolute inset-0 z-10 w-full h-full object-cover" />
             )}
             <img
               src={postHero}
               alt=""
               width="800"
               height="500"
-              class={`w-full h-auto aspect-[8/5] object-cover ${postHeroVideo ? 'motion-safe:opacity-0' : ''}`}
+              class={`w-full h-auto aspect-[8/5] object-cover ${postHeroVideo ? 'md:motion-safe:opacity-0' : ''}`}
               loading="eager"
               fetchpriority="high"
             />
@@ -126,7 +120,7 @@ const schemas = [
           {related.map((p) => (
             <li>
               <a
-                href={`/insights/${p.slug}/`}
+                href={`/insights/${p.slug}`}
                 class="group block h-full rounded-lg border border-border-subtle bg-bg-raised p-6 shadow-sm transition-shadow hover:shadow-md"
               >
                 <p class="text-xs uppercase tracking-wider text-ink-muted">

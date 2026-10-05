@@ -4,6 +4,7 @@ import Hero from '@components/Hero.astro';
 import Accordion from '@components/ui/Accordion.astro';
 import PullQuote from '@components/PullQuote.astro';
 import ClosingCTA from '@components/ClosingCTA.astro';
+import BgVideo from '@components/BgVideo.astro';
 import SectionDivider from '@components/SectionDivider.astro';
 import { getSeo } from '@lib/seo';
 import { qhhtService, faqPage, breadcrumb } from '@lib/schema';
@@ -71,19 +72,13 @@ const timeline = [
       alt=""
       aria-hidden="true"
       loading="lazy"
-      class="absolute inset-0 z-0 h-full w-full object-cover motion-safe:opacity-0"
+      decoding="async"
+      class="absolute inset-0 z-0 h-full w-full object-cover"
       style="object-position: right center;"
     />
-    <video
+    <BgVideo
       src="/video/qhht-archive.mp4"
-      poster="/video/qhht-archive-poster.jpg"
-      autoplay
-      muted
-      loop
-      playsinline
-      preload="metadata"
-      aria-hidden="true"
-      class="absolute inset-0 z-0 h-full w-full object-cover motion-reduce:hidden"
+      class="absolute inset-0 z-0 h-full w-full object-cover"
       style="object-position: right center;"
     />
     <div

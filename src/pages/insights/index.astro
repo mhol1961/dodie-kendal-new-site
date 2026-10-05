@@ -10,7 +10,7 @@ const SITE_URL = import.meta.env.SITE_URL || 'https://dodiekendall.com';
 
 const seo = getSeo({
   path: '/insights',
-  title: 'Insights',
+  exactTitle: 'QHHT Articles & Session Prep · Dodie Kendall',
   description:
     "Articles on QHHT, the Subconscious, and the practical side of Quantum Healing Hypnosis with Dodie Kendall.",
 });
@@ -86,7 +86,7 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
           <div class="container-default">
             <p class="mb-6 text-[10px] uppercase tracking-[0.22em] text-brand">Featured · Most recent</p>
             <a
-              href={`/insights/${featured.slug}/`}
+              href={`/insights/${featured.slug}`}
               class="group grid gap-8 md:grid-cols-12 md:gap-12 lg:gap-16"
             >
               <div class="md:col-span-7 lg:col-span-7">
@@ -133,7 +133,7 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
             <ul class="grid gap-8 md:grid-cols-2 lg:grid-cols-3" role="list">
               {rest.map((post) => (
                 <li>
-                  <a href={`/insights/${post.slug}/`} class="group flex h-full flex-col">
+                  <a href={`/insights/${post.slug}`} class="group flex h-full flex-col">
                     <div class="relative overflow-hidden rounded-lg">
                       <img
                         src={heroBySlug[post.slug] ?? '/hero-aurora-poster.jpg'}

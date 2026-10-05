@@ -1,0 +1,59 @@
+---
+/**
+ * BgVideo: decorative, muted, looping background video.
+ *
+ * The HTML carries no src (data-src only), so nothing downloads by default.
+ * The script attaches the file only on screens >= 768px with motion allowed,
+ * and only once the element is near the viewport. Phones and
+ * prefers-reduced-motion users never fetch the video; the element stays
+ * display:none for them and the sibling <img> fallback shows instead.
+ * Keep the media query in the script in sync with `md:motion-safe:block`.
+ */
+interface Props {
+  src: string;
+  /** Only needed when no identical <img> sits underneath the video. Set by the script, so phones never fetch it. */
+  poster?: string;
+  /** Intrinsic size; needed when the box sizes from the video (e.g. w-auto) to avoid a layout shift. */
+  width?: number;
+  height?: number;
+  class?: string;
+  style?: string;
+}
+
+const { src, poster, width, height, class: className = '', style } = Astro.props;
+---
+<video
+  data-src={src}
+  data-poster={poster}
+  width={width}
+  height={height}
+  autoplay
+  muted
+  loop
+  playsinline
+  preload="none"
+  aria-hidden="true"
+  class={`hidden md:motion-safe:block ${className}`}
+  style={style}
+></video>
+
+<script>
+  if (matchMedia('(min-width: 768px) and (prefers-reduced-motion: no-preference)').matches) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const video = entry.target as HTMLVideoElement;
+          io.unobserve(video);
+          video.src = video.dataset.src ?? '';
+          video.play().catch(() => {});
+        }
+      },
+      { rootMargin: '300px 0px' },
+    );
+    document.querySelectorAll<HTMLVideoElement>('video[data-src]').forEach((v) => {
+      if (v.dataset.poster) v.poster = v.dataset.poster;
+      io.observe(v);
+    });
+  }
+</script>

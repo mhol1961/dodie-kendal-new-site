@@ -8,6 +8,9 @@ import cloudflare from '@astrojs/cloudflare';
 export default defineConfig({
   site: process.env.SITE_URL || 'https://dodiekendall.com',
   output: 'hybrid', // static by default; SSR for the /api/* endpoints
+  // One URL per page, no trailing slash (SEO audit 2026-10-05). Pages build as
+  // about.html, served at /about; worker-entry.mjs 301s /about/ -> /about.
+  trailingSlash: 'never',
   adapter: cloudflare({
     platformProxy: { enabled: true },
   }),
@@ -33,6 +36,7 @@ export default defineConfig({
   compressHTML: true,
   build: {
     inlineStylesheets: 'auto',
+    format: 'file',
   },
   vite: {
     ssr: {

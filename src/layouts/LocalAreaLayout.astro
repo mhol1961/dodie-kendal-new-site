@@ -1,0 +1,176 @@
+---
+/**
+ * LocalAreaLayout: one layout for local-area landing pages
+ * (Port St. Lucie, Jupiter/Palm Beach Gardens, Palm City/Hobe Sound, ...).
+ *
+ * HOW TO ADD A CITY PAGE
+ * 1. Copy src/data/areas/_example.ts to src/data/areas/<slug>.ts and rewrite
+ *    EVERY field (shape: src/data/areas/types.ts). Remove all [EXAMPLE] tokens;
+ *    a production build fails while any remain.
+ * 2. Create the route src/pages/areas/<slug>.astro with just:
+ *      ---
+ *      import LocalAreaLayout from '@layouts/LocalAreaLayout.astro';
+ *      import area from '@/data/areas/<slug>';
+ *      ---
+ *      <LocalAreaLayout area={area} />
+ *    The URL is /areas/<slug> (no trailing slash). The sitemap picks it up
+ *    automatically (astro.config.mjs filter does not exclude /areas).
+ * 3. Run `npx astro check`, then the self-critique trio (CLAUDE.md section 6.8)
+ *    and a COMPLIANCE.md pass on the copy (no medical or therapeutic claims).
+ *
+ * THIN-CONTENT GUARD (read before writing a city)
+ * Each city must have genuinely different content: its own intro, real drive
+ * directions from that town, parking notes, a real local testimonial (with
+ * permission) and local FAQs. Do NOT clone one city and swap the name. Google
+ * treats near-duplicate "city-name swap" pages as doorway pages / scaled
+ * content abuse, which can demote the whole site, not just these pages. If a
+ * town has no real local testimonial or distinct questions yet, do not
+ * publish its page. The type requires every section; assertArea() below
+ * re-checks at build so a half-filled file cannot ship.
+ */
+import Base from '@layouts/Base.astro';
+import Accordion from '@components/ui/Accordion.astro';
+import ClosingCTA from '@components/ClosingCTA.astro';
+import { getSeo } from '@lib/seo';
+import { faqPage, breadcrumb } from '@lib/schema';
+import type { LocalArea } from '@/data/areas/types';
+
+interface Props {
+  area: LocalArea;
+}
+
+const { area } = Astro.props;
+
+function assertArea(a: LocalArea) {
+  const blank = (s: string) => !s || !s.trim();
+  const problems: string[] = [];
+  const strings = [
+    a.slug, a.name, a.seo.title, a.seo.description, a.heading, a.parking,
+    a.drive.routeSummary, a.testimonial.quote, a.testimonial.name, a.testimonial.town,
+    ...a.intro, ...a.drive.steps, ...a.faq.flatMap((f) => [f.question, f.answer]),
+  ];
+  if (strings.some(blank)) problems.push('a required text field is empty');
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(a.slug)) problems.push('slug must be kebab-case');
+  if (!(a.drive.minutes > 0)) problems.push('drive.minutes must be a positive number');
+  if (a.faq.length < 3) problems.push('faq needs at least 3 items');
+  if (new Set(a.faq.map((f) => f.question)).size !== a.faq.length) problems.push('faq questions repeat');
+  if (import.meta.env.PROD && JSON.stringify(a).includes('[EXAMPLE')) {
+    problems.push('still contains [EXAMPLE] placeholder text');
+  }
+  if (problems.length) {
+    throw new Error(`LocalAreaLayout: area "${a.slug}" is not publishable: ${problems.join('; ')}`);
+  }
+}
+assertArea(area);
+
+const path = `/areas/${area.slug}`;
+const seo = getSeo({ path, title: area.seo.title, description: area.seo.description });
+const origin = new URL(seo.canonical).origin;
+
+// Built inline (not in schema.ts): a Service scoped to this town, pointing at the
+// global business + person nodes Base already emits.
+const areaService = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': `${seo.canonical}#service`,
+  name: `Quantum Healing Hypnosis Technique (QHHT) Sessions for ${area.name}`,
+  serviceType: 'Quantum Healing Hypnosis',
+  url: seo.canonical,
+  provider: { '@id': `${origin}/#business` },
+  areaServed: { '@type': area.areaType, name: `${area.name}, Florida` },
+  availableChannel: {
+    '@type': 'ServiceChannel',
+    serviceLocation: { '@id': `${origin}/#business` },
+  },
+};
+
+const schemas = [
+  areaService,
+  faqPage(area.faq),
+  breadcrumb([{ name: 'Home', href: '/' }, { name: area.name }]),
+];
+---
+<Base seo={seo} schemas={schemas}>
+  <!-- Intro -->
+  <section class="section-y bg-bg-base">
+    <div class="container-default max-w-4xl">
+      <p class="text-xs uppercase tracking-[0.22em] text-brand">{area.name}</p>
+      <h1 class="mt-3 font-display text-ink">{area.heading}</h1>
+      <div class="mt-8 max-w-prose space-y-5 text-lg leading-relaxed text-ink-secondary">
+        {area.intro.map((p) => <p>{p}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Drive + parking -->
+  <section class="section-y bg-bg-sunken">
+    <div class="container-default max-w-5xl">
+      <header class="mb-10 max-w-2xl">
+        <p class="text-xs uppercase tracking-[0.22em] text-brand">Getting here</p>
+        <h2 class="mt-3 font-display text-ink">From {area.name} to the Stuart studio.</h2>
+      </header>
+
+      <div class="grid gap-8 md:grid-cols-[1fr,2fr]">
+        <div class="space-y-6">
+          <div class="rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm">
+            <p class="text-xs uppercase tracking-wider text-ink-muted">Typical drive</p>
+            <p class="mt-1 font-display text-3xl text-ink">About {area.drive.minutes} min</p>
+            <p class="mt-1 text-xs text-ink-secondary">{area.drive.routeSummary}</p>
+          </div>
+          <div class="rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm">
+            <p class="text-xs uppercase tracking-wider text-ink-muted">Parking</p>
+            <p class="mt-2 text-ink-secondary leading-relaxed">{area.parking}</p>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-border-subtle bg-bg-raised p-6 shadow-sm">
+          <h3 class="font-display text-xl text-ink">Directions</h3>
+          <ol class="mt-4 list-decimal space-y-3 pl-5 text-ink-secondary leading-relaxed">
+            {area.drive.steps.map((s) => <li>{s}</li>)}
+          </ol>
+          <p class="mt-6 text-sm text-ink-muted">The exact studio address is in your booking confirmation email.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Local testimonial (own markup, not PullQuote: its attribution adds a dash) -->
+  <section class="bg-bg-base py-24 md:py-32 text-ink">
+    <figure class="container-default max-w-5xl text-center">
+      <span aria-hidden="true" class="mx-auto block h-px w-16 bg-brand"></span>
+      <blockquote class="mt-10">
+        <p
+          class="italic-accent font-display text-[clamp(1.75rem,4vw,3.25rem)] leading-[1.15] tracking-[-0.02em]"
+          style="font-variation-settings: 'opsz' 144, 'wght' 450, 'SOFT' 100;"
+        >
+          &ldquo;{area.testimonial.quote}&rdquo;
+        </p>
+      </blockquote>
+      <figcaption class="mt-8 text-xs uppercase tracking-[0.22em] text-ink-muted">
+        {area.testimonial.name} · {area.testimonial.town}
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- Local FAQ (same data feeds the FAQPage JSON-LD above) -->
+  <section class="section-y bg-bg-sunken">
+    <div class="container-default">
+      <header class="mb-12 max-w-2xl">
+        <p class="text-xs uppercase tracking-[0.22em] text-brand">Common questions</p>
+        <h2 class="mt-3 font-display text-ink">Questions from {area.name}.</h2>
+        <p class="mt-5 text-lg text-ink-secondary">More answers live on the <a href="/faq" class="text-brand underline">FAQ page</a>.</p>
+      </header>
+      <div class="max-w-3xl">
+        <Accordion items={area.faq} idPrefix={`${area.slug}-faq`} />
+      </div>
+    </div>
+  </section>
+
+  <ClosingCTA
+    headlineLead="Ready for the"
+    headlineItalic="conversation?"
+    subhead="One session. The questions you bring. The answers waiting on the other side of the threshold."
+    cta={{ label: 'Book a Session', href: '/book' }}
+    trustLine="In-person sessions · Stuart, FL"
+  />
+</Base>

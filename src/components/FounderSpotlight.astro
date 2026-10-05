@@ -3,6 +3,8 @@
  * FounderSpotlight — asymmetric editorial. Real portrait, oversized italic display,
  * tight credential chips, single arrow CTA.
  */
+import BgVideo from './BgVideo.astro';
+
 interface Props {
   role: string;
   /** Plain headline text before italic accent. */
@@ -44,15 +46,9 @@ const {
         <div class="relative">
           <!-- Linen-light atmospheric video, very low opacity behind the photo -->
           <div aria-hidden="true" class="absolute -inset-10 -z-10 overflow-hidden rounded-3xl">
-            <video
+            <BgVideo
               src="/video/linen-light.mp4"
-              poster="/video/linen-light-poster.jpg"
-              autoplay
-              muted
-              loop
-              playsinline
-              preload="metadata"
-              class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-multiply motion-reduce:hidden"
+              class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-multiply"
             />
             <div class="absolute inset-0 bg-gradient-to-br from-teal/20 via-brand/15 to-transparent blur-2xl"></div>
           </div>
@@ -64,6 +60,7 @@ const {
               width="900"
               height="1100"
               loading="lazy"
+              decoding="async"
               class:list={['w-full h-auto aspect-[9/11] object-cover', photoClass]}
             />
             <!-- Credential overlay strip on the photo -->

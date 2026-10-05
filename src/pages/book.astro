@@ -4,6 +4,16 @@ import BookingEmbed from '@components/BookingEmbed.astro';
 import { getSeo } from '@lib/seo';
 import { qhhtService, breadcrumb } from '@lib/schema';
 
+// Pricing section: hidden until copy arrives. Set this to an object to render the
+// section below the price/deposit/duration tiles; leave null to render nothing.
+// e.g. { heading: '...', intro: '...', items: [{ label: '...', price: '$...', note: '...' }] }
+interface Pricing {
+  heading: string;
+  intro?: string;
+  items: Array<{ label: string; price: string; note?: string }>;
+}
+const pricing = null as Pricing | null;
+
 // SSR for /book — calendar ID must resolve from Cloudflare runtime env, not build time.
 // See ADR-004 (Option A, applied to this page only).
 export const prerender = false;
@@ -89,6 +99,25 @@ const next = [
           <p class="mt-1 text-xs text-ink-secondary">About 2 hrs conversation · 2–3 hrs session · plus your recording</p>
         </div>
       </div>
+
+      {pricing && pricing.items.length > 0 && (
+        <div class="mt-10 rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm md:p-8">
+          <p class="text-xs uppercase tracking-wider text-ink-muted">Pricing</p>
+          <h3 class="mt-2 font-display text-2xl text-ink">{pricing.heading}</h3>
+          {pricing.intro && <p class="mt-3 max-w-prose leading-relaxed text-ink-secondary">{pricing.intro}</p>}
+          <dl class="mt-6 divide-y divide-border-subtle">
+            {pricing.items.map((item) => (
+              <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-4">
+                <dt class="text-ink">
+                  {item.label}
+                  {item.note && <span class="block text-xs text-ink-secondary">{item.note}</span>}
+                </dt>
+                <dd class="font-display text-2xl text-ink">{item.price}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
 
       <div class="mt-10 max-w-prose space-y-5 text-lg leading-relaxed text-ink-secondary">
         <p>

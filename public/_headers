@@ -1,5 +1,8 @@
 # Guides must never be served stale (phones cache PDFs hard): always revalidate.
+# PDFs only: the photos in /dodie/ should stay cacheable.
 /dodie-kendall-prep-guide.pdf
   Cache-Control: no-cache
-/dodie/*
+/dodie/qhht-pre-session-prep-guide.pdf
+  Cache-Control: no-cache
+/dodie/QHHT%20Pre-session%20preparation%20guide.pdf
   Cache-Control: no-cache

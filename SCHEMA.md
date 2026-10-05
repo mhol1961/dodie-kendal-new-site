@@ -18,7 +18,7 @@ Injected in `Base.astro`. Single `LocalBusiness` graph reused across pages.
   "name": "Dodie Kendall QHHT",
   "alternateName": "Dodie Kendall Quantum Healing Hypnosis",
   "url": "https://dodiekendall.com",
-  "telephone": "+1-561-201-6918",
+  "telephone": "+1-772-247-5534",
   "email": "dodiekendall@gmail.com",
   "image": "https://dodiekendall.com/og-image.jpg",
   "logo": "https://dodiekendall.com/logo.svg",
@@ -65,7 +65,7 @@ Injected on Home and About pages.
   "description": "Dodie Kendall is a Quantum Healing Hypnosis Technique (QHHT) practitioner based in Stuart, Florida, trained in the Dolores Cannon lineage. She offers 5-hour in-person and remote QHHT sessions.",
   "url": "https://dodiekendall.com/about",
   "image": "https://dodiekendall.com/dodie-portrait.jpg",
-  "telephone": "+1-561-201-6918",
+  "telephone": "+1-772-247-5534",
   "email": "dodiekendall@gmail.com",
   "knowsAbout": [
     "Quantum Healing Hypnosis Technique",

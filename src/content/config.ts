@@ -11,6 +11,10 @@ const insights = defineCollection({
       updatedDate: z.coerce.date().optional(),
       heroImage: image().optional(),
       heroAlt: z.string().optional(),
+      // Share image (og:image / twitter:image / BlogPosting.image): a path under
+      // public/ ("/photos/x.jpg") or an absolute https URL. 1200x630 JPG/PNG.
+      // Omit it and /og/<slug>.png is generated at build time.
+      ogImage: z.string().regex(/^(\/[^/]|https:\/\/)/, 'use /path-under-public or https://').optional(),
       tags: z.array(z.string()).default([]),
       canonical: z.string().url().optional(),
       draft: z.boolean().default(false),

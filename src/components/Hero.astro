@@ -10,6 +10,8 @@
  *   insights — dark photographic background, text-led
  *   generic — light cream variant for utility pages
  */
+import BgVideo from './BgVideo.astro';
+
 interface Props {
   variant?: 'home' | 'about' | 'qhht' | 'insights' | 'generic';
   eyebrow?: string;
@@ -86,19 +88,13 @@ const eyebrowClass = isDark ? 'text-brand' : (isAbout ? 'text-brand-hover' : 'te
         aria-hidden="true"
         loading="eager"
         fetchpriority="high"
-        class={`absolute inset-0 z-0 h-full w-full object-cover ${finalVideo ? 'motion-safe:opacity-0' : 'hero-kenburns'}`}
+        class={`absolute inset-0 z-0 h-full w-full object-cover ${finalVideo ? '' : 'hero-kenburns'}`}
         style={`object-position: ${bgPosition};`}
       />
       {finalVideo && (
-        <video
+        <BgVideo
           src={finalVideo}
-          poster={finalBg}
-          autoplay
-          muted
-          loop
-          playsinline
-          aria-hidden="true"
-          class="absolute inset-0 z-0 h-full w-full object-cover motion-reduce:hidden"
+          class="absolute inset-0 z-0 h-full w-full object-cover"
           style={`object-position: ${bgPosition};`}
         />
       )}
