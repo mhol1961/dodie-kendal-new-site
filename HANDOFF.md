@@ -96,6 +96,12 @@ git push origin main
 npm run deploy   # build → apply D1 migrations → verify D1 tables → wrangler deploy
 ```
 
+**URLs: one per page, no trailing slash.** `astro.config.mjs` sets `trailingSlash: 'never'`
+and `build.format: 'file'`; `worker-entry.mjs` (wrangler `main`) answers `/page/`, `*.html`
+and legacy URLs with real 301s, then hands off to the Astro worker. `public/_redirects`
+does NOT work here (the adapter follows it internally, so browsers get a 200). Add
+legacy redirects to the `LEGACY` map in `worker-entry.mjs`.
+
 `npm run deploy` stops before publishing if the D1 schema (`migrations/`) can't be
 applied or its tables are missing. Without them the free-guide form still captures
 leads but sends **no** guide emails (logged as `limit-unavailable`). Don't run a bare
