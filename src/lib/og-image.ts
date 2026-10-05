@@ -75,3 +75,31 @@ export async function renderShareImage(title: string): Promise<Buffer> {
     .png()
     .toBuffer();
 }
+
+// Default share image for every page without its own (home, /qhht, /book...)
+// and the LocalBusiness schema image. Served at /og/default.jpg.
+const PHOTO_W = 460;
+export async function renderDefaultShareImage(): Promise<Buffer> {
+  const colW = W - PHOTO_W - PAD - 48;
+  // Upper body from Dodie's cream-dress portrait (1400x1750), face in the top third.
+  const photo = await sharp()(`${process.cwd()}/public/dodie-portrait.jpg`)
+    .extract({ left: 220, top: 40, width: 1040, height: 1402 })
+    .resize(PHOTO_W, H - 10)
+    .toBuffer();
+  const eyebrow = await text(`<span foreground="${C.teal}" letter_spacing="3072">QUANTUM HEALING HYPNOSIS</span>`, 'Inter SemiBold 20', 'Inter-SemiBold.ttf', colW);
+  const name = await text(`<span foreground="${C.ink}">Dodie Kendall</span>`, 'Fraunces SemiBold 84', 'Fraunces-SemiBold.ttf', colW);
+  const line = await text(`<span foreground="${C.coral}">QHHT in Stuart, FL</span>`, 'Fraunces SemiBold Italic 46', 'Fraunces-SemiBoldItalic.ttf', colW);
+  const byline = await text(`<span foreground="${C.muted}">In-person sessions · dodiekendall.com</span>`, 'Inter Medium 26', 'Inter-Medium.ttf', colW);
+
+  const nameTop = 226;
+  return sharp()(Buffer.from(background))
+    .composite([
+      { input: photo, left: W - PHOTO_W, top: 10 },
+      { input: eyebrow.data, left: PAD, top: PAD + 56 },
+      { input: name.data, left: PAD, top: nameTop },
+      { input: line.data, left: PAD, top: nameTop + name.info.height + 18 },
+      { input: byline.data, left: PAD, top: H - PAD - 26 },
+    ])
+    .jpeg({ quality: 86, mozjpeg: true })
+    .toBuffer();
+}

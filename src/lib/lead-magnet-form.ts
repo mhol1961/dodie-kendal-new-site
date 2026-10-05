@@ -4,6 +4,8 @@ import { readAttribution, trackLead } from './attribution-client.ts';
 
 const GUIDE_LINK =
   ' <a href="/dodie-kendall-prep-guide.pdf" target="_blank" rel="noopener" class="font-semibold underline text-brand hover:text-brand-hover">Open your prep guide &rarr;</a>';
+const CALL_LINK =
+  '<span class="mt-2 block text-ink-secondary">Want to talk it through first? <a href="/book#discovery" class="font-semibold underline text-brand hover:text-brand-hover">Book a free 30-minute call</a></span>';
 
 export type Outcome = 'emailed' | 'ready' | 'not-captured' | 'retry-check' | 'invalid-email' | 'rate-limited';
 
@@ -28,9 +30,9 @@ export function outcomeFor(status: number | null, body: Body): Outcome {
 const MESSAGES: Record<Outcome, { html: string; ok: boolean }> = {
   emailed: {
     ok: true,
-    html: 'Beautiful, your guide is ready, and a copy is in your inbox or on its way (check spam too). If the email asks, tap Confirm so Dodie can keep in touch.' + GUIDE_LINK,
+    html: 'Beautiful, your guide is ready, and a copy is in your inbox or on its way (check spam too). If the email asks, tap Confirm so Dodie can keep in touch.' + GUIDE_LINK + CALL_LINK,
   },
-  ready: { ok: true, html: 'Beautiful, your guide is ready.' + GUIDE_LINK },
+  ready: { ok: true, html: 'Beautiful, your guide is ready.' + GUIDE_LINK + CALL_LINK },
   'not-captured': {
     ok: false,
     html: 'We couldn’t save your sign-up just now, so we can’t email you a copy. Here’s the guide anyway; please try again later to get it by email.' + GUIDE_LINK,
@@ -47,6 +49,18 @@ const MESSAGES: Record<Outcome, { html: string; ok: boolean }> = {
 };
 
 type Turnstile = { reset: (el: Element) => void };
+
+/**
+ * Turnstile usually passes invisibly within a second or two of the form being
+ * touched. Give it up to `ms` before treating a missing token as a failure.
+ */
+export async function waitForTurnstileToken(form: HTMLFormElement, ms = 5000): Promise<string> {
+  const read = () => form.querySelector<HTMLInputElement>('[name="cf-turnstile-response"]')?.value ?? '';
+  for (const end = Date.now() + ms; !read() && Date.now() < end; ) {
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  return read();
+}
 
 export function wireLeadMagnetForm(form: HTMLFormElement | null): void {
   const status = form && document.getElementById(form.dataset.status ?? '');
@@ -68,20 +82,25 @@ export function wireLeadMagnetForm(form: HTMLFormElement | null): void {
   // Named in TurnstileWidget's data-error-callback: the check failed or was blocked.
   (window as unknown as Record<string, unknown>).onLeadMagnetTurnstileError = () => show('retry-check');
 
+  let busy = false;
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (busy) return;
     if (!email.value || !email.checkValidity()) {
       show('invalid-email');
       email.focus();
       return;
     }
-    const token = form.querySelector<HTMLInputElement>('[name="cf-turnstile-response"]')?.value;
+    busy = true;
+    status.textContent = 'Checking…';
+    status.className = 'mt-4 text-sm text-ink-muted';
+    const token = await waitForTurnstileToken(form);
     if (!token) {
+      busy = false;
       show('retry-check');
       return;
     }
     status.textContent = 'Sending…';
-    status.className = 'mt-4 text-sm text-ink-muted';
 
     let res: Response | null = null;
     let body: Body = null;
@@ -106,7 +125,11 @@ export function wireLeadMagnetForm(form: HTMLFormElement | null): void {
     // Saved in GHL (200 captured, or 202 fallback): count it as a lead in Meta.
     if ((res?.status === 200 && body?.captured) || res?.status === 202) trackLead();
     show(outcome);
-    if (MESSAGES[outcome].ok) form.reset();
+    if (MESSAGES[outcome].ok) {
+      form.reset();
+      form.dispatchEvent(new CustomEvent('lead-magnet:signed-up'));
+    }
     resetCheck();
+    busy = false;
   });
 }

@@ -17,11 +17,15 @@ export interface PageSeo {
   noIndex?: boolean;
 }
 
-const SITE_URL = import.meta.env.SITE_URL || 'https://dodiekendall.com';
+// `?.` so the unit tests can import this under plain Node (no import.meta.env there).
+const SITE_URL = import.meta.env?.SITE_URL || 'https://dodiekendall.com';
 const BRAND = 'Dodie Kendall QHHT';
 const DEFAULT_DESCRIPTION =
-  'A deeply respectful conversation with your Subconscious. Quantum Healing Hypnosis Technique sessions with Dodie Kendall — in-person in Stuart, Florida.';
-const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.jpg`;
+  'A deeply respectful conversation with your Subconscious. Quantum Healing Hypnosis (QHHT) with Dodie Kendall, in person at her studio in Stuart, FL.';
+// Built at build time by src/pages/og/default.jpg.ts (photo, name, location).
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/og/default.jpg`;
+const MAX_TITLE = 60;
+const MAX_DESCRIPTION = 160;
 
 interface SeoOptions {
   path: string;
@@ -35,13 +39,25 @@ interface SeoOptions {
   noIndex?: boolean;
 }
 
+/** `title · BRAND` when it fits in 60 characters, else the bare title. Never cuts words. */
+export function pageTitle(title?: string): string {
+  if (!title) return `${BRAND} · Quantum Healing Hypnosis in Stuart, FL`;
+  const full = `${title} · ${BRAND}`;
+  return full.length > MAX_TITLE ? title : full;
+}
+
 export function getSeo(opts: SeoOptions): PageSeo {
-  const fullTitle = opts.title
-    ? `${opts.title} · ${BRAND}`
-    : `${BRAND} · Quantum Healing Hypnosis in Stuart, FL`;
+  const description = opts.description ?? DEFAULT_DESCRIPTION;
+  if (description.length > MAX_DESCRIPTION) {
+    const msg = `[seo] ${opts.path}: description is ${description.length} chars (max ${MAX_DESCRIPTION}). Rewrite it; it is never truncated.`;
+    // Fail the build (prerendered pages) and dev. On the live Worker (SSR pages
+    // like /book) log instead, so a long description can't 500 the page.
+    if (globalThis.navigator?.userAgent === 'Cloudflare-Workers') console.error(msg);
+    else throw new Error(msg);
+  }
   return {
-    title: opts.exactTitle ?? (fullTitle.length > 60 ? fullTitle.slice(0, 57) + '…' : fullTitle),
-    description: (opts.description ?? DEFAULT_DESCRIPTION).slice(0, 155),
+    title: opts.exactTitle ?? pageTitle(opts.title),
+    description,
     canonical: `${SITE_URL}${opts.path}`,
     ogImage: opts.ogImage ?? DEFAULT_OG_IMAGE,
     ogType: opts.ogType ?? 'website',

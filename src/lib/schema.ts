@@ -13,7 +13,7 @@ export function localBusiness() {
     url: SITE_URL,
     telephone: '+1-772-247-5534',
     email: 'dodiekendall@gmail.com',
-    image: `${SITE_URL}/og-image.jpg`,
+    image: `${SITE_URL}/og/default.jpg`,
     logo: `${SITE_URL}/dodie-kendall-logo-dark-stars.png`,
     priceRange: '$$',
     founder: { '@id': `${SITE_URL}/#person` },

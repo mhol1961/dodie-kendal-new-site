@@ -65,3 +65,23 @@ export async function claimGuideEmail(db: D1Like, email: string, now = Date.now(
 export async function releaseGuideEmail(db: D1Like, email: string, claim: number): Promise<void> {
   await db.prepare('DELETE FROM guide_sends WHERE email = ?1 AND sent_at = ?2').bind(normal(email), claim).run();
 }
+
+/**
+ * Per-visitor cap for any public form endpoint (5 per IP per hour, shared across
+ * forms). Fails OPEN on a storage error or missing binding: Turnstile still guards,
+ * and a lead must never be lost to a database hiccup.
+ */
+export async function visitorAllowed(
+  env: { LEAD_DB?: unknown },
+  request: Request
+): Promise<boolean> {
+  const db = env.LEAD_DB as D1Like | undefined;
+  const ip = request.headers.get('CF-Connecting-IP');
+  if (!db || !ip) return true;
+  try {
+    return await allowIp(db, ip);
+  } catch (err) {
+    console.error('[limits] IP check failed, allowing', err);
+    return true;
+  }
+}

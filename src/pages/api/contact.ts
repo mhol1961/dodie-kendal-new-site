@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { upsertContact, applyTag, addNote, consentRecord, triggerWorkflow, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
 import { verifyRequest } from '@lib/turnstile';
+import { visitorAllowed } from '@lib/guide-limits';
 import { attributionSchema, attributionFields, attributionLine, isFacebookOrInstagram, FB_IG_TAG } from '@lib/attribution';
 
 export const prerender = false;
@@ -63,6 +64,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
   // Spam check before anything reaches GHL.
   if (!(await verifyRequest(request, env, data['cf-turnstile-response']))) {
     return new Response(JSON.stringify({ error: 'turnstile' }), { status: 400 });
+  }
+  if (!(await visitorAllowed(env, request))) {
+    return new Response(JSON.stringify({ error: 'rate-limited' }), { status: 429 });
   }
 
   const token = env.GHL_PRIVATE_INTEGRATION_TOKEN;

@@ -57,7 +57,7 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
   {posts.length === 0 ? (
     <section class="section-y bg-bg-base">
       <div class="container-default">
-        <p class="text-ink-muted">Posts are being added — check back soon.</p>
+        <p class="text-ink-muted">Posts are being added. Check back soon.</p>
       </div>
     </section>
   ) : (
@@ -104,7 +104,7 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
               </div>
               <div class="md:col-span-5 lg:col-span-5 flex flex-col justify-center">
                 <p class="text-xs uppercase tracking-[0.22em] text-ink-muted">
-                  {featured.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  <time datetime={featured.data.pubDate.toISOString().slice(0, 10)}>{featured.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}</time>
                   {' · '}5 min read
                 </p>
                 <h2 class="mt-4 font-display text-ink leading-[1.05]">
@@ -146,7 +146,7 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
                       <span aria-hidden="true" class="pointer-events-none absolute inset-0 bg-gradient-to-t from-bg-inverse/30 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></span>
                     </div>
                     <p class="mt-5 text-xs uppercase tracking-[0.22em] text-ink-muted">
-                      {post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      <time datetime={post.data.pubDate.toISOString().slice(0, 10)}>{post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}</time>
                     </p>
                     <h3 class="mt-2 font-display text-2xl text-ink leading-snug transition-colors group-hover:text-brand">
                       {post.data.title}

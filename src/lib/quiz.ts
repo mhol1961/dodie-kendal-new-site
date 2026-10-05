@@ -87,3 +87,88 @@ export function answersToTags(answers: Record<string, string>): string[] {
   }
   return tags;
 }
+
+/**
+ * What the quiz shows after a successful submit. Copy is Dodie's voice; keep it
+ * to facts the site already states and never promise an outcome.
+ */
+export interface QuizResult {
+  id: string;
+  /** Every listed answer must match. The first approved match wins. */
+  match: Record<string, string>;
+  /** Flip to true only after Dodie approves the wording. */
+  approved: boolean;
+  heading: string;
+  body: string;
+}
+
+export const GENERAL_RESULT: QuizResult = {
+  id: 'general',
+  match: {},
+  approved: true,
+  heading: 'Start with a conversation.',
+  body:
+    "Thank you for trusting me with your answers. I read every one myself, and I'll be in touch personally. " +
+    "Whatever brought you here, the gentlest first step is a free 30-minute call: you can ask me anything, and we'll see together whether a session feels right for you.",
+};
+
+// DRAFTS awaiting Dodie's approval. QhhtQuiz.astro filters to approved ones at
+// build time, so unapproved wording never reaches the page or its JS.
+export const QUIZ_RESULTS: QuizResult[] = [
+  {
+    id: 'clarity-decision',
+    match: { draw: 'clarity-decision' },
+    approved: false,
+    heading: 'You are looking for clarity.',
+    body:
+      "A decision you keep turning over is one of the things people bring to a session. Before we begin, we spend about two hours in conversation shaping the questions you most want to ask, and you take the audio recording home to listen back to. A free 30-minute call is an easy way to talk through what you'd bring.",
+  },
+  {
+    id: 'recurring-pattern',
+    match: { draw: 'recurring-pattern' },
+    approved: false,
+    heading: 'A pattern that keeps coming back.',
+    body:
+      "Wanting to understand why something keeps repeating is a very human reason to be curious about QHHT. In a session you set the agenda, so we'd shape your questions around that pattern together. If you'd like to talk it through first, a free 30-minute call is the gentlest place to start.",
+  },
+  {
+    id: 'past-lives',
+    match: { draw: 'past-lives' },
+    approved: false,
+    heading: 'Curious about past lives.',
+    body:
+      "Curiosity is a lovely place to begin. Past-life memories may come up in a session, but QHHT is broader than that: it's a conversation with the deepest part of you, and it goes wherever that leads. A free 30-minute call is a relaxed way to ask me what that's like.",
+  },
+  {
+    id: 'spiritual-connection',
+    match: { draw: 'spiritual-connection' },
+    approved: false,
+    heading: 'Looking for a deeper connection.',
+    body:
+      "QHHT is a deeply respectful conversation with your Subconscious, the part of you that's been there all along. We'd spend unhurried time together, in person here in Stuart, Florida, and you keep the recording. If you'd like to see whether it feels right, a free 30-minute call is a good first step.",
+  },
+  {
+    id: 'physical-sensation',
+    match: { draw: 'physical-sensation' },
+    approved: false,
+    heading: 'Something you feel but can’t explain.',
+    body:
+      "Thank you for telling me. QHHT is not medical treatment and never a replacement for your doctor or other licensed care, so please keep them in the loop about anything physical. If you're curious about exploring it alongside that care, a free 30-minute call is a good place to ask me your questions.",
+  },
+  {
+    id: 'something-else',
+    match: { draw: 'something-else' },
+    approved: false,
+    heading: 'Something all your own.',
+    body:
+      "You don't need a tidy reason to be here. In a session you set the agenda, and we spend the first couple of hours in conversation finding the questions that matter to you. A free 30-minute call is a relaxed way to tell me what's on your mind.",
+  },
+];
+
+/** The first approved result whose `match` fits the answers, else the general one. */
+export function resultFor(answers: Record<string, string>, results: QuizResult[]): QuizResult {
+  return (
+    results.find((r) => r.approved && Object.entries(r.match).every(([id, v]) => answers[id] === v)) ??
+    GENERAL_RESULT
+  );
+}

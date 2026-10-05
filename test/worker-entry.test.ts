@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const src = readFileSync(new URL('../worker-entry.mjs', import.meta.url), 'utf8').replace(/^import astro.*$/m, 'const astro = {};');
-const { canonicalPath } = await import('data:text/javascript,' + encodeURIComponent(src));
+const { canonicalPath, redirectTarget, SECURITY_HEADERS } = await import('data:text/javascript,' + encodeURIComponent(src));
 
 test('trailing slash is dropped (301 target), root stays', () => {
   assert.equal(canonicalPath('/about/'), '/about');
@@ -25,4 +25,19 @@ test('clean URLs, assets and APIs are left alone; legacy guide link redirects', 
     assert.equal(canonicalPath(p), null, p);
   }
   assert.equal(canonicalPath('/QHHT-Subject-Preparation-Guide-1.pdf'), '/dodie/qhht-pre-session-prep-guide.pdf');
+});
+
+test('http is always sent to https, in one hop with the canonical path', () => {
+  assert.equal(redirectTarget('http://dodiekendall.com/'), 'https://dodiekendall.com/');
+  assert.equal(redirectTarget('http://dodiekendall.com/about'), 'https://dodiekendall.com/about');
+  assert.equal(redirectTarget('http://dodiekendall.com/about/?utm_source=fb'), 'https://dodiekendall.com/about?utm_source=fb');
+  assert.equal(redirectTarget('https://dodiekendall.com/about'), null);
+  assert.equal(redirectTarget('https://dodiekendall.com/book/'), 'https://dodiekendall.com/book');
+  assert.equal(redirectTarget('http://localhost:8787/about'), null, 'local dev stays on http');
+});
+
+test('HSTS never covers subdomains (GHL email links use them) and is not preloaded', () => {
+  const hsts = SECURITY_HEADERS['Strict-Transport-Security'];
+  assert.match(hsts, /max-age=\d+/);
+  assert.equal(/includeSubDomains|preload/i.test(hsts), false);
 });

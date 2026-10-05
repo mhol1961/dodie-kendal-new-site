@@ -4,8 +4,8 @@
  *
  * Angle:    Trust the person first. Authority + warmth + safety.
  * Audience: Skeptics who need to trust WHO they'd work with before the modality.
- * Primary CTA: a free 15-min question-fit call (low-commitment) → /contact.
- *              Secondary: book a full session → /book.
+ * Primary CTA: the free 30-minute call (low-commitment) → /book#discovery.
+ *              Secondary: book a full session → /book#reserve.
  * Proof:    practitioner story, the Dolores Cannon lineage, safety reassurance.
  *
  * Lower-friction CTA on purpose: a call de-risks the $300 / 5-hour commitment
@@ -19,9 +19,9 @@ import { qhhtService, breadcrumb } from '@lib/schema';
 
 const seo = getSeo({
   path: '/landing-page-3',
-  title: 'Meet Dodie Kendall — QHHT',
+  title: 'Meet Dodie Kendall: QHHT',
   description:
-    "Quantum Healing Hypnosis with someone you can trust. Meet Dodie Kendall, QHHT practitioner in Stuart, FL — and book a free 15-minute question-fit call.",
+    "Quantum Healing Hypnosis with someone you can trust. Meet Dodie Kendall, QHHT practitioner in Stuart, FL, and book a free 30-minute call.",
   noIndex: true,
 });
 
@@ -34,7 +34,7 @@ const reassurances = [
   },
   {
     title: 'It is held in confidence',
-    body: "What surfaces in a session stays between us. The recording is yours alone — I never share or use it for anything else.",
+    body: "What surfaces in a session stays between us. The recording is yours alone. I never share or use it for anything else.",
   },
   {
     title: 'It is not a medical or therapy substitute',
@@ -58,15 +58,15 @@ const reassurances = [
           <span class="italic-accent block text-brand">So is the person who guides it.</span>
         </h1>
         <p class="mt-7 max-w-xl text-lg md:text-xl leading-relaxed text-inverse-muted">
-          I'm Dodie Kendall — a QHHT practitioner in Stuart, Florida, trained in
+          I'm Dodie Kendall, a QHHT practitioner in Stuart, Florida, trained in
           the Dolores Cannon lineage. Before you decide anything, let's just talk.
         </p>
         <div class="mt-10 flex flex-wrap items-center gap-5">
-          <a href="/contact" class="cta-glow inline-flex items-center justify-center rounded-pill px-8 py-3.5 text-base font-medium">
-            Book a free 15-min call
+          <a href="/book#discovery" class="cta-glow inline-flex items-center justify-center rounded-pill px-8 py-3.5 text-base font-medium">
+            Book a free 30-minute call
             <svg class="ml-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
           </a>
-          <a href="/book" class="inline-flex items-center gap-2 text-sm font-medium text-inverse underline decoration-1 underline-offset-[6px] hover:text-brand">
+          <a href="/book#reserve" class="inline-flex items-center gap-2 text-sm font-medium text-inverse underline decoration-1 underline-offset-[6px] hover:text-brand">
             Or book a session
             <span aria-hidden="true">↗</span>
           </a>
@@ -100,7 +100,7 @@ const reassurances = [
       'Native Floridian · Stuart, FL',
       'Dolores Cannon lineage',
       'Sessions held in confidence',
-      'Honest about fit — always',
+      'Honest about fit, always',
     ]}
   />
 
@@ -114,7 +114,7 @@ const reassurances = [
       </h2>
       <div class="mt-7 space-y-5 text-lg leading-relaxed text-ink-secondary">
         <p>
-          I spent decades searching for who we really are — and came to understand
+          I spent decades searching for who we really are, and came to understand
           us as multidimensional beings, energy moving through what I think of as
           "Earth school." I found Quantum Healing Hypnosis Technique through Dolores
           Cannon's work, and from my very first session as a client, I knew this was
@@ -123,7 +123,7 @@ const reassurances = [
         <p>
           My job isn't to interpret you or fix you. It's to hold a calm, safe
           space and gently guide you to the part of yourself that already has your
-          answers — and then to get out of the way while you listen.
+          answers, and then to get out of the way while you listen.
         </p>
       </div>
     </div>
@@ -171,21 +171,21 @@ const reassurances = [
       </h2>
       <p class="mx-auto mt-6 max-w-xl text-lg text-inverse-muted leading-relaxed">
         Tell me what you're working through. If a session feels right, we'll plan
-        one. If it's not the right time, I'll say so — honestly.
+        one. If it's not the right time, I'll say so, honestly.
       </p>
       <div class="mt-12 flex flex-wrap justify-center gap-5">
-        <a href="/contact" class="cta-glow inline-flex items-center justify-center rounded-pill px-10 py-4 text-lg font-medium">
-          Book a free 15-min call →
+        <a href="/book#discovery" class="cta-glow inline-flex items-center justify-center rounded-pill px-10 py-4 text-lg font-medium">
+          Book a free 30-minute call →
         </a>
       </div>
-      <p class="mt-10 text-xs uppercase tracking-[0.24em] text-inverse-muted">Stuart, FL · Monday – Saturday · I reply personally</p>
+      <p class="mt-10 text-xs uppercase tracking-[0.24em] text-inverse-muted">Stuart, FL · Free 30-minute call · No obligation</p>
     </div>
   </section>
 
   <!-- Sticky mobile CTA -->
   <div class="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-bg-raised/95 p-3 backdrop-blur-sm shadow-[0_-8px_24px_-12px_oklch(0.18_0.018_240_/_0.35)] md:hidden">
-    <a href="/contact" class="flex w-full items-center justify-center rounded-pill bg-brand px-5 py-3 text-sm font-medium text-ink-inverse shadow-sm">
-      Book a free 15-min call →
+    <a href="/book#discovery" class="flex w-full items-center justify-center rounded-pill bg-brand px-5 py-3 text-sm font-medium text-ink-inverse shadow-sm">
+      Book a free 30-minute call →
     </a>
   </div>
 </LandingLayout>

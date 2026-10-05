@@ -113,7 +113,7 @@ const year = new Date().getFullYear();
         {showPhone && (
           <a
             href="tel:+17722475534"
-            class="inline-flex items-center gap-2 text-sm font-medium text-ink hover:text-brand"
+            class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 px-1 text-sm font-medium text-ink hover:text-brand"
           >
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
@@ -129,8 +129,9 @@ const year = new Date().getFullYear();
       <slot />
     </main>
 
-    <!-- Compliance-only footer (no site-map nav) -->
-    <footer class="border-t border-border-subtle bg-bg-sunken">
+    <!-- Compliance-only footer (no site-map nav). Mobile bottom padding keeps the
+         disclaimer clear of the pages' fixed bottom CTA bar (md:hidden, ~70px). -->
+    <footer class="border-t border-border-subtle bg-bg-sunken pb-20 md:pb-0">
       <div class="container-default flex flex-col gap-4 py-8 text-xs text-ink-muted md:flex-row md:items-center md:justify-between">
         <p>© {year} Dodie Kendall QHHT · Stuart, FL ·
           <a href="/privacy" class="hover:text-brand">Privacy</a> ·

@@ -12,10 +12,12 @@
  * becomes a one-question-at-a-time stepper with a progress bar and an async JSON
  * submit that swaps in the in-place success state.
  */
-import { QUIZ_QUESTIONS } from '@lib/quiz';
+import { QUIZ_QUESTIONS, QUIZ_RESULTS, GENERAL_RESULT } from '@lib/quiz';
 import TurnstileWidget from '@components/TurnstileWidget.astro';
 
 const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
+// Only Dodie-approved results reach the page; drafts stay in src/lib/quiz.ts.
+const approvedResults = QUIZ_RESULTS.filter((r) => r.approved);
 ---
 <section id="quiz" class="bg-bg-sunken py-20 md:py-28">
   <div class="container-default max-w-2xl">
@@ -27,7 +29,7 @@ const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
       </h2>
       <p class="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-ink-secondary">
         Five short questions. I'll personally read your answers and point you
-        toward the right next step — no pressure, no obligation to book.
+        toward the right next step. No pressure, no obligation to book.
       </p>
     </header>
 
@@ -68,7 +70,7 @@ const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
         <!-- Contact step -->
         <fieldset data-step={QUIZ_QUESTIONS.length} class="quiz-step">
           <legend class="font-display text-xl text-ink md:text-2xl">Where should I send your next step?</legend>
-          <p class="mt-2 text-sm text-ink-muted">I'll reply personally — usually within 24–48 hours.</p>
+          <p class="mt-2 text-sm text-ink-muted">I'll reply personally, usually within 24 to 48 hours.</p>
           <div class="mt-6 grid gap-4">
             <label class="block">
               <span class="text-sm font-medium text-ink">First name</span>
@@ -108,25 +110,29 @@ const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
         </div>
       </form>
 
-      <!-- Success state (revealed by JS after a successful submit) -->
-      <div data-quiz-success hidden class="py-6 text-center">
+      <!-- Result (revealed by JS after a successful submit). Shows the general
+           result unless an approved answer-specific one matches. -->
+      <div data-quiz-success data-results={JSON.stringify(approvedResults)} hidden class="py-6 text-center">
         <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand/10">
           <svg class="h-7 w-7 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
         </div>
-        <h3 class="mt-5 font-display text-2xl text-ink">Thank you — it's on its way.</h3>
-        <p class="mx-auto mt-3 max-w-md text-ink-secondary leading-relaxed">
-          I've got your answers and I'll be in touch personally with your next step.
-          If you already know you're ready, you can book now.
-        </p>
-        <a href="/book" class="cta-glow mt-7 inline-flex items-center justify-center rounded-pill px-8 py-3.5 text-base font-medium">
-          Book a session →
-        </a>
+        <p class="mt-5 text-xs uppercase tracking-[0.24em] text-brand">Your result</p>
+        <h3 data-quiz-result-heading tabindex="-1" class="mt-2 font-display text-2xl text-ink outline-none">{GENERAL_RESULT.heading}</h3>
+        <p data-quiz-result-body class="mx-auto mt-3 max-w-md text-ink-secondary leading-relaxed">{GENERAL_RESULT.body}</p>
+        <div class="mt-7 flex flex-col items-center gap-4">
+          <a href="/book#discovery" class="cta-glow inline-flex items-center justify-center rounded-pill px-8 py-3.5 text-base font-medium">
+            Book a free 30-minute call →
+          </a>
+          <a href="/free-guide" class="text-sm font-medium text-brand underline underline-offset-2 hover:text-brand-hover">
+            Read the free prep guide
+          </a>
+        </div>
       </div>
     </div>
 
     <p class="mt-6 text-center text-sm text-ink-muted">
       Prefer to skip ahead?
-      <a href="/book" class="text-brand underline underline-offset-2 hover:text-brand-hover">Book a session directly</a>.
+      <a href="/book#reserve" class="text-brand underline underline-offset-2 hover:text-brand-hover">Book a session directly</a>.
     </p>
   </div>
 </section>
@@ -142,6 +148,8 @@ const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
 
 <script>
   import { readAttribution, trackLead } from '@lib/attribution-client';
+  import { waitForTurnstileToken } from '@lib/lead-magnet-form';
+  import { resultFor, type QuizResult } from '@lib/quiz';
   const form = document.getElementById('qhht-quiz') as HTMLFormElement | null;
   if (form) {
     const steps = Array.from(form.querySelectorAll<HTMLElement>('.quiz-step'));
@@ -235,16 +243,20 @@ const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
         phone: (fd.get('phone') as string) || undefined,
         consentMarketing: fd.get('consentMarketing') === 'true',
         answers,
-        'cf-turnstile-response': (fd.get('cf-turnstile-response') as string) || '',
+        'cf-turnstile-response': '',
         attribution: readAttribution(),
       };
-      // Spam check not finished (or blocked by a browser add-on): don't send yet.
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Checking…'; }
+      if (status) status.textContent = '';
+      // The spam check usually finishes invisibly; give it a few seconds before
+      // asking the visitor to do anything.
+      payload['cf-turnstile-response'] = await waitForTurnstileToken(form);
       if (!payload['cf-turnstile-response']) {
         if (status) status.textContent = 'Please complete the security check above, then submit again.';
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'See my result'; }
         return;
       }
-      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending…'; }
-      if (status) status.textContent = '';
+      if (submitBtn) submitBtn.textContent = 'Sending…';
       try {
         const res = await fetch('/api/quiz', {
           method: 'POST',
@@ -255,14 +267,30 @@ const totalSteps = QUIZ_QUESTIONS.length + 1; // questions + contact step
           trackLead();
           form.hidden = true;
           if (progress) progress.classList.add('hidden');
-          if (success) success.hidden = false;
-          success?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          if (success) {
+            let approved: QuizResult[] = [];
+            try { approved = JSON.parse(success.dataset.results || '[]'); } catch { /* general result */ }
+            const result = resultFor(answers, approved);
+            const heading = success.querySelector<HTMLElement>('[data-quiz-result-heading]');
+            const body = success.querySelector<HTMLElement>('[data-quiz-result-body]');
+            if (heading) heading.textContent = result.heading;
+            if (body) body.textContent = result.body;
+            success.hidden = false;
+            success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            heading?.focus({ preventScroll: true });
+          }
         } else if (res.status === 400) {
           // Tokens are single-use: get a fresh one for the retry.
           const widget = form.querySelector('.cf-turnstile');
           const ts = (window as { turnstile?: { reset: (el: Element) => void } }).turnstile;
           if (widget && ts) ts.reset(widget);
           if (status) status.textContent = 'Please complete the security check above, then submit again.';
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'See my result'; }
+        } else if (res.status === 429) {
+          const widget = form.querySelector('.cf-turnstile');
+          const ts = (window as { turnstile?: { reset: (el: Element) => void } }).turnstile;
+          if (widget && ts) ts.reset(widget);
+          if (status) status.textContent = 'Thank you. We already have several submissions from this connection; please try again later or email dodiekendall@gmail.com.';
           if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'See my result'; }
         } else {
           throw new Error('Bad status ' + res.status);

@@ -18,16 +18,22 @@ const { calendarId, fallbackUrl = '', title = 'Book a QHHT session with Dodie Ke
 const embedUrl = calendarId
   ? `https://api.leadconnectorhq.com/widget/booking/${calendarId}`
   : null;
+// GHL's own embed snippet ids booking iframes `<calendarId>_<timestamp>`.
+const iframeId = `${calendarId}_${Date.now()}`;
 ---
 <div class="overflow-hidden rounded-lg border border-border-subtle bg-bg-raised shadow-lg">
   {embedUrl ? (
-    <iframe
-      src={embedUrl}
-      title={title}
-      loading="lazy"
-      referrerpolicy="strict-origin-when-cross-origin"
-      style="width: 100%; min-height: 720px; border: 0;"
-    />
+    <>
+      {/* src is set by the script below (ad details appended), then GHL's form_embed.js
+          sizes the frame to its content. min-height is the floor. */}
+      <iframe
+        data-booking-src={embedUrl}
+        id={iframeId}
+        title={title}
+        referrerpolicy="strict-origin-when-cross-origin"
+        style="width: 100%; min-height: 600px; border: 0;"
+      />
+    </>
   ) : (
     <div class="p-8 text-center md:p-12">
       <p class="text-xs uppercase tracking-wider text-ink-muted">Calendar setup pending</p>
@@ -55,3 +61,24 @@ const embedUrl = calendarId
     </div>
   )}
 </div>
+
+<script>
+  import { readAttribution } from '@lib/attribution-client';
+  import { bookingUrl } from '@lib/booking-url';
+
+  // Bundled once per page however many calendars render. Give each calendar the
+  // visit's ad details, then load GHL's resizer, which sizes each /booking frame to
+  // its content. Order matters: the resizer only adopts frames that already have
+  // their src when it starts, so no loading="lazy" or late src (a lazy frame gets
+  // parked off-screen by the resizer and never loads).
+  const attr = readAttribution();
+  const frames = document.querySelectorAll<HTMLIFrameElement>('iframe[data-booking-src]');
+  frames.forEach((f) => {
+    f.src = bookingUrl(f.dataset.bookingSrc!, attr);
+  });
+  if (frames.length) {
+    const s = document.createElement('script');
+    s.src = 'https://link.msgsndr.com/js/form_embed.js';
+    document.body.append(s);
+  }
+</script>

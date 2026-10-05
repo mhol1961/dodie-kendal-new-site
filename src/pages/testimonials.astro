@@ -9,7 +9,7 @@ const seo = getSeo({
   path: '/testimonials',
   title: 'Client Reviews',
   description:
-    "In their own words — reviews from clients who have experienced a QHHT session with Dodie Kendall in Stuart, FL.",
+    "In their own words: reviews from clients who have experienced a QHHT session with Dodie Kendall in Stuart, FL.",
 });
 
 const schemas = [breadcrumb([{ name: 'Home', href: '/' }, { name: 'Reviews' }])];
@@ -24,7 +24,7 @@ const reviews = (await getCollection('testimonials').catch(() => []))
         <p class="text-xs uppercase tracking-[0.24em] text-brand">In their words</p>
         <h1 class="mt-3 font-display">What clients say after a session.</h1>
         <p class="mt-5 max-w-prose text-lg leading-relaxed text-ink-secondary">
-          These reviews were shared by clients on Google. Every session is different — but the through-line is the same: a calm, safe space to explore what you already carry inside.
+          These reviews were shared by clients on Google. Every session is different, but the through-line is the same: a calm, safe space to explore what you already carry inside.
         </p>
       </header>
 

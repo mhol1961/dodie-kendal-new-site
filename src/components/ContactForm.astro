@@ -16,7 +16,7 @@ import TurnstileWidget from '@components/TurnstileWidget.astro';
 >
   <Input id="contact-name" name="fullName" label="Full name" required autocomplete="name" placeholder="First Last" />
   <Input id="contact-email" name="email" type="email" label="Email" required autocomplete="email" placeholder="you@somewhere.com" />
-  <Input id="contact-phone" name="phone" type="tel" label="Phone" optional autocomplete="tel" placeholder="(555) 555-5555" helper="Optional — only used to coordinate scheduling if needed." />
+  <Input id="contact-phone" name="phone" type="tel" label="Phone" optional autocomplete="tel" placeholder="(555) 555-5555" helper="Optional, only used to coordinate scheduling if needed." />
   <Input id="contact-message" name="message" type="textarea" label="Your message" required rows={5} minLength={10} maxLength={2000} placeholder="What brought you here today?" />
 
   <!-- Honeypot — not visible, not focusable, not announced -->
@@ -123,18 +123,18 @@ import TurnstileWidget from '@components/TurnstileWidget.astro';
         });
         if (res.ok || res.status === 202) {
           if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
-          status.textContent = 'Thank you — your note is on its way. Dodie will write back personally within 24–48 hours.';
+          status.textContent = 'Thank you. Your note is on its way. Dodie will write back personally within 24 to 48 hours.';
           status.className = 'text-sm text-success';
           form.reset();
         } else if (res.status === 400) {
           status.textContent = 'Please complete the security check above, then send again.';
           status.className = 'text-sm text-error';
         } else {
-          status.textContent = 'Something went wrong on our end. You can also email dodiekendall@gmail.com directly — that always works.';
+          status.textContent = 'Something went wrong on our end. You can also email dodiekendall@gmail.com directly. That always works.';
           status.className = 'text-sm text-error';
         }
       } catch (err) {
-        status.textContent = 'Network error. You can also email dodiekendall@gmail.com directly — that always works.';
+        status.textContent = 'Network error. You can also email dodiekendall@gmail.com directly. That always works.';
         status.className = 'text-sm text-error';
       }
       // Turnstile tokens are single-use: always fetch a fresh one for the next send.

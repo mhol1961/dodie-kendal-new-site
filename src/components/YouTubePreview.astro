@@ -1,0 +1,62 @@
+---
+/**
+ * YouTubePreview: a thumbnail + play button that swaps in the youtube-nocookie player
+ * only when clicked, so the ~1MB of YouTube scripts never loads for people who don't
+ * watch. Same 16:9 box before and after, so nothing shifts. Look matches the
+ * LatestVideos cards.
+ */
+interface Props {
+  id: string;
+  title: string;
+}
+const { id, title } = Astro.props;
+---
+<div class="relative aspect-[16/9] w-full overflow-hidden bg-bg-inverse-deeper" data-yt-player>
+  <button
+    type="button"
+    class="group absolute inset-0 block h-full w-full appearance-none"
+    aria-label={`Play video: ${title}`}
+    data-yt-id={id}
+    data-yt-title={title}
+  >
+    <img
+      src={`https://i.ytimg.com/vi/${id}/sddefault.jpg`}
+      alt=""
+      width="640"
+      height="480"
+      loading="lazy"
+      decoding="async"
+      class="h-full w-full object-cover"
+    />
+    <span
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-0 flex items-center justify-center bg-bg-inverse-deeper/20 transition-colors group-hover:bg-bg-inverse-deeper/10"
+    >
+      <span class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-brand text-ink-inverse shadow-[0_10px_30px_-10px_oklch(0.05_0.02_240_/_0.8)] transition-transform duration-300 group-hover:scale-110 group-focus-visible:scale-110">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true">
+          <path d="M8 5.5v13l11-6.5-11-6.5z" />
+        </svg>
+      </span>
+    </span>
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('button[data-yt-id]').forEach((button) => {
+    button.addEventListener(
+      'click',
+      () => {
+        const frame = document.createElement('iframe');
+        frame.src = `https://www.youtube-nocookie.com/embed/${button.dataset.ytId}?autoplay=1&rel=0`;
+        frame.title = button.dataset.ytTitle ?? 'Video';
+        frame.className = 'absolute inset-0 h-full w-full';
+        frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        frame.allowFullscreen = true;
+        button.replaceWith(frame);
+        // The focused button is gone; put keyboard users on the player.
+        frame.focus();
+      },
+      { once: true }
+    );
+  });
+</script>

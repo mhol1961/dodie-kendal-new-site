@@ -11,7 +11,7 @@ const seo = getSeo({
   path: '/faq',
   title: 'Frequently Asked Questions',
   description:
-    "Common questions about QHHT sessions, logistics, practice, and aftercare — answered in plain language.",
+    "Common questions about QHHT sessions, logistics, practice, and aftercare, answered in plain language.",
 });
 
 const faqs = (await getCollection('faq').catch(() => [])).sort((a, b) => a.data.order - b.data.order);
@@ -73,6 +73,13 @@ function groupItems(category: CategoryKey) {
     .map((f) => ({ question: f.data.question, answer: f.data.answer }));
 }
 
+// Contextual links to Insights posts inside the category intros (header only:
+// the index cards above are already links).
+const introLinks: Partial<Record<CategoryKey, { text: string; href: string }>> = {
+  sessions: { text: 'What actually happens in the session', href: '/insights/what-happens-in-a-qhht-session' },
+  logistics: { text: 'prep', href: '/insights/how-to-prepare-for-your-first-quantum-healing-session' },
+};
+
 function slugify(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
@@ -91,7 +98,7 @@ const schemas = [
     eyebrow="FAQ"
     headlineLead="Common questions,"
     headlineItalic="honest answers."
-    subhead="Twenty answers to the things people ask before they book. Pick a category, or scroll all four — they're short."
+    subhead="Twenty answers to the things people ask before they book. Pick a category, or scroll all four. They're short."
     bgImage="/video/linen-light-poster.jpg"
     bgPosition="center"
   />
@@ -99,7 +106,7 @@ const schemas = [
   {faqs.length === 0 ? (
     <section class="section-y bg-bg-base">
       <div class="container-default">
-        <p class="text-ink-muted">FAQ entries are being added — check back soon.</p>
+        <p class="text-ink-muted">FAQ entries are being added. Check back soon.</p>
       </div>
     </section>
   ) : (
@@ -165,7 +172,12 @@ const schemas = [
                     <span class="italic-accent block text-brand">{cat.hook}</span>
                   </h2>
                   <p class={`mt-5 max-w-prose text-lg leading-relaxed ${bodyColor}`}>
-                    {cat.description}
+                    {(() => {
+                      const link = introLinks[cat.key];
+                      const parts = link ? cat.description.split(link.text) : [];
+                      if (!link || parts.length !== 2) return cat.description;
+                      return <>{parts[0]}<a href={link.href} class="text-brand underline underline-offset-2">{link.text}</a>{parts[1]}</>;
+                    })()}
                   </p>
                 </div>
               </header>
@@ -209,7 +221,7 @@ const schemas = [
             <span class="italic-accent block text-brand">I read every one.</span>
           </h2>
           <p class="mx-auto mt-5 max-w-xl text-lg text-ink-secondary leading-relaxed">
-            If your question isn't here, it's a fair one to ask. Most replies go out within 24–48 hours, Monday through Saturday.
+            If your question isn't here, it's a fair one to ask. Most replies go out within 24 to 48 hours, Monday through Saturday.
           </p>
           <div class="mt-8 flex flex-wrap justify-center gap-4">
             <a href="/contact" class="inline-flex items-center justify-center rounded-pill bg-brand px-7 py-3 font-medium text-ink-inverse shadow-md transition-all hover:bg-brand-hover hover:shadow-glow">

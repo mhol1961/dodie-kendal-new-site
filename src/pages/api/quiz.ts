@@ -15,6 +15,7 @@ import { z } from 'zod';
 import { upsertContact, applyTag, addNote, sendContactEmail, sendContactSms, consentRecord, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
 import { verifyRequest } from '@lib/turnstile';
+import { visitorAllowed } from '@lib/guide-limits';
 import { attributionSchema, attributionFields, attributionLine, isFacebookOrInstagram, FB_IG_TAG } from '@lib/attribution';
 import { QUIZ_VALUES, answersToTags } from '@lib/quiz';
 
@@ -115,7 +116,7 @@ p{font-size:1.05rem;line-height:1.6;margin:0 auto 1.5rem;max-width:28rem;color:#
 function successResponse(isFormPost: boolean, status: number, extra: Record<string, unknown> = {}): Response {
   if (isFormPost) {
     return htmlPage(status, {
-      heading: "Thank you — it's on its way.",
+      heading: "Thank you. It's on its way.",
       message:
         "I've got your answers and I'll be in touch personally with your next step. If you already know you're ready, you can book now.",
       primary: { href: '/book', label: 'Book a session' },
@@ -133,7 +134,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     body = await readBody(request);
   } catch {
     return isFormPost
-      ? htmlPage(400, { heading: 'Hmm — that didn’t go through.', message: 'Please go back and try again, or email dodiekendall@gmail.com.' })
+      ? htmlPage(400, { heading: 'Hmm, that didn’t go through.', message: 'Please go back and try again, or email dodiekendall@gmail.com.' })
       : jsonResponse(400, { error: 'Invalid request body' });
   }
 
@@ -160,6 +161,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return isFormPost
       ? htmlPage(400, { heading: 'One more step', message: 'This quiz needs JavaScript turned on for its security check. Please enable it and try again, or email dodiekendall@gmail.com.', primary: { href: '/landing-page-1#quiz', label: 'Return to the quiz' } })
       : jsonResponse(400, { error: 'turnstile' });
+  }
+  // Each quiz emails and texts Dodie, so cap how often one visitor can send it.
+  if (!(await visitorAllowed(env, request))) {
+    return isFormPost
+      ? htmlPage(429, { heading: 'Thank you, I have your answers', message: 'We received several submissions from this connection already. Please try again later, or email dodiekendall@gmail.com.' })
+      : jsonResponse(429, { error: 'rate-limited' });
   }
   const token = env.GHL_PRIVATE_INTEGRATION_TOKEN;
   const locationId = env.GHL_LOCATION_ID;
@@ -262,7 +269,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   try {
     await sendContactEmail(
       contactId,
-      { subject: 'Thank you — I have your answers', html: submitterEmailHtml(data.firstName) },
+      { subject: 'Thank you, I have your answers', html: submitterEmailHtml(data.firstName) },
       ghlAuth
     );
   } catch (err) {
@@ -310,7 +317,7 @@ function esc(s: string): string {
 function submitterEmailHtml(firstName: string): string {
   return `<div style="font-family:Georgia,serif;font-size:16px;line-height:1.6;color:#3a2f28;max-width:560px;">
     <p>Hi ${esc(firstName)},</p>
-    <p>Thank you for sharing what's drawing you to QHHT. I've read your answers, and I'll be in touch personally with a thoughtful next step — usually within 24–48 hours, Monday through Saturday.</p>
+    <p>Thank you for sharing what's drawing you to QHHT. I've read your answers, and I'll be in touch personally with a thoughtful next step, usually within 24 to 48 hours, Monday through Saturday.</p>
     <p>If you already feel ready, you're warmly welcome to book a session anytime:
       <a href="https://dodiekendall.com/book" style="color:#c2604f;">dodiekendall.com/book</a>.</p>
     <p>With warmth,<br/>Dodie Kendall<br/>QHHT Practitioner · Stuart, FL</p>

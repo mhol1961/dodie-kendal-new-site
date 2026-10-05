@@ -1,0 +1,53 @@
+---
+// Rendered by the Worker for any unmatched URL, with a 404 status.
+// Server-rendered on purpose: for a PRERENDERED 404, Astro 4's App fetches
+// https://<host>/404.html from inside the Worker (a subrequest to itself, which
+// worker-entry.mjs would also 301 to /404). Rendering it here avoids both.
+import Base from '@layouts/Base.astro';
+import { getSeo } from '@lib/seo';
+
+export const prerender = false;
+
+const seo = getSeo({
+  path: '/404',
+  title: 'Page not found',
+  description: "This page wandered off. Find your way back to QHHT sessions with Dodie Kendall in Stuart, FL.",
+  noIndex: true,
+});
+
+const links = [
+  { href: '/qhht', label: 'What is QHHT?', note: 'How a session works, start to finish.' },
+  { href: '/book', label: 'Book a session', note: 'Or start with a free 30-minute call.' },
+  { href: '/insights', label: 'Insights', note: 'Articles on QHHT and preparing for your session.' },
+  { href: '/contact', label: 'Contact Dodie', note: 'Send a note with any question.' },
+];
+---
+<Base seo={seo} leadMagnet={false}>
+  <section class="section-y bg-bg-base">
+    <div class="container-prose">
+      <p class="text-xs uppercase tracking-wider text-ink-muted">Page not found</p>
+      <h1 class="mt-2 font-display">This page seems to have wandered off.</h1>
+      <p class="mt-6 text-lg leading-relaxed text-ink-secondary">
+        The link may be old, or a letter may have slipped. Either way, you're welcome here. Here are a few good places to pick up the thread.
+      </p>
+
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2" role="list">
+        {links.map((l) => (
+          <li>
+            <a
+              href={l.href}
+              class="group block h-full rounded-lg border border-border-subtle bg-bg-raised p-6 shadow-sm transition-shadow hover:shadow-md"
+            >
+              <span class="font-display text-xl text-ink transition-colors group-hover:text-brand">{l.label}</span>
+              <span class="mt-2 block text-ink-secondary">{l.note}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <p class="mt-10 text-ink-secondary">
+        Rather talk? Call <a href="tel:+17722475534" class="text-brand underline underline-offset-2">772-247-5534</a>.
+      </p>
+    </div>
+  </section>
+</Base>

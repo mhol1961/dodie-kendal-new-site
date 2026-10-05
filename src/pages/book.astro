@@ -1,6 +1,8 @@
 ---
 import Base from '@layouts/Base.astro';
 import BookingEmbed from '@components/BookingEmbed.astro';
+import TestimonialGrid from '@components/TestimonialGrid.astro';
+import YouTubePreview from '@components/YouTubePreview.astro';
 import { getSeo } from '@lib/seo';
 import { qhhtService, breadcrumb } from '@lib/schema';
 
@@ -28,7 +30,7 @@ const seo = getSeo({
   path: '/book',
   title: 'Book a QHHT Session',
   description:
-    "Reserve your Quantum Healing Hypnosis session with Dodie Kendall — in person at the Stuart, FL studio. Plan for about five hours together; reserve your time with a small deposit at booking.",
+    'Book a QHHT session with Dodie Kendall in Stuart, FL: about five hours in person, $300 total with a $50 deposit. Or start with a free 30-minute call.',
 });
 
 const schemas = [
@@ -48,7 +50,7 @@ const next = [
   {
     num: '02',
     title: 'Pre-session prep guide',
-    body: "Two days before your session, I'll send you my prep guide to look over. It's short — you can read through it in about 20 minutes.",
+    body: "Two days before your session, I'll send you my prep guide to look over. It's short. You can read through it in about 20 minutes.",
   },
   {
     num: '03',
@@ -65,9 +67,19 @@ const next = [
       <p class="mt-4 max-w-prose text-lg leading-relaxed text-ink-secondary">
         There are two ways to begin. If you're new to QHHT or still deciding, start with a free call. If you already know, reserve your session below.
       </p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        {discoveryCalendarId && (
+          <a href="#discovery" class="inline-flex min-h-[44px] items-center justify-center rounded-pill border border-border-strong bg-bg-raised px-6 py-2.5 text-base font-medium text-ink transition-colors hover:border-brand hover:text-brand">
+            Free 30-minute call
+          </a>
+        )}
+        <a href="#reserve" class="inline-flex min-h-[44px] items-center justify-center rounded-pill bg-brand px-6 py-2.5 text-base font-medium text-ink-inverse shadow-sm transition-all hover:bg-brand-hover hover:shadow-md">
+          Reserve a session · $50 deposit
+        </a>
+      </div>
 
       {discoveryCalendarId && (
-        <div class="mt-10 rounded-lg border border-border-subtle bg-bg-sunken p-5 md:p-8">
+        <div id="discovery" class="mt-10 scroll-mt-24 rounded-lg border border-border-subtle bg-bg-sunken p-5 md:p-8">
           <p class="text-xs uppercase tracking-wider text-brand">New to QHHT? Start here</p>
           <h2 class="mt-2 font-display">A free 30-minute call.</h2>
           <p class="mt-4 max-w-prose text-lg leading-relaxed text-ink-secondary">
@@ -79,52 +91,60 @@ const next = [
         </div>
       )}
 
-      <p class="mt-16 text-xs uppercase tracking-wider text-ink-muted">Ready for your session?</p>
-      <h2 class="mt-2 font-display">Reserve your QHHT session.</h2>
+      <div id="reserve" class="mt-16 scroll-mt-24">
+        <p class="text-xs uppercase tracking-wider text-ink-muted">Ready for your session?</p>
+        <h2 class="mt-2 font-display">Reserve your QHHT session.</h2>
 
-      <div class="mt-8 grid gap-8 md:grid-cols-3">
-        <div class="rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm">
-          <p class="text-xs uppercase tracking-wider text-ink-muted">Total</p>
-          <p class="mt-1 font-display text-3xl text-ink">$300</p>
-          <p class="mt-1 text-xs text-ink-secondary">All-inclusive · session + recording</p>
+        <div class="mt-8 grid gap-8 md:grid-cols-3">
+          <div class="rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm">
+            <p class="text-xs uppercase tracking-wider text-ink-muted">Total</p>
+            <p class="mt-1 font-display text-3xl text-ink">$300</p>
+            <p class="mt-1 text-xs text-ink-secondary">All-inclusive · session + recording</p>
+          </div>
+          <div class="rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm">
+            <p class="text-xs uppercase tracking-wider text-ink-muted">Deposit at booking</p>
+            <p class="mt-1 font-display text-3xl text-ink">$50</p>
+            <p class="mt-1 text-xs text-ink-secondary">Remaining $250 paid on session day</p>
+          </div>
+          <div class="rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm">
+            <p class="text-xs uppercase tracking-wider text-ink-muted">Duration</p>
+            <p class="mt-1 font-display text-3xl text-ink">~5 hours</p>
+            <p class="mt-1 text-xs text-ink-secondary">About 2 hrs conversation · 2 to 3 hrs session · plus your recording</p>
+          </div>
         </div>
-        <div class="rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm">
-          <p class="text-xs uppercase tracking-wider text-ink-muted">Deposit at booking</p>
-          <p class="mt-1 font-display text-3xl text-ink">$50</p>
-          <p class="mt-1 text-xs text-ink-secondary">Remaining $250 paid on session day</p>
-        </div>
-        <div class="rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm">
-          <p class="text-xs uppercase tracking-wider text-ink-muted">Duration</p>
-          <p class="mt-1 font-display text-3xl text-ink">~5 hours</p>
-          <p class="mt-1 text-xs text-ink-secondary">About 2 hrs conversation · 2–3 hrs session · plus your recording</p>
-        </div>
+
+        {pricing && pricing.items.length > 0 && (
+          <div class="mt-10 rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm md:p-8">
+            <p class="text-xs uppercase tracking-wider text-ink-muted">Pricing</p>
+            <h3 class="mt-2 font-display text-2xl text-ink">{pricing.heading}</h3>
+            {pricing.intro && <p class="mt-3 max-w-prose leading-relaxed text-ink-secondary">{pricing.intro}</p>}
+            <dl class="mt-6 divide-y divide-border-subtle">
+              {pricing.items.map((item) => (
+                <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-4">
+                  <dt class="text-ink">
+                    {item.label}
+                    {item.note && <span class="block text-xs text-ink-secondary">{item.note}</span>}
+                  </dt>
+                  <dd class="font-display text-2xl text-ink">{item.price}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
       </div>
+    </div>
+  </section>
 
-      {pricing && pricing.items.length > 0 && (
-        <div class="mt-10 rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm md:p-8">
-          <p class="text-xs uppercase tracking-wider text-ink-muted">Pricing</p>
-          <h3 class="mt-2 font-display text-2xl text-ink">{pricing.heading}</h3>
-          {pricing.intro && <p class="mt-3 max-w-prose leading-relaxed text-ink-secondary">{pricing.intro}</p>}
-          <dl class="mt-6 divide-y divide-border-subtle">
-            {pricing.items.map((item) => (
-              <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-4">
-                <dt class="text-ink">
-                  {item.label}
-                  {item.note && <span class="block text-xs text-ink-secondary">{item.note}</span>}
-                </dt>
-                <dd class="font-display text-2xl text-ink">{item.price}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      )}
+  <TestimonialGrid />
 
-      <div class="mt-10 max-w-prose space-y-5 text-lg leading-relaxed text-ink-secondary">
+  <section class="section-y bg-bg-base">
+    <div class="container-default max-w-4xl">
+      <div class="max-w-prose space-y-5 text-lg leading-relaxed text-ink-secondary">
         <p>
-          Plan for about five hours together — about two hours of conversation, then two to three hours in the session itself. All sessions are in person at my Stuart, FL studio, and completely confidential.
+          Plan for about five hours together: about two hours of conversation, then two to three hours in the session itself. All sessions are in person at my Stuart, FL studio, and completely confidential.
         </p>
         <p>
-          If you've never done a QHHT session, that's exactly the right starting point — most clients haven't. Before we meet, I'll send you a short prep guide and we'll have a quick call so you arrive ready.
+          If you've never done a QHHT session, that's exactly the right starting point. Most clients haven't. Before we meet, I'll send you a short prep guide and we'll have a quick call so you arrive ready.
         </p>
       </div>
 
@@ -133,7 +153,7 @@ const next = [
         <ul class="mt-3 list-disc space-y-1.5 pl-5">
           <li>QHHT is a complementary practice, not medical or psychological treatment.</li>
           <li>Sessions do not diagnose, treat, cure, or prevent any disease.</li>
-          <li>Dodie is a QHHT Practitioner trained in the Dolores Cannon lineage — not a licensed physician, psychologist, or psychotherapist.</li>
+          <li>Dodie is a QHHT Practitioner trained in the Dolores Cannon lineage, not a licensed physician, psychologist, or psychotherapist.</li>
           <li>My participation is voluntary.</li>
         </ul>
       </div>
@@ -147,20 +167,11 @@ const next = [
           <p class="text-xs uppercase tracking-wider text-ink-muted">Prepare for your session</p>
           <h2 class="mt-3 font-display">Watch this first.</h2>
           <p class="mt-4 text-lg leading-relaxed text-ink-secondary">
-            Booked your session? Watch this first. Dodie walks you through 4 things to do before your first hypnotherapy session.
+            Booked your session? Watch this first. Dodie walks you through 4 things to do before your first QHHT session.
           </p>
         </header>
         <div class="overflow-hidden rounded-lg border border-border-subtle bg-bg-sunken shadow-sm">
-          <div class="aspect-[16/9] w-full">
-            <iframe
-              src="https://www.youtube-nocookie.com/embed/2HXMMojPaPQ"
-              title="4 Things You MUST Do Before Your First Hypnotherapy Session"
-              class="h-full w-full"
-              loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowfullscreen
-            ></iframe>
-          </div>
+          <YouTubePreview id="2HXMMojPaPQ" title="4 Things You MUST Do Before Your First Hypnotherapy Session" />
         </div>
       </div>
 

@@ -169,7 +169,7 @@ const eyebrowClass = isDark ? 'text-brand' : (isAbout ? 'text-brand-hover' : 'te
                 class={`inline-flex items-center gap-2 text-sm font-medium underline-offset-8 transition-colors text-inverse hover:text-brand ${isDark ? '' : 'text-ink'}`}
               >
                 <span class="underline decoration-1 underline-offset-[6px]">{secondaryCta.label}</span>
-                <span aria-hidden="true">↗</span>
+                <span aria-hidden="true">{secondaryCta.href.startsWith('http') ? '↗' : '→'}</span>
               </a>
             )}
           </div>

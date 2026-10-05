@@ -4,7 +4,7 @@
  *
  * Angle:    Lead with the transformation. Benefit-first, direct response.
  * Audience: Warmer / retargeting traffic that already knows it wants change.
- * Primary CTA: Book a Session (→ /book). Direct, confident.
+ * Primary CTA: Book a Session (→ /book#reserve, the paid calendar). Direct, confident.
  * Proof:    outcomes framing + transparent offer + FAQ objection handling.
  *
  * Scope-of-practice safe: outcomes are framed as clarity / insight / release /
@@ -19,7 +19,7 @@ import { qhhtService, breadcrumb } from '@lib/schema';
 
 const seo = getSeo({
   path: '/landing-page-2',
-  title: 'Answers You Can Feel — QHHT',
+  title: 'Answers You Can Feel: QHHT',
   description:
     "Carrying a question you can't quite answer? A QHHT session with Dodie Kendall opens a guided conversation with your own inner wisdom. Book in Stuart, FL.",
   noIndex: true,
@@ -30,28 +30,28 @@ const schemas = [qhhtService(), breadcrumb([{ name: 'QHHT' }])];
 const openings = [
   {
     title: 'Clarity on a question you keep circling',
-    body: "The decision you can't make. The pattern you can't name. A session brings a different kind of knowing to the surface — in your own words, in your own voice.",
+    body: "The decision you can't make. The pattern you can't name. A session brings a different kind of knowing to the surface, in your own words, in your own voice.",
   },
   {
     title: 'Release of a weight you have carried a long time',
-    body: "Old stories, old loops, old fear. Many people describe leaving a session feeling noticeably lighter — like something finally got to be set down.",
+    body: "Old stories, old loops, old fear. Many people describe leaving a session feeling noticeably lighter, like something finally got to be set down.",
   },
   {
     title: 'A felt sense of peace and direction',
-    body: "Not a lecture and not a prescription — a quiet, grounded sense of where to step next, and why.",
+    body: "Not a lecture and not a prescription: a quiet, grounded sense of where to step next, and why.",
   },
 ];
 
 const steps = [
   { n: '01', t: 'Bring your questions', b: "We start with a relaxed call to shape what you most want to understand." },
-  { n: '02', t: 'Settle into a guided state', b: "On session day I gently guide you into deep relaxation — aware and in control the whole time." },
-  { n: '03', t: 'Leave with the recording', b: "You take the full audio home — the insights keep arriving for weeks." },
+  { n: '02', t: 'Settle into a guided state', b: "On session day I gently guide you into deep relaxation, aware and in control the whole time." },
+  { n: '03', t: 'Leave with the recording', b: "You take the full audio home. The insights keep arriving for weeks." },
 ];
 
 const faqs = [
   {
     q: 'Will I be unconscious or lose control?',
-    a: "No. QHHT is a deeply relaxed, focused state — not sleep. You stay aware, you remember the session, and you can speak, pause, or stop at any time.",
+    a: "No. QHHT is a deeply relaxed, focused state, not sleep. You stay aware, you remember the session, and you can speak, pause, or stop at any time.",
   },
   {
     q: 'Is this medical or psychological treatment?',
@@ -63,7 +63,7 @@ const faqs = [
   },
   {
     q: 'Where do sessions happen?',
-    a: "In person in Stuart, Florida. Remote sessions are available — ask if that's a better fit for you.",
+    a: "In person in Stuart, Florida.",
   },
 ];
 ---
@@ -87,7 +87,7 @@ const faqs = [
         that keeps unfolding for weeks.
       </p>
       <div class="mt-10 flex flex-wrap items-center justify-center gap-5">
-        <a href="/book" class="cta-glow inline-flex items-center justify-center rounded-pill px-8 py-3.5 text-base font-medium">
+        <a href="/book#reserve" class="cta-glow inline-flex items-center justify-center rounded-pill px-8 py-3.5 text-base font-medium">
           Book your session
           <svg class="ml-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
         </a>
@@ -95,7 +95,7 @@ const faqs = [
           How it works
         </a>
       </div>
-      <p class="mt-8 text-xs uppercase tracking-[0.22em] text-ink-muted">$300 session · $50 deposit to reserve · Booking confirmed within 24 hours</p>
+      <p class="mt-8 text-xs uppercase tracking-[0.22em] text-ink-muted">$300 session · $50 deposit to reserve · Instant confirmation by email</p>
     </div>
   </section>
 
@@ -182,9 +182,9 @@ const faqs = [
         <div class="mt-10 flex flex-col items-start gap-4 border-t border-border-subtle pt-8 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p class="font-display text-3xl text-ink">$300<span class="text-base text-ink-muted"> · $50 deposit to reserve</span></p>
-            <p class="mt-1 text-sm text-ink-muted">In person in Stuart, FL · Remote available</p>
+            <p class="mt-1 text-sm text-ink-muted">In person in Stuart, FL</p>
           </div>
-          <a href="/book" class="cta-glow inline-flex items-center justify-center rounded-pill px-8 py-3.5 text-base font-medium">
+          <a href="/book#reserve" class="cta-glow inline-flex items-center justify-center rounded-pill px-8 py-3.5 text-base font-medium">
             Book a Session →
           </a>
         </div>
@@ -214,14 +214,14 @@ const faqs = [
     headlineLead="The question is already"
     headlineItalic="in you."
     headlineTail="Come find the answer."
-    subhead="Reserve your session with a small deposit. Booking confirmed within 24 hours."
-    cta={{ label: 'Book a Session', href: '/book' }}
+    subhead="Reserve your session with a small deposit. Instant confirmation by email."
+    cta={{ label: 'Book a Session', href: '/book#reserve' }}
     trustLine="Stuart, FL · $300 · $50 deposit to reserve"
   />
 
   <!-- Sticky mobile CTA -->
   <div class="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-bg-raised/95 p-3 backdrop-blur-sm shadow-[0_-8px_24px_-12px_oklch(0.18_0.018_240_/_0.35)] md:hidden">
-    <a href="/book" class="flex w-full items-center justify-center rounded-pill bg-brand px-5 py-3 text-sm font-medium text-ink-inverse shadow-sm">
+    <a href="/book#reserve" class="flex w-full items-center justify-center rounded-pill bg-brand px-5 py-3 text-sm font-medium text-ink-inverse shadow-sm">
       Book a Session →
     </a>
   </div>

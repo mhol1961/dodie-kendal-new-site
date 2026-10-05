@@ -29,7 +29,7 @@ const seo = getSeo({
   path: '/free-guide',
   title: 'Free Guide: Before Your First QHHT Session',
   description:
-    'A short, plain-language guide to your first Quantum Healing Hypnosis session: what the relaxed state feels like, how to shape your questions, what to bring, and what unfolds after. Free from Dodie Kendall, Stuart FL.',
+    'A free, plain-language guide to your first QHHT session: what the relaxed state feels like, how to shape your questions, and what to bring. From Dodie Kendall.',
   noIndex: true,
 });
 
@@ -63,10 +63,11 @@ const inside = [
   <section class="bg-bg-base pt-12 pb-16 md:pt-16 md:pb-24">
     <div class="container-default">
       <div class="grid items-center gap-12 md:grid-cols-[1.15fr,0.85fr] lg:gap-20">
-        <!-- Offer + capture -->
-        <div>
+        <!-- Offer + capture. On phones the long paragraph drops below the form
+             (order-1) so the email field sits above the fold. -->
+        <div class="flex flex-col">
           <p class="text-xs uppercase tracking-[0.22em] text-brand">
-            Free guide &middot; 4 pages &middot; Yours in one click
+            Free guide &middot; 4 pages &middot; Instant
           </p>
 
           <h1 class="mt-4 font-display text-ink">
@@ -75,7 +76,7 @@ const inside = [
             <span class="italic-accent block text-brand">This helps you find your three.</span>
           </h1>
 
-          <p class="mt-6 max-w-prose text-lg leading-relaxed text-ink-secondary">
+          <p class="order-1 mt-6 max-w-prose text-lg leading-relaxed text-ink-secondary md:order-none">
             A short, plain-language guide to your first Quantum Healing Hypnosis session.
             What the deeply relaxed state actually feels like. How to shape the questions
             you bring. What to eat and wear that day. And what tends to unfold in the week
@@ -134,13 +135,16 @@ const inside = [
         <!-- Cover -->
         <div class="relative mx-auto w-full max-w-xs md:mx-0 md:max-w-sm">
           <span aria-hidden="true" class="absolute -inset-6 -z-10 rounded-2xl bg-gradient-to-br from-teal/15 via-brand/15 to-transparent blur-2xl"></span>
-          <img
-            src="/lead-magnet-cover.svg"
-            alt="Cover of the free guide: Before your session, preparing for your first QHHT session"
-            width="600"
-            height="780"
-            class="h-auto w-full rotate-[-3deg] rounded-lg shadow-[0_30px_60px_-20px_oklch(0.18_0.018_240_/_0.45)] transition-transform duration-500 hover:rotate-0"
-          />
+          <picture class="block">
+            <source srcset="/lead-magnet-cover.webp" type="image/webp" />
+            <img
+              src="/lead-magnet-cover.jpg"
+              alt="Cover of Dodie Kendall's free prep guide: Before your session."
+              width="768"
+              height="994"
+              class="h-auto w-full rotate-[-3deg] rounded-lg shadow-[0_30px_60px_-20px_oklch(0.18_0.018_240_/_0.45)] transition-transform duration-500 hover:rotate-0"
+            />
+          </picture>
           <span class="absolute -left-3 -top-3 rounded-pill bg-brand px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-ink-inverse shadow-md">
             Free guide
           </span>
@@ -243,8 +247,18 @@ const inside = [
     trustLine="Stuart, FL · Free · No session required"
   />
 
-  <!-- Sticky mobile CTA — keeps the offer in the thumb zone -->
-  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-bg-raised/95 p-3 shadow-[0_-8px_24px_-12px_oklch(0.18_0.018_240_/_0.35)] backdrop-blur-sm md:hidden">
+  <!-- Path to booking for readers who would rather talk first -->
+  <section class="bg-bg-base py-10">
+    <p class="container-default text-center text-ink-secondary">
+      Want to talk it through first?
+      <a href="/book#discovery" class="font-medium text-brand underline underline-offset-2 hover:text-brand-hover">Book a free 30-minute call</a>
+    </p>
+  </section>
+
+  <!-- Sticky mobile CTA: keeps the offer in the thumb zone. Starts hidden; the
+       script shows it only while the form is off screen and before sign-up, so it
+       never covers the email field. -->
+  <div data-fg-sticky hidden class="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-bg-raised/95 p-3 shadow-[0_-8px_24px_-12px_oklch(0.18_0.018_240_/_0.35)] backdrop-blur-sm md:hidden">
     <a
       href="#fg-form"
       class="flex w-full items-center justify-center rounded-pill bg-brand px-5 py-3 text-sm font-medium text-ink-inverse shadow-sm"
@@ -256,5 +270,29 @@ const inside = [
 
 <script>
   import { wireLeadMagnetForm } from '@lib/lead-magnet-form';
-  wireLeadMagnetForm(document.querySelector<HTMLFormElement>('#fg-form'));
+  const form = document.querySelector<HTMLFormElement>('#fg-form');
+  wireLeadMagnetForm(form);
+
+  const bar = document.querySelector<HTMLElement>('[data-fg-sticky]');
+  const email = document.querySelector<HTMLInputElement>('#fg-email');
+  if (form && bar && email) {
+    let signedUp = false;
+    let formVisible = true;
+    const sync = () => { bar.hidden = signedUp || formVisible; };
+    new IntersectionObserver((entries) => {
+      formVisible = entries.some((en) => en.isIntersecting);
+      sync();
+    }).observe(form);
+    form.addEventListener('lead-magnet:signed-up', () => { signedUp = true; sync(); });
+
+    // Every "Send me the guide" link: bring the form into view and put the cursor in the field.
+    document.querySelectorAll<HTMLAnchorElement>('a[href="#fg-form"]').forEach((a) =>
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const smooth = matchMedia('(prefers-reduced-motion: no-preference)').matches;
+        form.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' });
+        email.focus({ preventScroll: true });
+      })
+    );
+  }
 </script>

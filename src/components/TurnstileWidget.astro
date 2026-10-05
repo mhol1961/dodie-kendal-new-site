@@ -1,6 +1,7 @@
 ---
 /**
- * Cloudflare Turnstile (managed) for the free-guide forms. Place inside the
+ * Cloudflare Turnstile (managed, interaction-only: the box shows only when a
+ * visitor actually has to click) for the site's forms. Place inside the
  * <form>: the widget adds a hidden cf-turnstile-response field, checked by
  * /api/lead-magnet. The site key is inlined at build time from
  * PUBLIC_TURNSTILE_SITE_KEY (see ENV.md). Dev uses Cloudflare's always-pass
@@ -18,6 +19,7 @@ if (!siteKey) {
   class="cf-turnstile mt-4"
   data-sitekey={siteKey}
   data-theme="light"
+  data-appearance="interaction-only"
   data-error-callback="onLeadMagnetTurnstileError"
 ></div>
 <noscript>
