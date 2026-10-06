@@ -2,22 +2,22 @@
 import Base from '@layouts/Base.astro';
 import { getSeo } from '@lib/seo';
 import { blogPosting, breadcrumb } from '@lib/schema';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BgVideo from '@components/BgVideo.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('insights', ({ data }) => !data.draft).catch(() => []);
-  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
 }
 
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content } = await render(post);
 
 // Related: up to 2 most recent posts that aren't this one
 const all = (await getCollection('insights', ({ data }) => !data.draft).catch(() => [])).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
-const related = all.filter((p) => p.slug !== post.slug).slice(0, 2);
+const related = all.filter((p) => p.id !== post.id).slice(0, 2);
 
 const heroBySlug: Record<string, string> = {
   'what-happens-in-a-qhht-session': '/video/hourglass-time-poster.jpg',
@@ -28,17 +28,17 @@ const heroVideoBySlug: Record<string, string | undefined> = {
   'what-happens-in-a-qhht-session': '/video/hourglass-time.mp4',
   'how-to-prepare-for-your-first-quantum-healing-session': '/video/fountain-pen-write.mp4',
 };
-const postHero = heroBySlug[post.slug];
-const postHeroVideo = heroVideoBySlug[post.slug];
+const postHero = heroBySlug[post.id];
+const postHeroVideo = heroVideoBySlug[post.id];
 
 // Share image: the post's own frontmatter ogImage, else the one generated at
 // build time by src/pages/og/[slug].png.ts. Always absolute.
 const seo = getSeo({
-  path: `/insights/${post.slug}`,
+  path: `/insights/${post.id}`,
   title: post.data.title,
   description: post.data.description,
   ogType: 'article',
-  ogImage: new URL(post.data.ogImage ?? `/og/${post.slug}.png`, Astro.site).href,
+  ogImage: new URL(post.data.ogImage ?? `/og/${post.id}.png`, Astro.site).href,
 });
 
 const schemas = [
@@ -120,7 +120,7 @@ const schemas = [
           {related.map((p) => (
             <li>
               <a
-                href={`/insights/${p.slug}`}
+                href={`/insights/${p.id}`}
                 class="group block h-full rounded-lg border border-border-subtle bg-bg-raised p-6 shadow-sm transition-shadow hover:shadow-md"
               >
                 <p class="text-xs uppercase tracking-wider text-ink-muted">

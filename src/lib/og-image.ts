@@ -5,7 +5,7 @@
 // astro) is loaded through createRequire, invisible to the
 // bundler. Colors are the light tokens from global.css converted to hex.
 const nodeRequire = () => process.getBuiltinModule('node:module').createRequire(`${process.cwd()}/`);
-const sharp = () => nodeRequire()('sharp') as typeof import('sharp');
+const sharp = () => nodeRequire()('sharp') as typeof import('sharp').default;
 const fontFile = (file: string) => `${process.cwd()}/assets/prep-guide/fonts/${file}`;
 
 const W = 1200;

@@ -1,5 +1,5 @@
 // Postbuild: remove every page that carries <meta name="robots" content="noindex...">
-// from dist/sitemap-*.xml, so a noindex page can never be "Submitted URL marked
+// from dist/client/sitemap-*.xml, so a noindex page can never be "Submitted URL marked
 // noindex" in Search Console, whatever the sitemap filter in astro.config.mjs says.
 // Works with build.format 'file' (about.html -> /about). Tested in test/sitemap-drop-noindex.test.ts.
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -34,7 +34,7 @@ export function dropFromSitemap(xml, paths) {
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const dist = 'dist';
+  const dist = 'dist/client';
   const paths = noindexPaths(dist);
   for (const f of readdirSync(dist).filter((n) => /^sitemap-\d+\.xml$/.test(n))) {
     const before = readFileSync(join(dist, f), 'utf8');

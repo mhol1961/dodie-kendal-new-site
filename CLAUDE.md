@@ -24,8 +24,8 @@
 
 ## 2. Stack
 
-- **Framework:** Astro 4.x (static-first + SSR islands where needed for forms)
-- **Styling:** Tailwind CSS 3.x + a tightly curated subset of **shadcn/ui** primitives, adapted to Astro (e.g., via `astro-shadcn` or hand-ported components)
+- **Framework:** Astro 7.x (static-first + SSR islands where needed for forms)
+- **Styling:** Tailwind CSS 3.x (via PostCSS, not `@astrojs/tailwind`) + a tightly curated subset of **shadcn/ui** primitives, adapted to Astro (e.g., via `astro-shadcn` or hand-ported components)
 - **Type checking:** TypeScript (strict)
 - **Content:** Astro Content Collections for the blog ("Insights"); Markdown/MDX
 - **Forms:** Astro server endpoints (`/src/pages/api/`) posting to GHL public API

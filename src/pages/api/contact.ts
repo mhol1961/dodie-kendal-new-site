@@ -2,6 +2,7 @@
 // See TECH-SPEC.md §5, GHL-INTEGRATION.md §4, ADR-003 (fallback email).
 
 import type { APIRoute } from 'astro';
+import { env as workerEnv } from 'cloudflare:workers';
 import { z } from 'zod';
 import { upsertContact, applyTag, addNote, consentRecord, triggerWorkflow, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
@@ -30,7 +31,7 @@ const TRANSACTIONAL_TEXT =
 const MARKETING_TEXT =
   'I consent to receive marketing text messages and email from Dodie Kendall QHHT about special offers, new updates, and Insights posts.';
 
-export const POST: APIRoute = async ({ request, locals }) => {
+export const POST: APIRoute = async ({ request }) => {
   let body: Record<string, unknown> = {};
   try {
     body = (await request.json()) as Record<string, unknown>;
@@ -57,9 +58,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const [firstName, ...rest] = data.fullName.split(/\s+/);
   const lastName = rest.join(' ') || undefined;
 
-  // Env from Cloudflare runtime — `locals.runtime.env` on CF, fallback to process.env in dev
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const env = ((locals as any)?.runtime?.env ?? process.env) as Record<string, string | undefined>;
+  // Worker vars + secrets (wrangler.toml [vars], dashboard secrets, .dev.vars locally).
+  const env = workerEnv as unknown as Record<string, string | undefined>;
 
   // Spam check before anything reaches GHL.
   if (!(await verifyRequest(request, env, data['cf-turnstile-response']))) {

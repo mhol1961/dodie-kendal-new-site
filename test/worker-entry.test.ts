@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 // The entry imports the built Astro worker; test only the pure path function.
 import { readFileSync } from 'node:fs';
 
-const src = readFileSync(new URL('../worker-entry.mjs', import.meta.url), 'utf8').replace(/^import astro.*$/m, 'const astro = {};');
+const src = readFileSync(new URL('../worker-entry.mjs', import.meta.url), 'utf8').replace(/^import \{ handle \}.*$/m, 'const handle = () => {};');
 const { canonicalPath, redirectTarget, SECURITY_HEADERS } = await import('data:text/javascript,' + encodeURIComponent(src));
 
 test('trailing slash is dropped (301 target), root stays', () => {

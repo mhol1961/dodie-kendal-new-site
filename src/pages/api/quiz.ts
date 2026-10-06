@@ -11,6 +11,7 @@
 // JSON). The `isFormPost` flag below drives which representation we return.
 
 import type { APIRoute } from 'astro';
+import { env as workerEnv } from 'cloudflare:workers';
 import { z } from 'zod';
 import { upsertContact, applyTag, addNote, sendContactEmail, sendContactSms, consentRecord, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
@@ -125,7 +126,7 @@ function successResponse(isFormPost: boolean, status: number, extra: Record<stri
   return jsonResponse(status, { ok: true, ...extra });
 }
 
-export const POST: APIRoute = async ({ request, locals }) => {
+export const POST: APIRoute = async ({ request }) => {
   const contentType = request.headers.get('content-type') ?? '';
   const isFormPost = !contentType.includes('application/json');
 
@@ -153,8 +154,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   const data = parsed.data;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const env = ((locals as any)?.runtime?.env ?? process.env) as Record<string, string | undefined>;
+  const env = workerEnv as unknown as Record<string, string | undefined>;
 
   // Spam check before anything reaches GHL or alerts Dodie (each quiz texts + emails her).
   if (!(await verifyRequest(request, env, data['cf-turnstile-response']))) {

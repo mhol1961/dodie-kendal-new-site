@@ -8,7 +8,7 @@ import { spawnSync } from 'node:child_process';
 import { strip } from '../scripts/strip-claude-pages.mjs';
 
 function fakeDist(root: string) {
-  const dist = join(root, 'dist');
+  const dist = join(root, 'dist', 'client'); // the adapter's static output
   for (const d of ['CLAUDE', 'insights/CLAUDE', 'about', '_worker.js/CLAUDE']) mkdirSync(join(dist, d), { recursive: true });
   for (const f of ['CLAUDE/index.html', 'insights/CLAUDE/index.html', 'about/index.html', '_worker.js/CLAUDE/x.mjs', 'CLAUDE.html']) {
     writeFileSync(join(dist, f), 'x');

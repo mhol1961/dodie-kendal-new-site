@@ -34,13 +34,13 @@ differs (see §4).
 
 | Layer | Choice |
 | --- | --- |
-| Framework | Astro (latest 4.x line), `output: 'hybrid'` — static pages plus SSR for `/book` and `/api/*` |
-| Styling | Tailwind CSS + a small hand-ported subset of shadcn/ui primitives |
+| Framework | Astro 7.x, static output — prerendered pages plus `export const prerender = false` (SSR) for `/book`, `/404` and `/api/*` |
+| Styling | Tailwind CSS 3 via PostCSS (`postcss.config.mjs`) + a small hand-ported subset of shadcn/ui primitives |
 | Language | TypeScript (strict) |
 | Content | Astro Content Collections (`src/content/insights`, `src/content/testimonials`), Markdown/MDX |
-| Hosting | Cloudflare Workers (Workers Assets serves `dist/`; the Worker handles SSR routes) |
+| Hosting | Cloudflare Workers (Workers Assets serves `dist/client/`; the Worker, bundled into `dist/server/`, handles SSR routes) |
 | Adapter | `@astrojs/cloudflare` |
-| Node | 20.x–22.x (see `engines` in `package.json` and `.nvmrc`) |
+| Node | 22.12+ (see `engines` in `package.json` and `.nvmrc`) |
 
 Config files: `astro.config.mjs`, `tailwind.config.mjs`, `wrangler.toml`,
 `tsconfig.json`.
@@ -120,7 +120,7 @@ SITE_URL=https://dodiekendall.com PUBLIC_CF_BEACON_TOKEN=<token> \
 grep -rl "cloudflareinsights" dist | head -1    # sanity check: the tag made it into the build
 ```
 
-Everything else in §5 is a Worker runtime binding, read via `locals.runtime.env`.
+Everything else in §5 is a Worker runtime binding, read via `import { env } from 'cloudflare:workers'`.
 
 Verify in the Cloudflare dashboard under the Worker's **Overview → Versions**
 list (each version shows the commit), or by curling the site and grepping for
@@ -193,7 +193,7 @@ lead magnet.
 
 `PUBLIC_*` variables are inlined into the client bundle at build time — never put
 anything sensitive behind that prefix. Everything else is read server-side via
-`locals.runtime.env`.
+`import { env } from 'cloudflare:workers'`.
 
 Rotation: rotate the GHL token roughly every 6 months or on any staffing change —
 issue a new Private Integration Token in Dodie's GHL subaccount, `wrangler secret

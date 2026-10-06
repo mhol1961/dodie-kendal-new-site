@@ -13,7 +13,9 @@ const nav = [
   { label: 'Resources', href: '/resources' },
   { label: 'Contact', href: '/contact' },
 ];
-const pathname = Astro.url.pathname;
+// Astro 7 prerenders the home page (build.format 'file') with a pathname other
+// than '/' (e.g. '/index.html'), so normalise to the public URL before matching.
+const pathname = Astro.url.pathname.replace(/(\/index)?\.html$/, '') || '/';
 function isActive(href: string): boolean {
   if (href === '/') return pathname === '/';
   return pathname.startsWith(href);

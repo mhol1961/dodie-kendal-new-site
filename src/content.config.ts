@@ -1,8 +1,10 @@
 // Astro content collections. See TECH-SPEC.md §4.
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
 
 const insights = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/insights' }),
   schema: ({ image }) =>
     z.object({
       title: z.string(),
@@ -16,14 +18,14 @@ const insights = defineCollection({
       // Omit it and /og/<slug>.png is generated at build time.
       ogImage: z.string().regex(/^(\/[^/]|https:\/\/)/, 'use /path-under-public or https://').optional(),
       tags: z.array(z.string()).default([]),
-      canonical: z.string().url().optional(),
+      canonical: z.url().optional(),
       draft: z.boolean().default(false),
       answerCapsule: z.string().max(500).optional(),
     }),
 });
 
 const testimonials = defineCollection({
-  type: 'data',
+  loader: glob({ pattern: '**/*.json', base: './src/content/testimonials' }),
   schema: ({ image }) =>
     z.object({
       quote: z.string(),
@@ -37,7 +39,7 @@ const testimonials = defineCollection({
 });
 
 const faq = defineCollection({
-  type: 'data',
+  loader: glob({ pattern: '**/*.json', base: './src/content/faq' }),
   schema: z.object({
     category: z.enum(['sessions', 'logistics', 'practice', 'aftercare']),
     question: z.string(),

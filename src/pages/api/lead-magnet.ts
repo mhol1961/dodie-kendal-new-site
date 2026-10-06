@@ -12,6 +12,7 @@
 //   303 → the PDF for native (no-JS) form posts, which can't carry a Turnstile token
 
 import type { APIRoute } from 'astro';
+import { env as workerEnv } from 'cloudflare:workers';
 import { z } from 'zod';
 import { upsertContact, applyTag, addNote, sendContactEmail, consentRecord, removeFromWorkflow, getContact, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
@@ -76,8 +77,7 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   // Never write the old "Friend" placeholder: it would show up as a name in GHL.
   const firstName = data.firstName && data.firstName !== 'Friend' ? data.firstName : undefined;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const env = ((locals as any)?.runtime?.env ?? process.env) as Record<string, string | undefined> & {
+  const env = workerEnv as unknown as Record<string, string | undefined> & {
     LEAD_DB?: D1Like;
   };
   const ip = request.headers.get('CF-Connecting-IP');
@@ -193,8 +193,7 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
     // GHL enrolls new contacts a second or two after creation, possibly after the
     // call above; repeat it after the response (Workers allow ~30 s of waitUntil).
     // ponytail: timed retries; a GHL-side "skip optin_pending" filter is the full fix.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ctx = (locals as any)?.runtime?.ctx as { waitUntil?: (p: Promise<unknown>) => void } | undefined;
+    const ctx = locals.cfContext as { waitUntil?: (p: Promise<unknown>) => void } | undefined;
     // Skip if they confirmed in the meantime: confirm-optin has re-enrolled them.
     const later = (ms: number) =>
       new Promise((r) => setTimeout(r, ms))

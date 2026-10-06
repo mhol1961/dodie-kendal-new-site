@@ -1,6 +1,9 @@
 name = "dodie-kendal-new-site"
 # worker-entry.mjs issues the canonical-URL 301s, then hands off to the Astro
-# worker in dist/_worker.js (see that file for why it can't be done in _redirects).
+# app via @astrojs/cloudflare/handler (see that file for why it can't be done in
+# _redirects). `astro build` bundles it into dist/server/ and writes
+# dist/server/wrangler.json plus .wrangler/deploy/config.json, which points
+# `wrangler deploy` / `wrangler dev` at that generated config: always build first.
 main = "./worker-entry.mjs"
 compatibility_date = "2026-05-18"
 compatibility_flags = ["nodejs_compat"]
@@ -29,16 +32,14 @@ binding = "LEAD_DB"
 database_name = "dodie-lead-limits"
 database_id = "70ae85b6-dd3e-472c-9d48-f9e1db0aa489"
 
-# Static assets directory. Cloudflare Workers Assets serves files from /dist
-# directly from the edge. The Worker (above) handles SSR routes that have
-# `export const prerender = false` — namely /book and /api/*.
+# Static assets. The build sets the directory (dist/client) in the generated
+# config. The Worker (above) handles SSR routes that have
+# `export const prerender = false`: /book, /404 and /api/*.
 #
 # `run_worker_first = true` means the Worker is the entry for every request.
-# The Astro adapter's _worker.js/index.js inspects the request path: it serves
-# prerendered HTML via env.ASSETS.fetch() for static routes, and runs SSR for
-# the dynamic ones. This is the pattern @astrojs/cloudflare v11 generates.
+# The Astro handler inspects the request path: it serves prerendered HTML via
+# env.ASSETS.fetch() for static routes, and runs SSR for the dynamic ones.
 [assets]
-directory = "./dist"
 binding = "ASSETS"
 run_worker_first = true
 

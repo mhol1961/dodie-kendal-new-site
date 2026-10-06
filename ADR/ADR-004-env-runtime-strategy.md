@@ -74,4 +74,8 @@ If you anticipate frequent env churn (e.g., rotating GHL tokens, multi-environme
 
 ---
 
+**Update 2026-10-05 (Astro 7 / @astrojs/cloudflare 14):** `Astro.locals.runtime.env` was removed (it now throws). Runtime vars, secrets and bindings are read with `import { env } from 'cloudflare:workers'`; `ctx.waitUntil` is `Astro.locals.cfContext.waitUntil`. The decision above (read at request time on SSR routes) is unchanged.
+
+---
+
 *Linked: ADR-001 (stack), ADR-002 (CRM pattern), ADR-003 (email fallback), `TECH-SPEC.md`, `LAUNCH-CHECKLIST.md`, `GHL-INTEGRATION.md`, `BACKLOG.md` Phase 1 Codex findings.*

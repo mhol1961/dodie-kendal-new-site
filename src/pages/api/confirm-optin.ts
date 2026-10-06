@@ -9,6 +9,7 @@
 // that shows up in the notes.
 
 import type { APIRoute } from 'astro';
+import { env as workerEnv } from 'cloudflare:workers';
 import { getContact, updateContact, applyTag, removeTag, addNote, consentRecord, triggerWorkflow, FIELD_IDS } from '@lib/ghl';
 import { verifyOptinToken } from '@lib/optin';
 
@@ -18,13 +19,12 @@ export const prerender = false;
 const CONFIRM_TEXT =
   'Tapping the button confirms your email address, so Dodie can send you an occasional note. You can unsubscribe any time.';
 
-export const GET: APIRoute = async ({ url, locals, redirect }) => {
+export const GET: APIRoute = async ({ url, redirect }) => {
   const done = () => redirect('/dodie-kendall-prep-guide.pdf', 303);
   const contactId = url.searchParams.get('c') ?? '';
   const sig = url.searchParams.get('t') ?? '';
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const env = ((locals as any)?.runtime?.env ?? process.env) as Record<string, string | undefined>;
+  const env = workerEnv as unknown as Record<string, string | undefined>;
   const token = env.GHL_PRIVATE_INTEGRATION_TOKEN;
   if (!token || !/^[A-Za-z0-9]{10,40}$/.test(contactId) || !sig) return done();
   const auth = { GHL_PRIVATE_INTEGRATION_TOKEN: token };

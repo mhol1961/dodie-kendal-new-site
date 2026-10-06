@@ -1,11 +1,11 @@
-// Worker entry (wrangler.toml `main`): canonical-URL redirects and security
-// headers, then the Astro app.
+// Worker entry (wrangler.toml `main`, bundled by the adapter's Vite build into
+// dist/server): canonical-URL redirects and security headers, then the Astro app.
 //
 // Why here: run_worker_first sends every request through the Worker, and the Astro
 // adapter serves static pages via ASSETS.fetch, which follows _redirects internally
 // (the browser saw 200, never a 301). So permanent redirects must be issued before
 // handing off to Astro. Site rules: https only, one URL per page, NO trailing slash.
-import astro from './dist/_worker.js/index.js';
+import { handle } from '@astrojs/cloudflare/handler';
 
 // Old URLs linked from emails already sent (was public/_redirects).
 const LEGACY = {
@@ -68,6 +68,6 @@ export default {
     if (to && new URL(request.url).protocol === 'http:') {
       return new Response('Please use https://dodiekendall.com', { status: 403 });
     }
-    return withSecurityHeaders(await astro.fetch(request, env, ctx));
+    return withSecurityHeaders(await handle(request, env, ctx));
   },
 };

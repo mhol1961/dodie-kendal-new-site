@@ -1,4 +1,5 @@
 ---
+import { env as workerEnv } from 'cloudflare:workers';
 import Base from '@layouts/Base.astro';
 import BookingEmbed from '@components/BookingEmbed.astro';
 import TestimonialGrid from '@components/TestimonialGrid.astro';
@@ -20,8 +21,7 @@ const pricing = null as Pricing | null;
 // See ADR-004 (Option A, applied to this page only).
 export const prerender = false;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const env = ((Astro.locals as any)?.runtime?.env ?? process.env) as Record<string, string | undefined>;
+const env = workerEnv as unknown as Record<string, string | undefined>;
 const calendarId = env.GHL_CALENDAR_ID;
 const discoveryCalendarId = env.GHL_DISCOVERY_CALENDAR_ID;
 const fallbackUrl = env.BOOKING_CALENDAR_FALLBACK_URL;

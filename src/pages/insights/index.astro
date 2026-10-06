@@ -86,14 +86,14 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
           <div class="container-default">
             <p class="mb-6 text-[10px] uppercase tracking-[0.22em] text-brand">Featured · Most recent</p>
             <a
-              href={`/insights/${featured.slug}`}
+              href={`/insights/${featured.id}`}
               class="group grid gap-8 md:grid-cols-12 md:gap-12 lg:gap-16"
             >
               <div class="md:col-span-7 lg:col-span-7">
                 <div class="relative overflow-hidden rounded-lg">
                   <span aria-hidden="true" class="absolute -inset-4 -z-10 bg-gradient-to-br from-teal/20 via-brand/15 to-transparent blur-2xl"></span>
                   <img
-                    src={heroBySlug[featured.slug] ?? '/hero-aurora-poster.jpg'}
+                    src={heroBySlug[featured.id] ?? '/hero-aurora-poster.jpg'}
                     alt=""
                     width="800"
                     height="500"
@@ -133,10 +133,10 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
             <ul class="grid gap-8 md:grid-cols-2 lg:grid-cols-3" role="list">
               {rest.map((post) => (
                 <li>
-                  <a href={`/insights/${post.slug}`} class="group flex h-full flex-col">
+                  <a href={`/insights/${post.id}`} class="group flex h-full flex-col">
                     <div class="relative overflow-hidden rounded-lg">
                       <img
-                        src={heroBySlug[post.slug] ?? '/hero-aurora-poster.jpg'}
+                        src={heroBySlug[post.id] ?? '/hero-aurora-poster.jpg'}
                         alt=""
                         width="800"
                         height="500"

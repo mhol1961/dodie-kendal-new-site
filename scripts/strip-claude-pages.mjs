@@ -21,6 +21,6 @@ export function strip(dist) {
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const removed = strip('dist');
-  if (removed.length) console.log(`[postbuild] removed ${removed.length} CLAUDE page(s) from dist`);
+  const removed = strip('dist/client');
+  if (removed.length) console.log(`[postbuild] removed ${removed.length} CLAUDE page(s) from dist/client`);
 }

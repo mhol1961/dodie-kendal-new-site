@@ -4,7 +4,7 @@
  *
  * IMPORTANT: This component does NOT read import.meta.env. The parent page must
  * be SSR (prerender = false) and pass `calendarId` and `fallbackUrl` from
- * `Astro.locals.runtime.env`. This way Cloudflare runtime env swaps take effect
+ * the Worker env (`cloudflare:workers`). This way Cloudflare runtime env swaps take effect
  * without a rebuild (see ADR-004 Option A — applied to the /book surface only).
  */
 interface Props {
