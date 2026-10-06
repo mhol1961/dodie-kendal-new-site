@@ -205,3 +205,10 @@
     transform: translateY(-1px);
   }
 }
+
+/* Decorative glows (negative insets, blurred spans) must never make the page
+   scroll sideways on phones. `clip` (not `hidden`) keeps position:sticky working. */
+html,
+body {
+  overflow-x: clip;
+}
