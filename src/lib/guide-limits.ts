@@ -16,14 +16,17 @@ export interface D1Like {
   };
 }
 
-export const IP_MAX_PER_HOUR = 5;
+// Per form, per IP, per hour. Generous on purpose: phones on a mobile carrier often
+// share one IP, and ad traffic is mostly mobile.
+export const IP_MAX_PER_HOUR = 10;
 const HOUR_S = 60 * 60;
 const DAY_MS = 24 * HOUR_S * 1000;
 
 const normal = (email: string) => email.trim().toLowerCase();
 
-/** Counts this sign-up against the IP's hourly cap; false once it is exceeded. */
-export async function allowIp(db: D1Like, ip: string, now = Date.now()): Promise<boolean> {
+/** Counts this submission against the IP's hourly cap for `scope` (one counter per
+ *  form); false once it is exceeded. */
+export async function allowIp(db: D1Like, ip: string, now = Date.now(), scope = 'guide'): Promise<boolean> {
   const bucket = Math.floor(now / 1000 / HOUR_S);
   const row = await db
     .prepare(
@@ -31,7 +34,7 @@ export async function allowIp(db: D1Like, ip: string, now = Date.now()): Promise
        ON CONFLICT (ip, bucket) DO UPDATE SET n = n + 1
        RETURNING n`
     )
-    .bind(ip, bucket)
+    .bind(`${scope}:${ip}`, bucket)
     .first<{ n: number }>();
   const allowed = (row?.n ?? 0) <= IP_MAX_PER_HOUR;
   // Housekeeping only: decided above, so a failed cleanup can't flip a denial.
@@ -66,22 +69,43 @@ export async function releaseGuideEmail(db: D1Like, email: string, claim: number
   await db.prepare('DELETE FROM guide_sends WHERE email = ?1 AND sent_at = ?2').bind(normal(email), claim).run();
 }
 
+export type VisitorStatus = 'ok' | 'over' | 'unknown';
+
 /**
- * Per-visitor cap for any public form endpoint (5 per IP per hour, shared across
- * forms). Fails OPEN on a storage error or missing binding: Turnstile still guards,
- * and a lead must never be lost to a database hiccup.
+ * Per-visitor cap for a public form. Callers ALWAYS capture the lead; this only
+ * decides whether to also send emails, texts and workflows:
+ *   'ok'      within the cap: send as normal
+ *   'over'    over the cap for this form: capture, but send nothing
+ *   'unknown' no IP or the limiter's storage failed: capture, send nothing that
+ *             costs money or could be abused (GHL's own new-contact alert still runs)
  */
-export async function visitorAllowed(
+export async function visitorStatus(
   env: { LEAD_DB?: unknown },
-  request: Request
-): Promise<boolean> {
+  request: Request,
+  scope: string
+): Promise<VisitorStatus> {
   const db = env.LEAD_DB as D1Like | undefined;
   const ip = request.headers.get('CF-Connecting-IP');
-  if (!db || !ip) return true;
+  if (!db || !ip) return 'unknown';
   try {
-    return await allowIp(db, ip);
+    return (await allowIp(db, ip, Date.now(), scope)) ? 'ok' : 'over';
   } catch (err) {
-    console.error('[limits] IP check failed, allowing', err);
-    return true;
+    console.error('[limits] IP check failed', err);
+    return 'unknown';
   }
+}
+
+/**
+ * Idempotency for form submissions: true the first time an id is seen (within a
+ * day), false for a repeat. A repeat means the visitor's earlier request already
+ * did the work (e.g. the response was lost), so the caller returns success without
+ * capturing or notifying again.
+ */
+export async function claimSubmission(db: D1Like, id: string, now = Date.now()): Promise<boolean> {
+  await db.prepare('DELETE FROM form_submissions WHERE at <= ?1').bind(now - DAY_MS).run().catch(() => {});
+  const row = await db
+    .prepare('INSERT INTO form_submissions (id, at) VALUES (?1, ?2) ON CONFLICT (id) DO NOTHING RETURNING id')
+    .bind(id, now)
+    .first<{ id: string }>();
+  return row !== null;
 }

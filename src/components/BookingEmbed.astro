@@ -33,6 +33,12 @@ const iframeId = `${calendarId}_${Date.now()}`;
         referrerpolicy="strict-origin-when-cross-origin"
         style="width: 100%; min-height: 600px; border: 0;"
       />
+      {/* Always-visible plain link: if the script that sets the iframe src fails
+          (blocked or stale chunk), the calendar is still one tap away. */}
+      <p class="border-t border-border-subtle px-4 py-3 text-center text-sm text-ink-muted">
+        Calendar not loading?
+        <a href={embedUrl} target="_blank" rel="noopener noreferrer" class="text-brand underline hover:text-brand-hover">Open it in a new tab</a>
+      </p>
     </>
   ) : (
     <div class="p-8 text-center md:p-12">

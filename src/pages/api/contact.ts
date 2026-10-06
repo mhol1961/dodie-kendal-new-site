@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { upsertContact, applyTag, addNote, consentRecord, triggerWorkflow, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
 import { verifyRequest } from '@lib/turnstile';
-import { visitorAllowed } from '@lib/guide-limits';
+import { visitorStatus } from '@lib/guide-limits';
 import { attributionSchema, attributionFields, attributionLine, isFacebookOrInstagram, FB_IG_TAG } from '@lib/attribution';
 
 export const prerender = false;
@@ -65,9 +65,8 @@ export const POST: APIRoute = async ({ request }) => {
   if (!(await verifyRequest(request, env, data['cf-turnstile-response']))) {
     return new Response(JSON.stringify({ error: 'turnstile' }), { status: 400 });
   }
-  if (!(await visitorAllowed(env, request))) {
-    return new Response(JSON.stringify({ error: 'rate-limited' }), { status: 429 });
-  }
+  // Never blocks capture; over the cap (or limiter down) the autoresponder is skipped.
+  const visitor = await visitorStatus(env, request, 'contact');
 
   const token = env.GHL_PRIVATE_INTEGRATION_TOKEN;
   const locationId = env.GHL_LOCATION_ID;
@@ -142,7 +141,7 @@ export const POST: APIRoute = async ({ request }) => {
       console.error('[contact] addNote failed (message still in your_message)', err);
     }
 
-    if (env.GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID) {
+    if (env.GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID && visitor === 'ok') {
       try {
         await triggerWorkflow(id, env.GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID, {
           GHL_PRIVATE_INTEGRATION_TOKEN: token,

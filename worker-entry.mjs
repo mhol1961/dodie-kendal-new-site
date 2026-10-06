@@ -66,7 +66,7 @@ export default {
     // (a 301 on a POST would drop the body); http POSTs are refused instead.
     if (to && isRead) return withSecurityHeaders(Response.redirect(to, 301));
     if (to && new URL(request.url).protocol === 'http:') {
-      return new Response('Please use https://dodiekendall.com', { status: 403 });
+      return withSecurityHeaders(new Response('Please use https://dodiekendall.com', { status: 403 }));
     }
     return withSecurityHeaders(await handle(request, env, ctx));
   },

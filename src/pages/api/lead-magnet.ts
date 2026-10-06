@@ -19,7 +19,7 @@ import { sendFallbackEmail } from '@lib/notify';
 import { verifyRequest } from '@lib/turnstile';
 import { attributionSchema, attributionFields, attributionLine, isFacebookOrInstagram, FB_IG_TAG } from '@lib/attribution';
 import { optinToken, confirmUrl } from '@lib/optin';
-import { allowIp, claimGuideEmail, releaseGuideEmail, type D1Like } from '@lib/guide-limits';
+import { claimGuideEmail, releaseGuideEmail, visitorStatus, type D1Like } from '@lib/guide-limits';
 
 export const prerender = false;
 
@@ -80,7 +80,6 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   const env = workerEnv as unknown as Record<string, string | undefined> & {
     LEAD_DB?: D1Like;
   };
-  const ip = request.headers.get('CF-Connecting-IP');
   const db = env.LEAD_DB;
   if (!db) console.error('[lead-magnet] LEAD_DB not bound — abuse limits are OFF, guide emails NOT sent');
 
@@ -90,16 +89,10 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   }
 
   // Counted after Turnstile so failed checks don't eat a shared connection's budget.
-  // Storage failure here fails OPEN (Turnstile still guards); it never blocks capture.
-  if (db && ip) {
-    let allowed = true;
-    try {
-      allowed = await allowIp(db, ip);
-    } catch (err) {
-      console.error('[lead-magnet] IP limit check failed — allowing', err);
-    }
-    if (!allowed) return json(429, { error: 'rate-limited' });
-  }
+  // Per-visitor cap never blocks capture: over the cap, or with the limiter down,
+  // the lead is still saved and only the guide email is skipped (the page still
+  // hands over the guide). claimGuideEmail separately limits each address.
+  const visitor = await visitorStatus(env, request, 'guide');
 
   const token = env.GHL_PRIVATE_INTEGRATION_TOKEN;
   const locationId = env.GHL_LOCATION_ID;
@@ -215,6 +208,10 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   if (emailDnd === null) return json(200, { ok: true, captured: true, emailed: false, reason: 'status-unknown' });
   if (emailDnd) return json(200, { ok: true, captured: true, emailed: false, reason: 'opted-out' });
   if (!db) return json(200, { ok: true, captured: true, emailed: false, reason: 'limit-unavailable' });
+  if (visitor !== 'ok') {
+    console.warn('[lead-magnet] visitor', visitor, '- lead captured, guide email skipped', contactId);
+    return json(200, { ok: true, captured: true, emailed: false, reason: visitor === 'over' ? 'rate-limited' : 'limit-unavailable' });
+  }
 
   let claim: number | null;
   try {

@@ -16,7 +16,7 @@ import { z } from 'zod';
 import { upsertContact, applyTag, addNote, sendContactEmail, sendContactSms, consentRecord, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
 import { verifyRequest } from '@lib/turnstile';
-import { visitorAllowed } from '@lib/guide-limits';
+import { visitorStatus, claimSubmission, type D1Like } from '@lib/guide-limits';
 import { attributionSchema, attributionFields, attributionLine, isFacebookOrInstagram, FB_IG_TAG } from '@lib/attribution';
 import { QUIZ_VALUES, answersToTags } from '@lib/quiz';
 
@@ -40,6 +40,8 @@ const payloadSchema = z.object({
   consentMarketing: z.literal(true),
   answers: answersSchema,
   'cf-turnstile-response': z.string().max(2048).optional(),
+  // Client-generated id per quiz fill; a retry with the same id is a no-op.
+  submissionId: z.string().uuid().optional(),
   attribution: attributionSchema,
 });
 
@@ -162,12 +164,19 @@ export const POST: APIRoute = async ({ request }) => {
       ? htmlPage(400, { heading: 'One more step', message: 'This quiz needs JavaScript turned on for its security check. Please enable it and try again, or email dodiekendall@gmail.com.', primary: { href: '/landing-page-1#quiz', label: 'Return to the quiz' } })
       : jsonResponse(400, { error: 'turnstile' });
   }
-  // Each quiz emails and texts Dodie, so cap how often one visitor can send it.
-  if (!(await visitorAllowed(env, request))) {
-    return isFormPost
-      ? htmlPage(429, { heading: 'Thank you, I have your answers', message: 'We received several submissions from this connection already. Please try again later, or email dodiekendall@gmail.com.' })
-      : jsonResponse(429, { error: 'rate-limited' });
+  // A retried submission (same id, e.g. the first response was lost) already did
+  // its work: answer success without capturing or notifying twice.
+  const db = (env as { LEAD_DB?: unknown }).LEAD_DB as D1Like | undefined;
+  if (db && data.submissionId) {
+    const isNew = await claimSubmission(db, data.submissionId).catch((err) => {
+      console.error('[quiz] submission dedupe check failed, continuing', err);
+      return true;
+    });
+    if (!isNew) return successResponse(isFormPost, 200, { duplicate: true });
   }
+  // Each quiz emails and texts Dodie. The lead is always captured; over the cap (or
+  // with the limiter down) the confirmation email and Dodie's email/SMS are skipped.
+  const visitor = await visitorStatus(env, request, 'quiz');
   const token = env.GHL_PRIVATE_INTEGRATION_TOKEN;
   const locationId = env.GHL_LOCATION_ID;
 
@@ -258,6 +267,11 @@ export const POST: APIRoute = async ({ request }) => {
       contactId,
       failedTags,
     });
+  }
+
+  if (visitor !== 'ok') {
+    console.warn('[quiz] visitor', visitor, '- lead captured, notifications skipped', contactId);
+    return successResponse(isFormPost, 200);
   }
 
   // --- Step 3: notifications. BEST-EFFORT ONLY. The lead is already captured,

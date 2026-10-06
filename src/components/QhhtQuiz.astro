@@ -228,6 +228,16 @@ const approvedResults = QUIZ_RESULTS.filter((r) => r.approved);
       });
     });
 
+    // One id per quiz fill, reused on every retry: if a response is lost after the
+    // server already did the work, the retry is recognised and not sent to Dodie twice.
+    const submissionId = crypto.randomUUID();
+    // Turnstile tokens are single-use: fetch a fresh one after any unsuccessful try.
+    const resetCheck = () => {
+      const widget = form.querySelector('.cf-turnstile');
+      const ts = (window as { turnstile?: { reset: (el: Element) => void } }).turnstile;
+      if (widget && ts) ts.reset(widget);
+    };
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!stepValid()) return;
@@ -245,6 +255,7 @@ const approvedResults = QUIZ_RESULTS.filter((r) => r.approved);
         answers,
         'cf-turnstile-response': '',
         attribution: readAttribution(),
+        submissionId,
       };
       if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Checking…'; }
       if (status) status.textContent = '';
@@ -280,22 +291,18 @@ const approvedResults = QUIZ_RESULTS.filter((r) => r.approved);
             heading?.focus({ preventScroll: true });
           }
         } else if (res.status === 400) {
-          // Tokens are single-use: get a fresh one for the retry.
-          const widget = form.querySelector('.cf-turnstile');
-          const ts = (window as { turnstile?: { reset: (el: Element) => void } }).turnstile;
-          if (widget && ts) ts.reset(widget);
+          resetCheck();
           if (status) status.textContent = 'Please complete the security check above, then submit again.';
           if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'See my result'; }
         } else if (res.status === 429) {
-          const widget = form.querySelector('.cf-turnstile');
-          const ts = (window as { turnstile?: { reset: (el: Element) => void } }).turnstile;
-          if (widget && ts) ts.reset(widget);
+          resetCheck();
           if (status) status.textContent = 'Thank you. We already have several submissions from this connection; please try again later or email dodiekendall@gmail.com.';
           if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'See my result'; }
         } else {
           throw new Error('Bad status ' + res.status);
         }
       } catch {
+        resetCheck();
         if (status) status.textContent = "Something went wrong sending that. Please try again, or email dodiekendall@gmail.com.";
         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'See my result'; }
       }

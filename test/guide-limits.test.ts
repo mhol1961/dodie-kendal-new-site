@@ -10,12 +10,15 @@ import {
   claimGuideEmail,
   releaseGuideEmail,
   IP_MAX_PER_HOUR,
+  visitorStatus,
+  claimSubmission,
   type D1Like,
 } from '../src/lib/guide-limits.ts';
 
 function d1(): D1Like {
   const db = new DatabaseSync(':memory:');
   db.exec(readFileSync('migrations/0001_lead_limits.sql', 'utf8'));
+  db.exec(readFileSync('migrations/0002_form_submissions.sql', 'utf8'));
   return {
     prepare(sql) {
       const stmt = db.prepare(sql);
@@ -94,4 +97,32 @@ test('a failed cleanup does not block a valid claim', async () => {
     prepare: (sql) => (sql.startsWith('DELETE') ? { bind: () => ({ first: async () => null, run: async () => { throw new Error('x'); } }) } : db.prepare(sql)),
   };
   assert.notEqual(await claimGuideEmail(flaky, 'a@b.co', T0), null);
+});
+
+test('each form has its own counter, so the quiz cannot use up the guide sign-up', async () => {
+  const db = d1();
+  for (let i = 0; i < IP_MAX_PER_HOUR; i++) assert.equal(await allowIp(db, '9.9.9.9', T0, 'quiz'), true);
+  assert.equal(await allowIp(db, '9.9.9.9', T0, 'quiz'), false);
+  assert.equal(await allowIp(db, '9.9.9.9', T0, 'guide'), true, 'other form unaffected');
+});
+
+test('visitorStatus: ok, over, and unknown when the limiter cannot answer', async () => {
+  const db = d1();
+  const req = (ip?: string) => new Request('https://x', { headers: ip ? { 'CF-Connecting-IP': ip } : {} });
+  assert.equal(await visitorStatus({ LEAD_DB: db }, req('1.1.1.1'), 'contact'), 'ok');
+  for (let i = 0; i < IP_MAX_PER_HOUR; i++) await visitorStatus({ LEAD_DB: db }, req('2.2.2.2'), 'contact');
+  assert.equal(await visitorStatus({ LEAD_DB: db }, req('2.2.2.2'), 'contact'), 'over');
+  assert.equal(await visitorStatus({}, req('1.1.1.1'), 'contact'), 'unknown', 'no binding');
+  assert.equal(await visitorStatus({ LEAD_DB: db }, req(), 'contact'), 'unknown', 'no IP');
+  const broken: D1Like = { prepare: () => ({ bind: () => ({ first: async () => { throw new Error('x'); }, run: async () => { throw new Error('x'); } }) }) };
+  assert.equal(await visitorStatus({ LEAD_DB: broken }, req('1.1.1.1'), 'contact'), 'unknown', 'storage error');
+});
+
+test('a submission id is processed once; a retry with the same id is recognised', async () => {
+  const db = d1();
+  const id = '6f1c2a54-0d0e-4a9b-9c55-1d2f3e4a5b6c';
+  assert.equal(await claimSubmission(db, id, T0), true);
+  assert.equal(await claimSubmission(db, id, T0 + 1000), false);
+  assert.equal(await claimSubmission(db, 'a6f1c2a5-0d0e-4a9b-9c55-1d2f3e4a5b6c', T0), true);
+  assert.equal(await claimSubmission(db, id, T0 + DAY + 1), true, 'expires after a day');
 });
