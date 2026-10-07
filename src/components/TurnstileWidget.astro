@@ -14,6 +14,8 @@ if (!siteKey) {
     'PUBLIC_TURNSTILE_SITE_KEY is not set: every free-guide sign-up would be rejected. Add it to .env.production (see ENV.md).'
   );
 }
+// Town pages (/qhht/{town}) never link straight to the PDF: send them to the sign-up page.
+const onTownPage = Astro.url.pathname.startsWith('/qhht/');
 ---
 <div
   class="cf-turnstile mt-4"
@@ -24,8 +26,12 @@ if (!siteKey) {
 ></div>
 <noscript>
   <p class="mt-4 text-sm text-ink-secondary">
-    This sign-up needs JavaScript. You can still
-    <a href="/dodie-kendall-prep-guide.pdf" class="font-semibold underline text-brand">open the guide directly</a>.
+    This sign-up needs JavaScript.
+    {onTownPage ? (
+      <>You can also get the guide from the <a href="/free-guide" class="font-semibold underline text-brand">free guide page</a>.</>
+    ) : (
+      <>You can still <a href="/dodie-kendall-prep-guide.pdf" class="font-semibold underline text-brand">open the guide directly</a>.</>
+    )}
   </p>
 </noscript>
 <script is:inline>

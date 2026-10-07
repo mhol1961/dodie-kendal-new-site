@@ -30,6 +30,20 @@ test('releasing one town builds and links only that town', () => {
   assert.deepEqual(nearbyAreas(hobe, builtAreas(false, [])), []);
 });
 
+test('first release (Port St. Lucie alone) shows no "also serving" links', () => {
+  const built = builtAreas(false, ['port-st-lucie']);
+  const psl = AREAS.find((a) => a.slug === 'port-st-lucie')!;
+  assert.deepEqual(nearbyAreas(psl, built), []);
+  // Each later release only ever links towns already released.
+  const order = ['port-st-lucie', 'jupiter', 'palm-city', 'jensen-beach', 'hobe-sound'];
+  for (let i = 1; i <= order.length; i++) {
+    const live = order.slice(0, i);
+    for (const a of builtAreas(false, live)) {
+      for (const n of nearbyAreas(a, builtAreas(false, live))) assert.ok(live.includes(n.slug), `${a.slug} -> ${n.slug}`);
+    }
+  }
+});
+
 test('nearby slugs all point at real towns, never at themselves', () => {
   for (const a of AREAS) {
     for (const s of a.nearby) {
