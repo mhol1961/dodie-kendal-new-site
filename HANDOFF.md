@@ -85,16 +85,27 @@ bundles.
 
 ## 4. How a change gets published
 
-### dodiekendall.com — Cloudflare Workers, via `wrangler deploy`
+### dodiekendall.com: push to `main` publishes (Cloudflare Workers Builds)
 
-**A GitHub push alone does NOT publish this site.** The Cloudflare "Builds" tab
-in the dashboard is a dead pipeline stuck on an old failure — ignore it. The
-live site updates only when a new Worker Version is uploaded:
+**Pushing to `main` is the only way this site deploys** (since 2026-10-07, same as
+Guiding Winds). Cloudflare's GitHub build runs `npm run build` then `npx wrangler deploy`.
+Pushes to any other branch only upload a test version (not live), reachable at
+`https://<first 8 chars of version id>-dodie-kendal-new-site.mhollandanalyst.workers.dev`
+(`npx wrangler versions list`). Do not run `wrangler deploy` by hand; `npm run deploy`
+now refuses. Emergency rollback: `npx wrangler rollback`.
 
-```bash
-git push origin main
-npm run deploy   # build → apply D1 migrations → verify D1 tables → wrangler deploy
-```
+**Nothing unapproved on `main`.** Whatever is on `main` goes live on push. Keep
+unreleased work on branches (e.g. `feature/town-pages`, gated by `RELEASED`).
+
+**Build-time values live in the committed `.env.production`** (public values only,
+they ship in the HTML): the Turnstile site key now, and `PUBLIC_FB_PIXEL_ID` /
+`PUBLIC_CF_BEACON_TOKEN` when they exist. Node is pinned by `.node-version`. Never put a
+secret there; secrets are Worker Secrets (`wrangler secret put`), which deploys keep.
+
+**D1 migrations are NOT applied by the automatic build.** Before pushing a commit that
+adds a file in `migrations/`, apply it first: `npm run db:migrate` (tables are created
+`IF NOT EXISTS`, so applying early is safe). Without the tables, the free-guide form
+still captures leads but sends no guide emails (logged as `limit-unavailable`).
 
 **URLs: one per page, no trailing slash.** `astro.config.mjs` sets `trailingSlash: 'never'`
 and `build.format: 'file'`; `worker-entry.mjs` (wrangler `main`) answers `/page/`, `*.html`
@@ -102,34 +113,15 @@ and legacy URLs with real 301s, then hands off to the Astro worker. `public/_red
 does NOT work here (the adapter follows it internally, so browsers get a 200). Add
 legacy redirects to the `LEGACY` map in `worker-entry.mjs`.
 
-`npm run deploy` stops before publishing if the D1 schema (`migrations/`) can't be
-applied or its tables are missing. Without them the free-guide form still captures
-leads but sends **no** guide emails (logged as `limit-unavailable`). Don't run a bare
-`wrangler deploy` after adding a migration.
-
-**Set the build-time variables before `npm run build`.** `SITE_URL`,
-`PUBLIC_CF_BEACON_TOKEN` and `PUBLIC_FB_PIXEL_ID` are read by Astro/Vite *at build
-time*, not by the Worker at runtime — they are not in `.dev.vars`, and `wrangler
-secret` / `wrangler.toml [vars]` cannot supply them. Build with them present in the
-shell (or a `.env.production`), or the deployed bundle silently ships with no
-analytics and no ad attribution:
-
-```bash
-SITE_URL=https://dodiekendall.com PUBLIC_CF_BEACON_TOKEN=<token> \
-  PUBLIC_FB_PIXEL_ID=<the pixel id> npm run build
-grep -rl "cloudflareinsights" dist | head -1    # sanity check: the tag made it into the build
-```
-
 Everything else in §5 is a Worker runtime binding, read via `import { env } from 'cloudflare:workers'`.
 
-Verify in the Cloudflare dashboard under the Worker's **Overview → Versions**
-list (each version shows the commit), or by curling the site and grepping for
-your change. The Worker also serves at its `*.workers.dev` subdomain, which is
+Verify in the Cloudflare dashboard under the Worker's **Builds** tab (each push), the
+**Overview → Versions** list, or by curling the site and grepping for your change. The Worker also serves at its `*.workers.dev` subdomain, which is
 useful for verifying before the custom domain is checked.
 
 Deploy target details are in `wrangler.toml`: Worker name, `main`, the `[assets]`
 block (`directory = "./dist"`, binding `ASSETS`, `run_worker_first = true`), and
-the non-secret `[vars]`.
+the non-secret `[vars]`. The build generates the final config (`dist/server/wrangler.json`).
 
 > Important: every `wrangler deploy` **resets plain-text variables set in the
 > dashboard** but preserves Secrets. Therefore non-secret runtime vars must live
