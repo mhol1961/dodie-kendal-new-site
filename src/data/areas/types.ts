@@ -1,7 +1,8 @@
-// Data shape for local-area landing pages rendered by src/layouts/LocalAreaLayout.astro.
-// Every field is required on purpose: a city page without its own intro, directions,
-// parking notes, local testimonial and at least 3 local FAQs is a thin page. The tuple
-// types below make the compiler enforce the minimum counts; the layout re-checks at build.
+// Data shape for local-area landing pages rendered by src/layouts/LocalAreaLayout.astro
+// at /qhht/<slug>. The required fields are what keeps a town page from being thin: its
+// own intro (drive time in the first paragraph), real directions, a drive map and at
+// least 3 local FAQs. The tuple types make the compiler enforce the minimum counts;
+// the layout re-checks at build. Release is gated separately (see ./index.ts).
 
 export interface AreaFaq {
   question: string;
@@ -10,7 +11,7 @@ export interface AreaFaq {
 }
 
 export interface LocalArea {
-  /** URL slug: the page lives at /areas/<slug> (no trailing slash). */
+  /** URL slug: the page lives at /qhht/<slug> (no trailing slash). */
   slug: string;
   /** Display name, e.g. 'Port St. Lucie'. Used in headings and schema areaServed. */
   name: string;
@@ -24,20 +25,24 @@ export interface LocalArea {
   };
   /** Page H1. Write it for this town; do not template it. */
   heading: string;
-  /** Intro paragraphs, at least one, written for this town specifically. */
+  /** Intro paragraphs written for this town. The FIRST must contain drive.time (lowercase ok). */
   intro: [string, ...string[]];
   drive: {
-    /** Typical one-way drive time to the Stuart studio, in minutes. */
-    minutes: number;
-    /** One line, e.g. 'South on I-95 to Kanner Hwy (SR-76)'. */
+    /** Honest range from real routing, no dashes: 'About 20 to 30 minutes'. */
+    time: string;
+    /** Road distance from the town center to central Stuart (scripts/area-routes.json). */
+    miles: number;
+    /** One line, e.g. 'US 1 (Federal Highway) north the whole way'. */
     routeSummary: string;
-    /** Turn-by-turn steps from a well-known local starting point. */
+    /** Directions from the town center. Only roads the real route uses. */
     steps: [string, ...string[]];
   };
-  /** Parking notes for the studio, phrased for someone driving in from this town. */
-  parking: string;
-  /** A real testimonial from a client in or near this town, used with permission. */
-  testimonial: {
+  /** Alt text for /areas/<slug>-map.{webp,png} (built by scripts/build-area-maps.mjs). */
+  mapAlt: string;
+  /** Optional short note in the "Getting here" section. */
+  localNote?: { heading: string; body: string };
+  /** ONLY a real testimonial from a client in or near this town, used with permission. Omit otherwise. */
+  testimonial?: {
     quote: string;
     /** First name + last initial only, e.g. 'Maria K.' */
     name: string;
@@ -45,4 +50,6 @@ export interface LocalArea {
   };
   /** Local questions, at least 3. Also emitted as FAQPage JSON-LD. */
   faq: [AreaFaq, AreaFaq, AreaFaq, ...AreaFaq[]];
+  /** Slugs of neighboring town pages. Only the ones built in this build are linked. */
+  nearby: string[];
 }

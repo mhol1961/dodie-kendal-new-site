@@ -94,6 +94,9 @@ const next = [
           wrapper styling; the form theme itself is configured inside GHL.
           form_embed.js auto-resizes the iframe height via postMessage.
         -->
+        {import.meta.env.PUBLIC_SITE_PREVIEW === '1' ? (
+          <p class="mt-10 rounded-lg border border-border-subtle bg-bg-raised p-6 text-ink-secondary">Preview: Dodie's contact form appears here on the live site.</p>
+        ) : (
         <div class="mt-10 overflow-hidden rounded-lg border border-border-subtle bg-bg-raised p-2 shadow-sm">
           <iframe
             src="https://api.leadconnectorhq.com/widget/form/Sv6wLoRU5khzSvRlNYWf"
@@ -115,6 +118,7 @@ const next = [
             style="border:none;min-height:832px"
           ></iframe>
         </div>
+        )}
       </div>
 
       <!-- Direct-contact sidebar -->
@@ -225,5 +229,5 @@ const next = [
     (api.leadconnectorhq.com, GHL's neutral widget host — NOT the
     guidingwinds-unplug white-label domain, which is a different business).
   -->
-  <script src="https://api.leadconnectorhq.com/js/form_embed.js" is:inline defer></script>
+  {import.meta.env.PUBLIC_SITE_PREVIEW !== '1' && <script src="https://api.leadconnectorhq.com/js/form_embed.js" is:inline defer></script>}
 </Base>

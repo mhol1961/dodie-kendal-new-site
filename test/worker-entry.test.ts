@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const src = readFileSync(new URL('../worker-entry.mjs', import.meta.url), 'utf8').replace(/^import \{ handle \}.*$/m, 'const handle = () => {};');
-const { canonicalPath, redirectTarget, SECURITY_HEADERS } = await import('data:text/javascript,' + encodeURIComponent(src));
+const { canonicalPath, redirectTarget, SECURITY_HEADERS, default: worker } = await import('data:text/javascript,' + encodeURIComponent(src));
 
 test('trailing slash is dropped (301 target), root stays', () => {
   assert.equal(canonicalPath('/about/'), '/about');
@@ -40,4 +40,17 @@ test('HSTS never covers subdomains (GHL email links use them) and is not preload
   const hsts = SECURITY_HEADERS['Strict-Transport-Security'];
   assert.match(hsts, /max-age=\d+/);
   assert.equal(/includeSubDomains|preload/i.test(hsts), false);
+});
+
+test('preview Worker: noindex everywhere, robots blocks all, API never reaches the app', async () => {
+  const env = { SITE_PREVIEW: '1' };
+  const api = await worker.fetch(new Request('https://p.example/api/quiz', { method: 'POST', body: '{}' }), env, {});
+  assert.equal(api.status, 200);
+  assert.equal((await api.json()).reason, 'preview');
+  assert.equal(api.headers.get('X-Robots-Tag'), 'noindex, nofollow');
+  const robots = await worker.fetch(new Request('https://p.example/robots.txt'), env, {});
+  assert.match(await robots.text(), /Disallow: \//);
+  const redirect = await worker.fetch(new Request('https://p.example/about/'), env, {});
+  assert.equal(redirect.status, 301);
+  assert.equal(redirect.headers.get('X-Robots-Tag'), 'noindex, nofollow');
 });

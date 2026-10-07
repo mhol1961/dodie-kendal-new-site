@@ -1,38 +1,34 @@
 ---
 /**
- * LocalAreaLayout: one layout for local-area landing pages
- * (Port St. Lucie, Jupiter/Palm Beach Gardens, Palm City/Hobe Sound, ...).
+ * LocalAreaLayout: one layout for local-area landing pages at /qhht/<slug>
+ * (Port St. Lucie, Jupiter, Palm City, Jensen Beach, Hobe Sound).
  *
- * HOW TO ADD A CITY PAGE
- * 1. Copy src/data/areas/_example.ts to src/data/areas/<slug>.ts and rewrite
- *    EVERY field (shape: src/data/areas/types.ts). Remove all [EXAMPLE] tokens;
- *    a production build fails while any remain.
- * 2. Create the route src/pages/areas/<slug>.astro with just:
- *      ---
- *      import LocalAreaLayout from '@layouts/LocalAreaLayout.astro';
- *      import area from '@/data/areas/<slug>';
- *      ---
- *      <LocalAreaLayout area={area} />
- *    The URL is /areas/<slug> (no trailing slash). The sitemap picks it up
- *    automatically (astro.config.mjs filter does not exclude /areas).
- * 3. Run `npx astro check`, then the self-critique trio (CLAUDE.md section 6.8)
+ * HOW TO ADD A TOWN PAGE
+ * 1. Write src/data/areas/<slug>.ts (shape: src/data/areas/types.ts) and add it to
+ *    AREAS in src/data/areas/index.ts. src/pages/qhht/[town].astro builds it.
+ * 2. Add the town to scripts/build-area-maps.mjs, run it with --fetch, and use the
+ *    real OSRM time and distance it prints for drive.time and drive.miles.
+ * 3. It goes live only when its slug is in RELEASED (src/data/areas/index.ts).
+ *    Release one town at a time, about a week apart.
+ * 4. Run `npx astro check`, then the self-critique trio (CLAUDE.md section 6.8)
  *    and a COMPLIANCE.md pass on the copy (no medical or therapeutic claims).
  *
- * THIN-CONTENT GUARD (read before writing a city)
- * Each city must have genuinely different content: its own intro, real drive
- * directions from that town, parking notes, a real local testimonial (with
- * permission) and local FAQs. Do NOT clone one city and swap the name. Google
- * treats near-duplicate "city-name swap" pages as doorway pages / scaled
- * content abuse, which can demote the whole site, not just these pages. If a
- * town has no real local testimonial or distinct questions yet, do not
- * publish its page. The type requires every section; assertArea() below
- * re-checks at build so a half-filled file cannot ship.
+ * THIN-CONTENT GUARD (read before writing a town)
+ * Each town must have genuinely different content: its own intro, real drive
+ * directions from that town, at least 3 facts true only for that town, and local
+ * FAQs. Do NOT clone one town and swap the name. Google treats near-duplicate
+ * "city-name swap" pages as doorway pages / scaled content abuse, which can demote
+ * the whole site, not just these pages. Keep every pair of town pages (and each vs
+ * /qhht) under 40% word 5-gram overlap. Never invent a testimonial: the section
+ * renders only when a real one exists. assertArea() below re-checks at build so a
+ * half-filled file cannot ship.
  */
 import Base from '@layouts/Base.astro';
 import Accordion from '@components/ui/Accordion.astro';
 import ClosingCTA from '@components/ClosingCTA.astro';
 import { getSeo } from '@lib/seo';
 import { faqPage, breadcrumb } from '@lib/schema';
+import { nearbyAreas, RELEASED } from '@/data/areas/index.ts';
 import type { LocalArea } from '@/data/areas/types';
 
 interface Props {
@@ -45,30 +41,39 @@ function assertArea(a: LocalArea) {
   const blank = (s: string) => !s || !s.trim();
   const problems: string[] = [];
   const strings = [
-    a.slug, a.name, a.seo.title, a.seo.description, a.heading, a.parking,
-    a.drive.routeSummary, a.testimonial.quote, a.testimonial.name, a.testimonial.town,
+    a.slug, a.name, a.seo.title, a.seo.description, a.heading, a.mapAlt,
+    a.drive.time, a.drive.routeSummary,
     ...a.intro, ...a.drive.steps, ...a.faq.flatMap((f) => [f.question, f.answer]),
   ];
   if (strings.some(blank)) problems.push('a required text field is empty');
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(a.slug)) problems.push('slug must be kebab-case');
-  if (!(a.drive.minutes > 0)) problems.push('drive.minutes must be a positive number');
+  if (!/^About \d+ to \d+ minutes$/.test(a.drive.time)) problems.push('drive.time must read "About N to M minutes"');
+  if (!a.intro[0].toLowerCase().includes(a.drive.time.toLowerCase())) problems.push('the first intro paragraph must state drive.time');
+  if (!(a.drive.miles > 0)) problems.push('drive.miles must be a positive number');
   if (a.faq.length < 3) problems.push('faq needs at least 3 items');
   if (new Set(a.faq.map((f) => f.question)).size !== a.faq.length) problems.push('faq questions repeat');
-  if (import.meta.env.PROD && JSON.stringify(a).includes('[EXAMPLE')) {
-    problems.push('still contains [EXAMPLE] placeholder text');
-  }
+  if (/[–—]/.test(JSON.stringify(a))) problems.push('copy contains an em or en dash');
   if (problems.length) {
     throw new Error(`LocalAreaLayout: area "${a.slug}" is not publishable: ${problems.join('; ')}`);
   }
 }
 assertArea(area);
 
-const path = `/areas/${area.slug}`;
-const seo = getSeo({ path, title: area.seo.title, description: area.seo.description });
+const path = `/qhht/${area.slug}`;
+const seo = getSeo({
+  path,
+  title: area.seo.title,
+  description: area.seo.description,
+  // A preview build carries unreleased towns: keep them out of any index.
+  noIndex: !RELEASED.includes(area.slug),
+});
 const origin = new URL(seo.canonical).origin;
 
-// Built inline (not in schema.ts): a Service scoped to this town, pointing at the
-// global business + person nodes Base already emits.
+// Only link neighbors that exist in this build.
+const nearby = nearbyAreas(area);
+
+// A Service scoped to this town, pointing at the business + person nodes Base already
+// emits (by @id, so no second LocalBusiness). No ratings or reviews on purpose.
 const areaService = {
   '@context': 'https://schema.org',
   '@type': 'Service',
@@ -87,22 +92,31 @@ const areaService = {
 const schemas = [
   areaService,
   faqPage(area.faq),
-  breadcrumb([{ name: 'Home', href: '/' }, { name: area.name }]),
+  breadcrumb([{ name: 'Home', href: '/' }, { name: 'QHHT', href: '/qhht' }, { name: area.name }]),
 ];
+const map = `/areas/${area.slug}-map`;
 ---
 <Base seo={seo} schemas={schemas}>
-  <!-- Intro -->
+  <!-- Intro: drive time in the first paragraph, price and next step right under it -->
   <section class="section-y bg-bg-base">
     <div class="container-default max-w-4xl">
-      <p class="text-xs uppercase tracking-[0.22em] text-brand">{area.name}</p>
+      <p class="text-xs uppercase tracking-[0.22em] text-brand">QHHT · {area.name}</p>
       <h1 class="mt-3 font-display text-ink">{area.heading}</h1>
       <div class="mt-8 max-w-prose space-y-5 text-lg leading-relaxed text-ink-secondary">
         {area.intro.map((p) => <p>{p}</p>)}
       </div>
+      <p class="mt-8 font-display text-xl text-ink">$300 per session. A $50 deposit reserves your time.</p>
+      <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4">
+        <a href="/book" class="inline-flex items-center rounded-pill bg-brand px-6 py-3 text-ink-inverse transition-colors hover:bg-brand-hover">Book a Session</a>
+        <a href="/free-guide" class="text-brand underline underline-offset-2">Read the free prep guide</a>
+      </div>
+      <p class="mt-5 text-sm text-ink-muted">
+        Bookings confirm instantly by email. Questions first? Call <a href="tel:+17722475534" class="text-brand underline">772-247-5534</a>.
+      </p>
     </div>
   </section>
 
-  <!-- Drive + parking -->
+  <!-- Getting here: real route, map, directions -->
   <section class="section-y bg-bg-sunken">
     <div class="container-default max-w-5xl">
       <header class="mb-10 max-w-2xl">
@@ -114,62 +128,88 @@ const schemas = [
         <div class="space-y-6">
           <div class="rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm">
             <p class="text-xs uppercase tracking-wider text-ink-muted">Typical drive</p>
-            <p class="mt-1 font-display text-3xl text-ink">About {area.drive.minutes} min</p>
-            <p class="mt-1 text-xs text-ink-secondary">{area.drive.routeSummary}</p>
+            <p class="mt-1 font-display text-2xl text-ink">{area.drive.time}</p>
+            <p class="mt-1 text-sm text-ink-secondary">About {area.drive.miles} miles. {area.drive.routeSummary}.</p>
           </div>
           <div class="rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm">
-            <p class="text-xs uppercase tracking-wider text-ink-muted">Parking</p>
-            <p class="mt-2 text-ink-secondary leading-relaxed">{area.parking}</p>
+            <p class="text-xs uppercase tracking-wider text-ink-muted">Address and parking</p>
+            <p class="mt-2 text-ink-secondary leading-relaxed">The exact studio address and parking details come with your booking confirmation.</p>
           </div>
         </div>
 
+        <figure class="self-start overflow-hidden rounded-lg border border-border-subtle bg-bg-raised shadow-sm">
+          <picture>
+            <source srcset={`${map}.webp`} type="image/webp" />
+            <img src={`${map}.png`} alt={area.mapAlt} width="1200" height="800" loading="lazy" decoding="async" class="h-auto w-full" />
+          </picture>
+        </figure>
+      </div>
+
+      <div class="mt-8 grid gap-8 md:grid-cols-[2fr,1fr]">
         <div class="rounded-lg border border-border-subtle bg-bg-raised p-6 shadow-sm">
           <h3 class="font-display text-xl text-ink">Directions</h3>
           <ol class="mt-4 list-decimal space-y-3 pl-5 text-ink-secondary leading-relaxed">
             {area.drive.steps.map((s) => <li>{s}</li>)}
           </ol>
-          <p class="mt-6 text-sm text-ink-muted">The exact studio address is in your booking confirmation email.</p>
         </div>
+        {area.localNote && (
+          <aside class="rounded-lg bg-bg-base p-6">
+            <h3 class="font-display text-xl text-ink">{area.localNote.heading}</h3>
+            <p class="mt-3 text-ink-secondary leading-relaxed">{area.localNote.body}</p>
+          </aside>
+        )}
       </div>
     </div>
   </section>
 
-  <!-- Local testimonial (own markup, not PullQuote: its attribution adds a dash) -->
-  <section class="bg-bg-base py-24 md:py-32 text-ink">
-    <figure class="container-default max-w-5xl text-center">
-      <span aria-hidden="true" class="mx-auto block h-px w-16 bg-brand"></span>
-      <blockquote class="mt-10">
-        <p
-          class="italic-accent font-display text-[clamp(1.75rem,4vw,3.25rem)] leading-[1.15] tracking-[-0.02em]"
-          style="font-variation-settings: 'opsz' 144, 'wght' 450, 'SOFT' 100;"
-        >
-          &ldquo;{area.testimonial.quote}&rdquo;
-        </p>
-      </blockquote>
-      <figcaption class="mt-8 text-xs uppercase tracking-[0.22em] text-ink-muted">
-        {area.testimonial.name} · {area.testimonial.town}
-      </figcaption>
-    </figure>
-  </section>
+  <!-- Local testimonial: only a real one, with permission (own markup, not PullQuote: its attribution adds a dash) -->
+  {area.testimonial && (
+    <section class="bg-bg-base py-24 md:py-32 text-ink">
+      <figure class="container-default max-w-5xl text-center">
+        <span aria-hidden="true" class="mx-auto block h-px w-16 bg-brand"></span>
+        <blockquote class="mt-10">
+          <p
+            class="italic-accent font-display text-[clamp(1.75rem,4vw,3.25rem)] leading-[1.15] tracking-[-0.02em]"
+            style="font-variation-settings: 'opsz' 144, 'wght' 450, 'SOFT' 100;"
+          >
+            &ldquo;{area.testimonial.quote}&rdquo;
+          </p>
+        </blockquote>
+        <figcaption class="mt-8 text-xs uppercase tracking-[0.22em] text-ink-muted">
+          {area.testimonial.name} · {area.testimonial.town}
+        </figcaption>
+      </figure>
+    </section>
+  )}
 
   <!-- Local FAQ (same data feeds the FAQPage JSON-LD above) -->
-  <section class="section-y bg-bg-sunken">
+  <section class="section-y bg-bg-base">
     <div class="container-default">
       <header class="mb-12 max-w-2xl">
         <p class="text-xs uppercase tracking-[0.22em] text-brand">Common questions</p>
         <h2 class="mt-3 font-display text-ink">Questions from {area.name}.</h2>
-        <p class="mt-5 text-lg text-ink-secondary">More answers live on the <a href="/faq" class="text-brand underline">FAQ page</a>.</p>
+        <p class="mt-5 text-lg text-ink-secondary">
+          How a session unfolds is on the <a href="/qhht" class="text-brand underline">QHHT page</a>, and more answers live on the <a href="/faq" class="text-brand underline">FAQ page</a>.
+        </p>
       </header>
       <div class="max-w-3xl">
         <Accordion items={area.faq} idPrefix={`${area.slug}-faq`} />
       </div>
+      {nearby.length > 0 && (
+        <nav aria-label="Nearby areas" class="mt-12 max-w-3xl text-ink-secondary">
+          <p class="text-xs uppercase tracking-[0.22em] text-ink-muted">Also serving</p>
+          <ul class="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+            {nearby.map((n) => <li><a href={`/qhht/${n.slug}`} class="text-brand underline">{n.name}</a></li>)}
+          </ul>
+        </nav>
+      )}
     </div>
   </section>
 
   <ClosingCTA
-    headlineLead="Ready for the"
-    headlineItalic="conversation?"
-    subhead="One session. The questions you bring. The answers waiting on the other side of the threshold."
+    headlineLead="Your Higher Self is already speaking."
+    headlineItalic="Are you ready to listen?"
+    subhead="One session. One audio recording, yours to keep."
     cta={{ label: 'Book a Session', href: '/book' }}
     trustLine="In-person sessions · Stuart, FL"
   />

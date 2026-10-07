@@ -58,16 +58,35 @@ function withSecurityHeaders(response) {
   return res;
 }
 
+// Private preview Worker only (SITE_PREVIEW=1, set by scripts/deploy-preview.sh):
+// nothing indexed, and no form or API call reaches GHL. Forms get a harmless
+// "saved" reply so the thank-you screens can be reviewed.
+function previewOnly(pathname) {
+  if (pathname === '/robots.txt') return new Response('User-agent: *\nDisallow: /\n');
+  if (pathname.startsWith('/api/')) {
+    return Response.json({ ok: true, captured: true, emailed: false, reason: 'preview' });
+  }
+  return null;
+}
+
 export default {
   async fetch(request, env, ctx) {
-    const isRead = request.method === 'GET' || request.method === 'HEAD';
-    const to = redirectTarget(request.url);
-    // http -> https applies to every method's URL, but only reads are redirected
-    // (a 301 on a POST would drop the body); http POSTs are refused instead.
-    if (to && isRead) return withSecurityHeaders(Response.redirect(to, 301));
-    if (to && new URL(request.url).protocol === 'http:') {
-      return withSecurityHeaders(new Response('Please use https://dodiekendall.com', { status: 403 }));
-    }
-    return withSecurityHeaders(await handle(request, env, ctx));
+    if (env.SITE_PREVIEW !== '1') return route(request, env, ctx);
+    const res = previewOnly(new URL(request.url).pathname);
+    const out = res ? withSecurityHeaders(res) : await route(request, env, ctx);
+    out.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return out;
   },
 };
+
+async function route(request, env, ctx) {
+  const isRead = request.method === 'GET' || request.method === 'HEAD';
+  const to = redirectTarget(request.url);
+  // http -> https applies to every method's URL, but only reads are redirected
+  // (a 301 on a POST would drop the body); http POSTs are refused instead.
+  if (to && isRead) return withSecurityHeaders(Response.redirect(to, 301));
+  if (to && new URL(request.url).protocol === 'http:') {
+    return withSecurityHeaders(new Response('Please use https://dodiekendall.com', { status: 403 }));
+  }
+  return withSecurityHeaders(await handle(request, env, ctx));
+}

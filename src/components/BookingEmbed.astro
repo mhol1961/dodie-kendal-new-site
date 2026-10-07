@@ -15,7 +15,8 @@ interface Props {
 
 const { calendarId, fallbackUrl = '', title = 'Book a QHHT session with Dodie Kendall' } = Astro.props;
 
-const embedUrl = calendarId
+// Private preview: never show a live calendar (a booking there is real and charges the deposit).
+const embedUrl = calendarId && import.meta.env.PUBLIC_SITE_PREVIEW !== '1'
   ? `https://api.leadconnectorhq.com/widget/booking/${calendarId}`
   : null;
 // GHL's own embed snippet ids booking iframes `<calendarId>_<timestamp>`.
@@ -40,6 +41,8 @@ const iframeId = `${calendarId}_${Date.now()}`;
         <a href={embedUrl} target="_blank" rel="noopener noreferrer" class="text-brand underline hover:text-brand-hover">Open it in a new tab</a>
       </p>
     </>
+  ) : import.meta.env.PUBLIC_SITE_PREVIEW === '1' ? (
+    <p class="p-8 text-center text-ink-secondary md:p-12">Preview: Dodie's live booking calendar appears here.</p>
   ) : (
     <div class="p-8 text-center md:p-12">
       <p class="text-xs uppercase tracking-wider text-ink-muted">Calendar setup pending</p>

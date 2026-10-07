@@ -6,6 +6,7 @@ import PullQuote from '@components/PullQuote.astro';
 import ClosingCTA from '@components/ClosingCTA.astro';
 import BgVideo from '@components/BgVideo.astro';
 import SectionDivider from '@components/SectionDivider.astro';
+import AreasServed from '@components/AreasServed.astro';
 import { getSeo } from '@lib/seo';
 import { qhhtService, faqPage, breadcrumb } from '@lib/schema';
 import { getCollection } from 'astro:content';
@@ -161,6 +162,8 @@ const timeline = [
       </div>
     </div>
   </section>
+
+  <AreasServed />
 
   <ClosingCTA
     headlineLead="Ready for the"

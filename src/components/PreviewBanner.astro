@@ -1,0 +1,8 @@
+---
+// Private preview builds only (PUBLIC_SITE_PREVIEW=1, see scripts/deploy-preview.sh).
+---
+{import.meta.env.PUBLIC_SITE_PREVIEW === '1' && (
+  <p class="border-b border-border-subtle bg-bg-sunken px-4 py-2 text-center text-sm text-ink">
+    Private preview for Dodie. Not the live site: forms and booking are turned off here.
+  </p>
+)}

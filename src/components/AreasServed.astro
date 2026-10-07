@@ -1,0 +1,39 @@
+---
+/**
+ * "Areas I serve": links to the local-area pages built in this build (released
+ * towns, or all of them in a PUBLIC_SITE_PREVIEW=1 build). Renders nothing when
+ * no town is built, so unreleased towns never leak a link.
+ */
+import { builtAreas } from '@/data/areas/index.ts';
+
+interface Props {
+  /** 'footer': a compact list for the footer. 'section': a full-width band. */
+  variant?: 'footer' | 'section';
+}
+
+const { variant = 'section' } = Astro.props;
+const areas = builtAreas();
+---
+{areas.length > 0 && (variant === 'footer' ? (
+  <nav aria-label="Footer: Areas I serve" class="mt-6">
+    <h2 class="mb-3 text-base font-medium text-ink">Areas I serve</h2>
+    <ul class="space-y-2 text-ink-secondary">
+      {areas.map((a) => <li><a href={`/qhht/${a.slug}`} class="hover:text-brand">{a.name}</a></li>)}
+    </ul>
+  </nav>
+) : (
+  <section class="section-y bg-bg-sunken">
+    <div class="container-default">
+      <header class="mb-8 max-w-2xl">
+        <p class="text-xs uppercase tracking-[0.22em] text-brand">Areas I serve</p>
+        <h2 class="mt-3 font-display text-ink">Coming to Stuart from nearby.</h2>
+        <p class="mt-5 text-lg text-ink-secondary">Every session is in person at my studio in Stuart. Directions and drive times from your town:</p>
+      </header>
+      <ul class="flex flex-wrap gap-3">
+        {areas.map((a) => (
+          <li><a href={`/qhht/${a.slug}`} class="inline-flex rounded-pill border border-border-subtle bg-bg-raised px-5 py-2 text-ink transition-colors hover:border-brand hover:text-brand">{a.name}</a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+))}

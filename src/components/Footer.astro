@@ -3,6 +3,8 @@
  * Footer — 4-column desktop, 1-column mobile, with the "not medical advice" disclaimer.
  * DESIGN.md §Layout: sunken bg, brand/site/contact/legal columns.
  */
+import AreasServed from '@components/AreasServed.astro';
+
 const year = new Date().getFullYear();
 ---
 <footer class="mt-24 border-t border-border-subtle bg-bg-sunken">
@@ -49,6 +51,7 @@ const year = new Date().getFullYear();
           </a>
         </li>
       </ul>
+      <AreasServed variant="footer" />
     </div>
 
     <div>

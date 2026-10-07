@@ -1,0 +1,14 @@
+---
+// Local-area pages at /qhht/<town>. Only released towns are built (all five in a
+// PUBLIC_SITE_PREVIEW=1 build); see src/data/areas/index.ts for the release plan.
+import LocalAreaLayout from '@layouts/LocalAreaLayout.astro';
+import { builtAreas } from '@/data/areas/index.ts';
+import type { LocalArea } from '@/data/areas/types';
+
+export function getStaticPaths() {
+  return builtAreas().map((area) => ({ params: { town: area.slug }, props: { area } }));
+}
+
+const { area } = Astro.props as { area: LocalArea };
+---
+<LocalAreaLayout area={area} />
