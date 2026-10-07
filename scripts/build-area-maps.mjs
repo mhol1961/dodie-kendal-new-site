@@ -1,21 +1,26 @@
-// Builds the drive map for each local-area page: public/areas/<slug>-map.{webp,png}.
-// Light, branded, no street address and no studio pin: just the real driving route
-// from the town center to central Stuart, with faint dots for the neighboring towns.
+// Builds the drive map for each local-area page: public/areas/<slug>-map-{800,1600}.webp.
+// Real OpenStreetMap tiles (streets, water, place names), lightened to the site's
+// palette, with the real driving route from the town center to central Stuart drawn
+// on top. Two markers only: the town and "Stuart" (the Stuart city center, NEVER the
+// studio address). "© OpenStreetMap contributors" is printed on every map.
 //
 //   node scripts/build-area-maps.mjs          # draw from the cached routes
 //   node scripts/build-area-maps.mjs --fetch  # re-route via the public OSRM server first
 //
-// Routes are cached in scripts/area-routes.json so redrawing needs no network.
+// Routes are cached in scripts/area-routes.json; tiles in node_modules/.cache/osm-tiles,
+// so redrawing needs no network. Tiles come from tile.openstreetmap.org: a few dozen per
+// run, cached, with an identifying User-Agent, per the OSM tile usage policy.
 // Town centers are the OpenStreetMap place/boundary centers from Nominatim (2026-10-06).
-// Stuart is the Stuart city center, never the studio address.
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
 const sharp = createRequire(import.meta.url)('sharp');
 const root = new URL('../', import.meta.url);
 const CACHE = new URL('scripts/area-routes.json', root);
+const TILES = new URL('node_modules/.cache/osm-tiles/', root).pathname;
 const FONTS = new URL('assets/prep-guide/fonts/', root).pathname;
 const OUT = new URL('public/areas/', root).pathname;
+const UA = 'dodiekendall.com area-map build (static images, cached; contact: dodiekendall@gmail.com)';
 
 const STUART = { name: 'Stuart', lat: 27.197983, lon: -80.2519175 };
 const PLACES = {
@@ -26,25 +31,21 @@ const PLACES = {
   'jensen-beach': { name: 'Jensen Beach', lat: 27.2379528, lon: -80.2389899 },
   'hobe-sound': { name: 'Hobe Sound', lat: 27.059498, lon: -80.1364323 },
 };
-// One map per page. `also` draws an extra route (Tradition is part of Port St. Lucie).
-const MAPS = [
-  { slug: 'port-st-lucie', also: ['tradition'] },
-  { slug: 'jupiter' },
-  { slug: 'palm-city' },
-  { slug: 'jensen-beach' },
-  { slug: 'hobe-sound' },
-];
+const MAPS = ['port-st-lucie', 'jupiter', 'palm-city', 'jensen-beach', 'hobe-sound'];
 
-const C = { bg: '#f6ede0', ink: '#221811', muted: '#8a7d74', faint: '#cdbfb2', coral: '#d55759', teal: '#005d5e', water: '#e3ecea' };
-const W = 1200;
-const H = 800;
-const PAD = 90;
+const C = { ink: '#221811', coral: '#d55759', teal: '#005d5e', cream: '#f7f3ec' };
+// Frames (CSS size, drawn at each scale): computers get 800x500 at 1x and 2x; phones a
+// squarer 400x320 frame drawn at 2x, so its labels stay full size on a small screen.
+const FRAMES = [
+  { W: 800, H: 500, PAD: 70, out: [[1, '800'], [2, '1600']] },
+  { W: 400, H: 320, PAD: 44, out: [[2, 'phone']] },
+];
 
 async function fetchRoutes() {
   const out = {};
   for (const [slug, p] of Object.entries(PLACES)) {
     const url = `https://router.project-osrm.org/route/v1/driving/${p.lon},${p.lat};${STUART.lon},${STUART.lat}?overview=full&geometries=geojson&steps=true`;
-    const r = await (await fetch(url, { headers: { 'User-Agent': 'dodiekendall-site-build/1.0' } })).json();
+    const r = await (await fetch(url, { headers: { 'User-Agent': UA } })).json();
     if (r.code !== 'Ok') throw new Error(`OSRM ${slug}: ${r.code}`);
     const rt = r.routes[0];
     out[slug] = {
@@ -59,6 +60,24 @@ async function fetchRoutes() {
   return out;
 }
 
+// Web Mercator pixel coordinates at zoom z (256px tiles).
+const project = ([lon, lat], z) => {
+  const s = 256 * 2 ** z;
+  const r = (lat * Math.PI) / 180;
+  return [((lon + 180) / 360) * s, ((1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2) * s];
+};
+
+async function tile(z, x, y) {
+  const f = `${TILES}${z}-${x}-${y}.png`;
+  if (existsSync(f)) return readFileSync(f);
+  const res = await fetch(`https://tile.openstreetmap.org/${z}/${x}/${y}.png`, { headers: { 'User-Agent': UA } });
+  if (!res.ok) throw new Error(`tile ${z}/${x}/${y}: ${res.status}`);
+  const buf = Buffer.from(await res.arrayBuffer());
+  writeFileSync(f, buf);
+  await new Promise((r) => setTimeout(r, 250));
+  return buf;
+}
+
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 async function label(str, font, file, color) {
   const { data, info } = await sharp({ text: { text: `<span foreground="${color}">${esc(str)}</span>`, font, fontfile: FONTS + file, rgba: true } })
@@ -67,75 +86,94 @@ async function label(str, font, file, color) {
   return { data, w: info.width, h: info.height };
 }
 
-async function draw(map, routes) {
-  const town = PLACES[map.slug];
-  const lines = [map.slug, ...(map.also ?? [])].map((s) => routes[s].coords);
-  // Fit the routes, at least ~0.09 deg tall so the short drives still show their neighbors.
-  const pts = lines.flat().concat([[STUART.lon, STUART.lat]]);
-  const k = Math.cos((town.lat * Math.PI) / 180);
-  let [x0, x1] = [Math.min(...pts.map((p) => p[0] * k)), Math.max(...pts.map((p) => p[0] * k))];
-  let [y0, y1] = [Math.min(...pts.map((p) => p[1])), Math.max(...pts.map((p) => p[1]))];
-  const span = Math.max(x1 - x0, ((y1 - y0) * (W - 2 * PAD)) / (H - 2 * PAD - 80), 0.09 * ((W - 2 * PAD) / (H - 2 * PAD - 80)));
-  const cx = (x0 + x1) / 2;
-  const cy = (y0 + y1) / 2;
-  const scale = (W - 2 * PAD) / span; // px per (deg * cos lat)
-  const px = (lon, lat) => [W / 2 + (lon * k - cx) * scale, (H - 80) / 2 + (cy - lat) * scale];
-  const inside = ([x, y]) => x > 40 && x < W - 40 && y > 40 && y < H - 120;
+async function draw(slug, routes, { W, H, PAD, out: outputs }) {
+  const town = PLACES[slug];
+  const line = routes[slug].coords;
+  const pts = [...line, [town.lon, town.lat], [STUART.lon, STUART.lat]];
+  // Highest zoom (max 14) at which the route fits inside the padded frame.
+  let z = 14;
+  for (; z > 8; z--) {
+    const xy = pts.map((p) => project(p, z));
+    const w = Math.max(...xy.map((p) => p[0])) - Math.min(...xy.map((p) => p[0]));
+    const h = Math.max(...xy.map((p) => p[1])) - Math.min(...xy.map((p) => p[1]));
+    if (w <= W - 2 * PAD && h <= H - 2 * PAD) break;
+  }
+  const xy = pts.map((p) => project(p, z));
+  const ox = Math.round((Math.min(...xy.map((p) => p[0])) + Math.max(...xy.map((p) => p[0]))) / 2 - W / 2);
+  const oy = Math.round((Math.min(...xy.map((p) => p[1])) + Math.max(...xy.map((p) => p[1]))) / 2 - H / 2);
 
-  const path = (c) => c.map(([lon, lat], i) => `${i ? 'L' : 'M'}${px(lon, lat).map((v) => v.toFixed(1)).join(' ')}`).join('');
-  const [tx, ty] = px(town.lon, town.lat);
-  const [sx, sy] = px(STUART.lon, STUART.lat);
-  // Scale bar: the largest of 1, 2 or 5 miles that fits in ~180px.
-  const pxPerMile = scale / 69.05 / 1; // 1 deg latitude ~ 69.05 mi; x is cos-corrected
-  const miles = [10, 5, 2, 1, 0.5].find((m) => m * pxPerMile <= 200) ?? 0.5;
-
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-  <rect width="${W}" height="${H}" fill="${C.bg}"/>
-  <rect x="0" y="0" width="${W}" height="8" fill="${C.coral}"/>
-  ${lines.slice(1).map((c) => `<path d="${path(c)}" fill="none" stroke="${C.teal}" stroke-opacity="0.45" stroke-width="5" stroke-dasharray="2 12" stroke-linecap="round" stroke-linejoin="round"/>`).join('')}
-  <path d="${path(lines[0])}" fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="${path(lines[0])}" fill="none" stroke="${C.teal}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-  ${(map.also ?? []).map((s) => { const [x, y] = px(PLACES[s].lon, PLACES[s].lat); return `<circle cx="${x}" cy="${y}" r="9" fill="${C.bg}" stroke="${C.teal}" stroke-width="4"/>`; }).join('')}
-  <circle cx="${tx}" cy="${ty}" r="15" fill="${C.coral}" stroke="#ffffff" stroke-width="5"/>
-  <circle cx="${sx}" cy="${sy}" r="13" fill="${C.teal}" stroke="#ffffff" stroke-width="5"/>
-  <g transform="translate(${W - 70} 70)"><path d="M0 -26 L10 4 L0 -2 L-10 4 Z" fill="${C.ink}" fill-opacity="0.7"/></g>
-  <rect x="${PAD}" y="${H - 150}" width="${miles * pxPerMile}" height="4" fill="${C.ink}" fill-opacity="0.6"/>
-  <rect x="0" y="${H - 104}" width="${W}" height="104" fill="#ffffff" fill-opacity="0.55"/>
-</svg>`;
-
-  const r = routes[map.slug];
-  const big = (s, col) => label(s, 'Fraunces SemiBold 40', 'Fraunces-SemiBold.ttf', col);
-  const small = (s, col = C.muted) => label(s, 'Inter Medium 22', 'Inter-Medium.ttf', col);
+  // Base: the OSM tiles under the frame, desaturated and washed toward the site cream.
   const layers = [];
-  const place = (lbl, x, y, side) => {
-    // A label that would run off the right edge goes left of its dot instead of over it.
-    if (side === 'right' && x + 26 + lbl.w > W - 16) side = 'left';
-    const left = Math.round(Math.min(Math.max(side === 'left' ? x - lbl.w - 26 : x + 26, 16), W - lbl.w - 16));
-    layers.push({ input: lbl.data, left, top: Math.round(Math.min(Math.max(y - lbl.h / 2, 20), H - 130 - lbl.h)) });
-  };
-  // Put each end label on the side the route line does not leave from.
-  const main = lines[0];
-  const away = ([lon, lat], x) => (px(lon, lat)[0] > x ? 'left' : 'right');
-  place(await big(town.name, C.ink), tx, ty, away(main[Math.min(12, main.length - 1)], tx));
-  place(await big('Stuart', C.teal), sx, sy, away(main[Math.max(0, main.length - 13)], sx));
-  for (const s of map.also ?? []) { const [x, y] = px(PLACES[s].lon, PLACES[s].lat); place(await small(PLACES[s].name, C.teal), x, y, 'right'); }
-  const n = await label('N', 'Inter SemiBold 20', 'Inter-SemiBold.ttf', C.ink);
-  layers.push({ input: n.data, left: W - 70 - Math.round(n.w / 2), top: 82 });
-  const sc = await small(`${miles} mile${miles === 1 ? '' : 's'}`);
-  layers.push({ input: sc.data, left: PAD, top: H - 140 });
-  const cap = await label(`About ${r.miles} miles by car, ${town.name} to Stuart`, 'Inter SemiBold 26', 'Inter-SemiBold.ttf', C.ink);
-  layers.push({ input: cap.data, left: PAD, top: H - 82 });
-  const credit = await label('Route: OSRM · Map data © OpenStreetMap contributors', 'Inter Regular 16', 'Inter-Regular.ttf', C.muted);
-  layers.push({ input: credit.data, left: PAD, top: H - 38 });
+  for (let tx = Math.floor(ox / 256); tx <= Math.floor((ox + W - 1) / 256); tx++) {
+    for (let ty = Math.floor(oy / 256); ty <= Math.floor((oy + H - 1) / 256); ty++) {
+      layers.push({ input: await tile(z, tx, ty), left: tx * 256 - ox + 256, top: ty * 256 - oy + 256 });
+    }
+  }
+  // Two steps: sharp crops before it composites, whatever the call order.
+  const mosaic = await sharp({ create: { width: W + 512, height: H + 512, channels: 3, background: C.cream } })
+    .composite(layers)
+    .png()
+    .toBuffer();
+  const raw = await sharp(mosaic).extract({ left: 256, top: 256, width: W, height: H }).png().toBuffer();
+  const base1 = await sharp(raw)
+    .modulate({ saturation: 0.55, brightness: 1.03 })
+    .composite([{ input: Buffer.from(`<svg width="${W}" height="${H}"><rect width="100%" height="100%" fill="${C.cream}" fill-opacity="0.22"/></svg>`) }])
+    .png()
+    .toBuffer();
 
-  const img = sharp(Buffer.from(svg)).composite(layers);
-  mkdirSync(OUT, { recursive: true });
-  // Flat colors: a palette PNG, then lossless WebP from it, is ~10 KB (smaller than lossy WebP).
-  const png = await img.png({ palette: true, quality: 90 }).toBuffer();
-  writeFileSync(`${OUT}${map.slug}-map.png`, png);
-  await sharp(png).webp({ lossless: true }).toFile(`${OUT}${map.slug}-map.webp`);
-  console.log(`${map.slug}: ${r.minutes} min, ${r.miles} mi via ${r.roads.join(' > ')}`);
+  for (const [s, suffix] of outputs) {
+    const P = (p) => project(p, z).map((v, i) => (v - (i ? oy : ox)) * s);
+    const route = line.map((p) => P(p).map((v) => v.toFixed(1)).join(',')).join(' ');
+    const [tx, ty] = P([town.lon, town.lat]);
+    const [sx, sy] = P([STUART.lon, STUART.lat]);
+    const dot = (x, y, fill) => `<circle cx="${x}" cy="${y}" r="${8 * s}" fill="${fill}" stroke="#fff" stroke-width="${3 * s}"/>`;
+    const svg = `<svg width="${W * s}" height="${H * s}" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="${route}" fill="none" stroke="#fff" stroke-width="${10 * s}" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.9"/>
+      <polyline points="${route}" fill="none" stroke="${C.coral}" stroke-width="${5 * s}" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+    const over = [];
+
+    // Labels in white pills, on the side of each marker away from the route. Each pill
+    // also runs under its marker, hiding the tile's own copy of that place name.
+    const pill = async (text, color, x, y, preferLeft) => {
+      const l = await label(text, `Inter SemiBold ${15 * s}`, 'Inter-SemiBold.ttf', color);
+      const pw = l.w + 16 * s;
+      const ph = l.h + 8 * s;
+      let left = preferLeft ? x - 14 * s - pw : x + 14 * s;
+      if (left < 6 * s || left + pw > W * s - 6 * s) left = preferLeft ? x + 14 * s : x - 14 * s - pw;
+      left = Math.round(Math.min(Math.max(left, 6 * s), W * s - pw - 6 * s));
+      const top = Math.round(Math.min(Math.max(y - ph / 2, 6 * s), H * s - ph - 34 * s));
+      const bx = Math.round(Math.max(Math.min(left, x - 64 * s), 0));
+      const bw = Math.round(Math.min(Math.max(left + pw, x + 64 * s), W * s) - bx);
+      over.push({ input: Buffer.from(`<svg width="${bw}" height="${ph}"><rect width="100%" height="100%" rx="${ph / 2}" fill="#fff"/></svg>`), left: bx, top });
+      over.push({ input: l.data, left: left + 8 * s, top: top + 4 * s });
+    };
+    const awayLeft = (from, toward) => P(toward)[0] > from[0];
+    await pill(town.name, C.ink, tx, ty, awayLeft([tx, ty], line[Math.min(15, line.length - 1)]));
+    await pill('Stuart', C.teal, sx, sy, awayLeft([sx, sy], line[Math.max(0, line.length - 16)]));
+    // Route above the pills (labels sit on the side away from it), markers on top.
+    over.push({ input: Buffer.from(svg) });
+    over.push({ input: Buffer.from(`<svg width="${W * s}" height="${H * s}" xmlns="http://www.w3.org/2000/svg">${dot(tx, ty, C.coral)}${dot(sx, sy, C.teal)}</svg>`) });
+
+    const attr = await label('© OpenStreetMap contributors', `Inter Medium ${11 * s}`, 'Inter-Medium.ttf', '#4a3f38');
+    const aw = attr.w + 12 * s;
+    const ah = attr.h + 6 * s;
+    over.push({ input: Buffer.from(`<svg width="${aw}" height="${ah}"><rect width="100%" height="100%" fill="#fff" fill-opacity="0.85"/></svg>`), left: W * s - aw, top: H * s - ah });
+    over.push({ input: attr.data, left: W * s - aw + 6 * s, top: H * s - ah + 3 * s });
+
+    const base = s === 1 ? base1 : await sharp(base1).resize(W * 2, H * 2, { kernel: 'lanczos3' }).sharpen({ sigma: 0.6 }).toBuffer();
+    const out = `${OUT}${slug}-map-${suffix}.webp`;
+    await sharp(base).composite(over).webp({ quality: 80, effort: 6 }).toFile(out);
+    console.log(out, `z${z}`, Math.round(readFileSync(out).length / 1024), 'KB');
+  }
+  for (const old of ['webp', 'png']) rmSync(`${OUT}${slug}-map.${old}`, { force: true });
 }
 
-const routes = process.argv.includes('--fetch') || !existsSync(CACHE) ? await fetchRoutes() : JSON.parse(readFileSync(CACHE, 'utf8'));
-for (const m of MAPS) await draw(m, routes);
+mkdirSync(TILES, { recursive: true });
+mkdirSync(OUT, { recursive: true });
+const routes = process.argv.includes('--fetch') ? await fetchRoutes() : JSON.parse(readFileSync(CACHE, 'utf8'));
+for (const slug of MAPS) for (const f of FRAMES) await draw(slug, routes, f);
+for (const slug of MAPS) {
+  const r = routes[slug];
+  console.log(`${slug}: ${r.minutes} min, ${r.miles} mi via ${r.roads.join(' > ')}`);
+}

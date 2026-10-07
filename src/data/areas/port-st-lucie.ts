@@ -23,7 +23,7 @@ const area: LocalArea = {
     miles: 10.8,
     routeSummary: 'Port St. Lucie Boulevard to US 1, then south over the Roosevelt Bridge',
     steps: [
-      'From the middle of the city, take Port St. Lucie Boulevard (SR 716) southeast. It crosses the North Fork of the St. Lucie River on the way.',
+      'From the middle of the city, take Airoso Boulevard south to Port St. Lucie Boulevard (SR 716), then follow it southeast. It crosses the North Fork of the St. Lucie River on the way.',
       'Turn right onto US 1 and head south. You leave St. Lucie County and enter Martin County along this stretch.',
       'Cross the Roosevelt Bridge over the St. Lucie River into Stuart. From the city center that’s about 11 miles.',
       'From Tradition, follow Tradition Parkway into Gatlin Boulevard and take it east to Port St. Lucie Boulevard, then use the same route. It’s about 16 miles, so allow 30 to 40 minutes.',

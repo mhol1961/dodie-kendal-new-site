@@ -8,7 +8,7 @@ if (process.env.PUBLIC_SITE_PREVIEW !== '1') {
   for (const a of AREAS) {
     if (RELEASED.includes(a.slug)) continue;
     for (const f of readdirSync('dist/client/areas')) {
-      if (f.startsWith(`${a.slug}-map.`) || f.startsWith(`${a.slug}-hero-`)) rmSync(`dist/client/areas/${f}`);
+      if (f.startsWith(`${a.slug}-map`) || f.startsWith(`${a.slug}-hero-`)) rmSync(`dist/client/areas/${f}`);
     }
   }
 }

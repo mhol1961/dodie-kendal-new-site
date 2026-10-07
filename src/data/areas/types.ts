@@ -37,7 +37,7 @@ export interface LocalArea {
     /** Directions from the town center. Only roads the real route uses. */
     steps: [string, ...string[]];
   };
-  /** Alt text for /areas/<slug>-map.{webp,png} (built by scripts/build-area-maps.mjs). */
+  /** Alt text for /areas/<slug>-map-{800,1600}.webp (built by scripts/build-area-maps.mjs). */
   mapAlt: string;
   /**
    * Optional hero photo of a real place in this town, behind the heading:

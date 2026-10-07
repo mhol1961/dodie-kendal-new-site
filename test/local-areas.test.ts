@@ -72,3 +72,10 @@ test('every hero photo named in the data exists in both sizes, with alt text and
     assert.ok(a.hero.credit && a.hero.creditUrl, `${a.slug} credit`);
   }
 });
+
+test('every area has its OpenStreetMap drive map in both sizes', async () => {
+  const { existsSync } = await import('node:fs');
+  for (const a of AREAS) {
+    for (const w of ['800', '1600', 'phone']) assert.ok(existsSync(`public/areas/${a.slug}-map-${w}.webp`), `${a.slug} map ${w}`);
+  }
+});
