@@ -109,11 +109,11 @@ const directions = `https://www.google.com/maps/dir/?api=1&origin=${encodeURICom
   <section class="section-y bg-bg-base">
     {area.hero ? (
       <div class="relative -mt-16 overflow-hidden md:-mt-24">
-        {/* Real <img> (crawlable, LCP-prioritized). The fade sits only where the text is:
-            on computers a cream fade on the left that clears toward the right, on phones
-            clear photo on top and the text on a fade below. */}
+        {/* Real <img> (crawlable, LCP-prioritized). Phones: the photo is a clear band on
+            top (its own 9:5 crop, subject centred) with the text on cream below. Computers:
+            the photo fills the hero, solid cream behind the text fading to clear. */}
         <picture>
-          <source media="(max-width: 767px)" srcset={`/areas/${area.slug}-hero-900.webp`} width="900" height="750" />
+          <source media="(max-width: 767px)" srcset={`/areas/${area.slug}-hero-900.webp`} width="900" height="500" />
           <img
             src={`/areas/${area.slug}-hero-1600.webp`}
             alt={area.hero.alt}
@@ -121,16 +121,16 @@ const directions = `https://www.google.com/maps/dir/?api=1&origin=${encodeURICom
             height="800"
             fetchpriority="high"
             decoding="async"
-            class="absolute inset-0 h-full w-full object-cover"
+            class="absolute inset-x-0 top-0 aspect-[9/5] w-full object-cover md:inset-0 md:aspect-auto md:h-full"
             style={area.hero.position ? `object-position: ${area.hero.position}` : undefined}
           />
         </picture>
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent from-20% to-bg-base to-[42%] md:hidden" aria-hidden="true" />
+        <div class="absolute inset-x-0 top-0 aspect-[9/5] bg-gradient-to-b from-transparent from-70% to-bg-base md:hidden" aria-hidden="true" />
         {/* Computers: solid cream from the left edge to the end of the text column
             (container offset + padding + 36rem), then an 8rem fade to clear. Solid, so
             the text has the same contrast as on the plain page. */}
         <div class="hero-side-fade absolute inset-y-0 left-0 hidden md:block" aria-hidden="true" />
-        <div class="container-default relative max-w-4xl pb-12 pt-48 md:pb-24 md:pt-28">
+        <div class="container-default relative max-w-4xl pb-4 pt-[calc(55.6vw+0.5rem)] md:pb-24 md:pt-28">
           <div class="md:max-w-xl">
             <p class="text-xs uppercase tracking-[0.22em] text-brand-hover">QHHT · {area.name}</p>
             <h1 class="mt-3 font-display text-ink">{area.heading}</h1>
