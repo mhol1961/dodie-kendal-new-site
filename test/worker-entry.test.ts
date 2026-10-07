@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 // The entry imports the built Astro worker; test only the pure path function.
 import { readFileSync } from 'node:fs';
 
-const src = readFileSync(new URL('../worker-entry.mjs', import.meta.url), 'utf8').replace(/^import \{ handle \}.*$/m, 'const handle = () => {};');
+const src = readFileSync(new URL('../worker-entry.mjs', import.meta.url), 'utf8').replace(/^import \{ handle \}.*$/m, "const handle = () => { throw new Error('app reached'); };");
 const { canonicalPath, redirectTarget, SECURITY_HEADERS, default: worker } = await import('data:text/javascript,' + encodeURIComponent(src));
 
 test('trailing slash is dropped (301 target), root stays', () => {
@@ -53,4 +53,19 @@ test('preview Worker: noindex everywhere, robots blocks all, API never reaches t
   const redirect = await worker.fetch(new Request('https://p.example/about/'), env, {});
   assert.equal(redirect.status, 301);
   assert.equal(redirect.headers.get('X-Robots-Tag'), 'noindex, nofollow');
+});
+
+test('preview Worker: encoded, doubled-slash and non-read requests never reach the app', async () => {
+  const env = { SITE_PREVIEW: '1' };
+  const paths = ['/%61pi/quiz', '/%2561pi/quiz', '//api/quiz', '/API/contact', '/api', '/api/', '/%5Capi/quiz', '/%E0%A4%A'];
+  for (const p of paths) {
+    const r = await worker.fetch(new Request('https://p.example' + p), env, {});
+    assert.equal((await r.json()).reason, 'preview', p);
+  }
+  for (const method of ['POST', 'PUT', 'DELETE']) {
+    const r = await worker.fetch(new Request('https://p.example/about', { method, body: method === 'DELETE' ? null : 'x' }), env, {});
+    assert.equal((await r.json()).reason, 'preview', method);
+  }
+  const head = await worker.fetch(new Request('https://p.example/api/videos.json', { method: 'HEAD' }), env, {});
+  assert.equal(head.headers.get('X-Robots-Tag'), 'noindex, nofollow');
 });

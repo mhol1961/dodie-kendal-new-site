@@ -61,18 +61,29 @@ function withSecurityHeaders(response) {
 // Private preview Worker only (SITE_PREVIEW=1, set by scripts/deploy-preview.sh):
 // nothing indexed, and no form or API call reaches GHL. Forms get a harmless
 // "saved" reply so the thank-you screens can be reviewed.
-function previewOnly(pathname) {
-  if (pathname === '/robots.txt') return new Response('User-agent: *\nDisallow: /\n');
-  if (pathname.startsWith('/api/')) {
-    return Response.json({ ok: true, captured: true, emailed: false, reason: 'preview' });
+// Fails closed: every non-read, and any path that decodes (however many times) to
+// /api, gets the stub, so encoded or doubled-slash paths can't reach the app's API.
+function previewOnly(request) {
+  const stub = () => Response.json({ ok: true, captured: true, emailed: false, reason: 'preview' });
+  let p = new URL(request.url).pathname;
+  for (let i = 0; ; i++) {
+    let d;
+    try { d = decodeURIComponent(p); } catch { return stub(); }
+    if (d === p) break;
+    if (i === 5) return stub();
+    p = d;
   }
+  p = p.replace(/[\\/]+/g, '/').toLowerCase();
+  if (p === '/robots.txt') return new Response('User-agent: *\nDisallow: /\n');
+  const isRead = request.method === 'GET' || request.method === 'HEAD';
+  if (!isRead || p === '/api' || p.startsWith('/api/')) return stub();
   return null;
 }
 
 export default {
   async fetch(request, env, ctx) {
     if (env.SITE_PREVIEW !== '1') return route(request, env, ctx);
-    const res = previewOnly(new URL(request.url).pathname);
+    const res = previewOnly(request);
     const out = res ? withSecurityHeaders(res) : await route(request, env, ctx);
     out.headers.set('X-Robots-Tag', 'noindex, nofollow');
     return out;
