@@ -32,6 +32,12 @@ const area: LocalArea = {
     heading: 'Make a day of it',
     body: 'Plan to arrive a little early so you’re not rushing in. Once the session is over, let the drive home be quiet time to sit with what came through.',
   },
+  hero: {
+    alt: 'The red Jupiter Inlet Lighthouse rising above green shoreline and calm blue water on a clear day in Jupiter, Florida',
+    position: 'right 25%',
+    credit: 'Photo: Lea Shanley, CC BY-SA 3.0, via Wikimedia Commons, cropped',
+    creditUrl: 'https://commons.wikimedia.org/wiki/File:Jupiter_Inlet_Lighthouse_and_Museum_-_waterfront_view.jpg',
+  },
   faq: [
     {
       question: 'Do you offer QHHT sessions in Jupiter?',

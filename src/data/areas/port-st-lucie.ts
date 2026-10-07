@@ -35,6 +35,12 @@ const area: LocalArea = {
     heading: 'Give yourself a soft landing',
     body: 'Sessions go deep, and many clients prefer to keep the rest of the day open. From Port St. Lucie you can be home and resting soon after we finish.',
   },
+  hero: {
+    alt: 'Calm Lake Tradition under a clear blue sky, with palms and a white gazebo on the far shore, in Port St. Lucie, Florida',
+    position: 'center 70%',
+    credit: 'Photo: Dough4872, CC BY-SA 4.0, via Wikimedia Commons, cropped',
+    creditUrl: 'https://commons.wikimedia.org/wiki/File:Lake_Tradition_in_Port_St_Lucie_FL_looking_north_from_south_shore.jpeg',
+  },
   faq: [
     {
       question: 'Do you hold sessions in Port St. Lucie?',

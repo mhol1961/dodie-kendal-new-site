@@ -39,6 +39,21 @@ export interface LocalArea {
   };
   /** Alt text for /areas/<slug>-map.{webp,png} (built by scripts/build-area-maps.mjs). */
   mapAlt: string;
+  /**
+   * Optional hero photo of a real place in this town, behind the heading:
+   * /areas/<slug>-hero-{900,1600}.webp (scripts/build-area-heroes.mjs). Only freely
+   * licensed photos; source, photographer and license go in docs/areas-photo-credits.md.
+   */
+  hero?: {
+    /** Describes the place and the town. */
+    alt: string;
+    /** CSS object-position for the crop, e.g. 'center 40%'. */
+    position?: string;
+    /** Shown small under the hero when the license requires attribution. */
+    credit?: string;
+    /** The photo's source page (with its license), linked from the credit. */
+    creditUrl?: string;
+  };
   /** Optional short note in the "Getting here" section. */
   localNote?: { heading: string; body: string };
   /** ONLY a real testimonial from a client in or near this town, used with permission. Omit otherwise. */

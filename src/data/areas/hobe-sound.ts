@@ -31,6 +31,12 @@ const area: LocalArea = {
     heading: 'Use the drive',
     body: 'Some clients like to keep the radio off on the way in and let their questions settle. On the way home, the quiet gives the session room to keep unfolding.',
   },
+  hero: {
+    alt: 'Still water of the Loxahatchee River lined with green mangroves under a soft blue sky at Jonathan Dickinson State Park in Hobe Sound, Florida',
+    position: 'center 55%',
+    credit: 'Photo: Ebyabe, CC BY-SA 3.0, via Wikimedia Commons, cropped',
+    creditUrl: 'https://commons.wikimedia.org/wiki/File:Hobe_Sound_FL_Jonathan_Dickinson_SP_Loxahatchee05.jpg',
+  },
   faq: [
     {
       question: 'Do you see clients from Hobe Sound?',

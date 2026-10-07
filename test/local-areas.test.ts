@@ -62,3 +62,13 @@ test('FAQPage JSON-LD is built from the same text the page shows', () => {
     );
   }
 });
+
+test('every hero photo named in the data exists in both sizes, with alt text and a credit', async () => {
+  const { existsSync } = await import('node:fs');
+  for (const a of AREAS) {
+    if (!a.hero) continue;
+    for (const w of [900, 1600]) assert.ok(existsSync(`public/areas/${a.slug}-hero-${w}.webp`), `${a.slug} ${w}`);
+    assert.match(a.hero.alt, new RegExp(a.name.replace('.', '\\.')), `${a.slug} alt names the town`);
+    assert.ok(a.hero.credit && a.hero.creditUrl, `${a.slug} credit`);
+  }
+});

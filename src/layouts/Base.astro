@@ -82,6 +82,7 @@ const preview = import.meta.env.PUBLIC_SITE_PREVIEW === '1'; // private preview 
         data-cf-beacon={JSON.stringify({ token: cfBeaconToken })}
       />
     )}
+    <slot name="head" />
   </head>
   <body class="bg-bg-base text-ink antialiased">
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-bg-raised focus:px-4 focus:py-2 focus:rounded-pill focus:shadow-md">
