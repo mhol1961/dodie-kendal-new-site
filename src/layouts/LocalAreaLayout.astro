@@ -101,19 +101,21 @@ const directions = `https://www.google.com/maps/dir/?api=1&origin=${encodeURICom
 <Base seo={seo} schemas={schemas}>
   {area.hero && (
     <Fragment slot="head">
-      <link rel="preload" as="image" type="image/webp" href={`/areas/${area.slug}-hero-900.webp`} media="(max-width: 767px)" fetchpriority="high" />
-      <link rel="preload" as="image" type="image/webp" href={`/areas/${area.slug}-hero-1600.webp`} media="(min-width: 768px)" fetchpriority="high" />
+      <link rel="preload" as="image" type="image/webp" href={`/areas/${area.slug}-hero-900.webp`} media="(max-width: 1023px)" fetchpriority="high" />
+      <link rel="preload" as="image" type="image/webp" href={`/areas/${area.slug}-hero-1600.webp`} media="(min-width: 1024px)" fetchpriority="high" />
     </Fragment>
   )}
   <!-- Intro: drive time in the first paragraph, price and next step right under it -->
   <section class="section-y bg-bg-base">
     {area.hero ? (
-      <div class="relative -mt-16 overflow-hidden md:-mt-24">
-        {/* Real <img> (crawlable, LCP-prioritized). Phones: the photo is a clear band on
-            top (its own 9:5 crop, subject centred) with the text on cream below. Computers:
-            the photo fills the hero, solid cream behind the text fading to clear. */}
+      <div class="relative -mt-16 md:-mt-24 lg:overflow-hidden">
+        {/* Real <img> (crawlable, LCP-prioritized), nothing placed on it. Phones and
+            tablets: a full-width banner about 40% of the screen tall, no fade, text on
+            cream below. Laptops and up: the photo spans the whole hero, the crop puts the
+            subject in the right half, and a cream fade (nearly solid behind the text)
+            clears just past the middle. Credits live in a line above the footer. */}
         <picture>
-          <source media="(max-width: 767px)" srcset={`/areas/${area.slug}-hero-900.webp`} width="900" height="500" />
+          <source media="(max-width: 1023px)" srcset={`/areas/${area.slug}-hero-900.webp`} width="900" height="780" />
           <img
             src={`/areas/${area.slug}-hero-1600.webp`}
             alt={area.hero.alt}
@@ -121,30 +123,21 @@ const directions = `https://www.google.com/maps/dir/?api=1&origin=${encodeURICom
             height="800"
             fetchpriority="high"
             decoding="async"
-            class="absolute inset-x-0 top-0 aspect-[9/5] w-full object-cover md:inset-0 md:aspect-auto md:h-full"
+            class="block h-[40vh] min-h-[13rem] w-full object-cover lg:absolute lg:inset-0 lg:h-full lg:min-h-0"
             style={area.hero.position ? `object-position: ${area.hero.position}` : undefined}
           />
         </picture>
-        <div class="absolute inset-x-0 top-0 aspect-[9/5] bg-gradient-to-b from-transparent from-70% to-bg-base md:hidden" aria-hidden="true" />
-        {/* Computers: solid cream from the left edge to the end of the text column
-            (container offset + padding + 36rem), then an 8rem fade to clear. Solid, so
-            the text has the same contrast as on the plain page. */}
-        <div class="hero-side-fade absolute inset-y-0 left-0 hidden md:block" aria-hidden="true" />
-        <div class="container-default relative max-w-4xl pb-4 pt-[calc(55.6vw+0.5rem)] md:pb-24 md:pt-28">
-          <div class="md:max-w-xl">
+        <div class="hero-side-fade absolute inset-0 hidden lg:block" aria-hidden="true" />
+        <div class="container-default relative max-w-4xl pt-10 lg:max-w-[1200px] lg:pb-24 lg:pt-28">
+          <div class="lg:max-w-[32rem]">
             <p class="text-xs uppercase tracking-[0.22em] text-brand-hover">QHHT · {area.name}</p>
             <h1 class="mt-3 font-display text-ink">{area.heading}</h1>
           </div>
         </div>
-        {area.hero.credit && (
-          <p class="absolute right-3 top-2 max-w-[calc(100%-1.5rem)] rounded bg-bg-base/85 px-2 py-0.5 text-[11px] leading-snug text-ink-secondary md:bottom-2 md:top-auto">
-            {area.hero.creditUrl ? <a href={area.hero.creditUrl} rel="noopener" class="hover:underline">{area.hero.credit}</a> : area.hero.credit}
-          </p>
-        )}
       </div>
     ) : (
       <div class="container-default max-w-4xl">
-        <p class="text-xs uppercase tracking-[0.22em] text-brand">QHHT · {area.name}</p>
+        <p class="text-xs uppercase tracking-[0.22em] text-brand-hover">QHHT · {area.name}</p>
         <h1 class="mt-3 font-display text-ink">{area.heading}</h1>
       </div>
     )}
@@ -285,11 +278,23 @@ const directions = `https://www.google.com/maps/dir/?api=1&origin=${encodeURICom
     cta={{ label: 'Book a Session', href: '/book' }}
     trustLine="In-person sessions · Stuart, FL"
   />
+  {area.hero?.credit && (
+    <p slot="above-footer" class="container-default -mb-24 mt-24 pb-4 text-xs text-ink-muted">
+      Photo credits: {area.hero.creditUrl ? <a href={area.hero.creditUrl} rel="noopener" class="underline">{area.hero.credit}</a> : area.hero.credit}
+    </p>
+  )}
 </Base>
 
 <style>
+  /* Nearly solid cream to the end of the text column (1200px container + 2rem padding
+     + 32rem text), clear 12rem later: just past the middle on laptop widths. */
   .hero-side-fade {
-    width: calc((100% - min(100%, 56rem)) / 2 + 2rem + 36rem + 8rem);
-    background: linear-gradient(to right, oklch(var(--bg-base)) calc(100% - 8rem), oklch(var(--bg-base) / 0));
+    --text-end: calc((100% - min(100%, 75rem)) / 2 + 2rem + 32rem);
+    background: linear-gradient(
+      to right,
+      oklch(var(--bg-base) / 0.98) 0,
+      oklch(var(--bg-base) / 0.98) var(--text-end),
+      oklch(var(--bg-base) / 0) calc(var(--text-end) + 12rem)
+    );
   }
 </style>

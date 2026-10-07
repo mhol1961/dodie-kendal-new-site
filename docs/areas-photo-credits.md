@@ -1,6 +1,6 @@
 # Town page hero photos: credits
 
-Every hero photo on the /qhht/{town} pages. Only freely licensed photos (public domain, CC0, CC BY, CC BY-SA, Unsplash or Pexels license). All four below are CC BY-SA from Wikimedia Commons, so each page shows a credit line linking to the source. The photos are cropped and compressed (`scripts/build-area-heroes.mjs`); the Port St. Lucie photo is also cropped on the right to leave out a church steeple.
+Every hero photo on the /qhht/{town} pages. Only freely licensed photos (public domain, CC0, CC BY, CC BY-SA, Unsplash or Pexels license). All four below are CC BY-SA from Wikimedia Commons, so each page credits its photo in one short "Photo credits" line just above the footer (never on the image), linking to the source. The photos are cropped and compressed (`scripts/build-area-heroes.mjs`); the Port St. Lucie photo is also cropped on the right to leave out a church steeple.
 
 | Town | Place | Source | Photographer | License |
 |---|---|---|---|---|
@@ -11,4 +11,6 @@ Every hero photo on the /qhht/{town} pages. Only freely licensed photos (public 
 
 **Palm City:** no photo. No properly licensed photo of a recognizable Palm City place was found on Wikimedia Commons, Unsplash or Pexels (October 2026), so its page has no hero photo.
 
-To add or replace one: download the original, record it here, run `node scripts/build-area-heroes.mjs <slug> <original> [position]`, then set `hero` (alt, position, credit, creditUrl) in `src/data/areas/<slug>.ts`.
+**Credit-free search (October 2026):** public domain, CC0, Unsplash and Pexels were searched again for all five towns to avoid credits. Nothing was at least as good as the photos above (runner-ups: an overcast portrait of the Jupiter lighthouse on Unsplash, a dusk Jensen Beach Causeway on Unsplash, a grey Bridge Road banyan scene in Hobe Sound on Pexels), so the CC BY-SA photos stay and keep their credits.
+
+To add or replace one: download the original, record it here, run `node scripts/build-area-heroes.mjs <slug> <original> <subjectX> <subjectY>` (the subject lands in the clear right half on laptops and centred in the phone banner), then set `hero` (alt, credit, creditUrl) in `src/data/areas/<slug>.ts`.

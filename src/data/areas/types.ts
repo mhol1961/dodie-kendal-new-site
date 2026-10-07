@@ -49,7 +49,7 @@ export interface LocalArea {
     alt: string;
     /** CSS object-position for the crop, e.g. 'center 40%'. */
     position?: string;
-    /** Shown small under the hero when the license requires attribution. */
+    /** Credit for licenses that need one, shown in a "Photo credits" line above the footer (never on the image). */
     credit?: string;
     /** The photo's source page (with its license), linked from the credit. */
     creditUrl?: string;

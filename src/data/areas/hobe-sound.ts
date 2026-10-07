@@ -33,8 +33,7 @@ const area: LocalArea = {
   },
   hero: {
     alt: 'Still water of the Loxahatchee River lined with green mangroves under a soft blue sky at Jonathan Dickinson State Park in Hobe Sound, Florida',
-    position: 'center 55%',
-    credit: 'Photo: Ebyabe, CC BY-SA 3.0, via Wikimedia Commons, cropped',
+    credit: 'Ebyabe, CC BY-SA 3.0, via Wikimedia Commons, cropped',
     creditUrl: 'https://commons.wikimedia.org/wiki/File:Hobe_Sound_FL_Jonathan_Dickinson_SP_Loxahatchee05.jpg',
   },
   faq: [

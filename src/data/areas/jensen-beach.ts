@@ -29,8 +29,7 @@ const area: LocalArea = {
   mapAlt: 'Map of the drive from Jensen Beach south to Stuart, about 4.8 miles, ending on US 1 over the Roosevelt Bridge.',
   hero: {
     alt: 'White ibises grazing beside a quiet pond under a spreading oak at Indian Riverside Park in Jensen Beach, Florida',
-    position: 'center 55%',
-    credit: 'Photo: Tamanoeconomico, CC BY-SA 4.0, via Wikimedia Commons, cropped',
+    credit: 'Tamanoeconomico, CC BY-SA 4.0, via Wikimedia Commons, cropped',
     creditUrl: 'https://commons.wikimedia.org/wiki/File:Indian_Riverside_Park_(Jensen_Beach,_Florida).jpg',
   },
   faq: [

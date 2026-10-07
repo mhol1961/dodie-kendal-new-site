@@ -94,6 +94,7 @@ const preview = import.meta.env.PUBLIC_SITE_PREVIEW === '1'; // private preview 
       <slot />
       {leadMagnet && <LeadMagnetGate />}
     </main>
+    <slot name="above-footer" />
     <Footer />
     {!preview && <ChatWidget />}
   </body>
