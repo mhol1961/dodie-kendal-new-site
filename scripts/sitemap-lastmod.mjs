@@ -29,7 +29,22 @@ export function postDate(markdown) {
   return d && !isNaN(d.valueOf()) ? d : null;
 }
 
+// A shallow checkout (CI clones can be) only has the newest commit, which would date
+// every page "today". Fetch the full history once before reading any dates.
+let unshallowed = false;
+function ensureHistory(root) {
+  if (unshallowed) return;
+  unshallowed = true;
+  try {
+    const shallow = execFileSync('git', ['rev-parse', '--is-shallow-repository'], { cwd: root, encoding: 'utf8' }).trim();
+    if (shallow === 'true') execFileSync('git', ['fetch', '--unshallow', '--quiet'], { cwd: root, stdio: 'inherit' });
+  } catch (err) {
+    console.warn('[sitemap-lastmod] could not fetch full git history; lastmod may show the build date', err.message);
+  }
+}
+
 function gitDate(file, root) {
+  ensureHistory(root);
   try {
     const out = execFileSync('git', ['log', '-1', '--format=%cI', '--', file], { cwd: root, encoding: 'utf8' }).trim();
     return out ? new Date(out) : null;
