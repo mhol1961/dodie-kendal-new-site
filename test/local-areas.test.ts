@@ -12,11 +12,12 @@ test('preview builds all five towns', () => {
   assert.deepEqual(builtAreas(true).map((a) => a.slug), ALL);
 });
 
-test('a live build builds only released towns (none yet)', () => {
-  assert.deepEqual(RELEASED, []);
-  assert.deepEqual(builtAreas(false), []);
+test('a live build builds only released towns, released in the agreed order', () => {
+  const ORDER = ['port-st-lucie', 'jupiter', 'palm-city', 'jensen-beach', 'hobe-sound'];
+  assert.deepEqual(RELEASED, ORDER.slice(0, RELEASED.length), 'release the next town in order, one at a time');
+  assert.deepEqual(builtAreas(false).map((a) => a.slug), RELEASED);
   // Plain Node has no import.meta.env, so the default is the live (non-preview) build.
-  assert.deepEqual(builtAreas(), []);
+  assert.deepEqual(builtAreas().map((a) => a.slug), RELEASED);
 });
 
 test('releasing one town builds and links only that town', () => {

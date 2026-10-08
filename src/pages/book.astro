@@ -15,7 +15,7 @@ interface Pricing {
   items?: Array<{ label: string; price: string; note?: string }>;
 }
 const pricing: Pricing | null = {
-  heading: '$300 per session. A $50 deposit reserves your time.',
+  heading: '$300 per session. A $50 deposit reserves your time, and the remaining $250 is paid on the day of your session.',
   intro: 'Your session includes the pre-session conversation, the hypnosis session itself, and your audio recording to keep. You pay the deposit when you book, and the calendar confirms your time instantly by email.',
 };
 
@@ -32,7 +32,7 @@ const seo = getSeo({
   path: '/book',
   title: 'Book a QHHT Session',
   description:
-    'Book a QHHT session with Dodie Kendall in Stuart, FL: about five hours in person, $300 total with a $50 deposit. Or start with a free 30-minute call.',
+    'Book a QHHT session with Dodie Kendall in Stuart, FL: about five hours in person, $300 ($50 deposit, $250 on the day). Or start with a free 30-minute call.',
 });
 
 const schemas = [
@@ -106,7 +106,7 @@ const next = [
           <div class="rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm">
             <p class="text-xs uppercase tracking-wider text-ink-muted">Deposit at booking</p>
             <p class="mt-1 font-display text-3xl text-ink">$50</p>
-            <p class="mt-1 text-xs text-ink-secondary">Reserves your time</p>
+            <p class="mt-1 text-xs text-ink-secondary">Reserves your time · $250 balance on session day</p>
           </div>
           <div class="rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm">
             <p class="text-xs uppercase tracking-wider text-ink-muted">Duration</p>

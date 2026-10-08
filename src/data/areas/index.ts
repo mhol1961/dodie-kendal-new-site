@@ -2,7 +2,8 @@
 //
 // RELEASE PLAN (rankings protection): towns go live one at a time, about one a week,
 // in this order: port-st-lucie, jupiter, palm-city, jensen-beach, hobe-sound.
-// To release a town, add its slug to RELEASED and deploy. Unreleased towns are not
+// To release a town, add its slug to RELEASED (one line), add its llms.txt line, and
+// push to main (the push deploys). Unreleased towns are not
 // built, so they are absent from the site, sitemap, links and "Areas I serve" lists.
 // A build with PUBLIC_SITE_PREVIEW=1 builds all five (noindexed) for Dodie's preview.
 import type { LocalArea } from './types';
@@ -12,7 +13,9 @@ import palmCity from './palm-city.ts';
 import jensenBeach from './jensen-beach.ts';
 import hobeSound from './hobe-sound.ts';
 
-export const RELEASED: string[] = [];
+// Released 2026-10-08: port-st-lucie. Next, one per release (docs/areas-release-plan.md):
+//   jupiter 2026-10-15 · palm-city 2026-10-22 · jensen-beach 2026-10-29 · hobe-sound 2026-11-05
+export const RELEASED: string[] = ['port-st-lucie'];
 
 export const AREAS: LocalArea[] = [portStLucie, jupiter, palmCity, jensenBeach, hobeSound];
 

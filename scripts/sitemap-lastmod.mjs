@@ -14,6 +14,8 @@ export function sourceFor(pathname, root = process.cwd()) {
     const md = `src/content/insights/${post[1]}.md`;
     if (existsSync(join(root, md))) return md;
   }
+  const town = /^\/qhht\/([^/]+)$/.exec(p);
+  if (town && existsSync(join(root, `src/data/areas/${town[1]}.ts`))) return `src/data/areas/${town[1]}.ts`;
   for (const f of [`src/pages${p || '/index'}.astro`, `src/pages${p}/index.astro`]) {
     if (existsSync(join(root, f))) return f;
   }

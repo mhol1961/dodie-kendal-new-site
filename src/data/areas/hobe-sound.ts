@@ -49,7 +49,7 @@ const area: LocalArea = {
     },
     {
       question: 'How do I reserve a time?',
-      answer: 'Book online. $300 per session. A $50 deposit reserves your time. Your booking is confirmed instantly by email.',
+      answer: 'Book online. $300 per session. A $50 deposit reserves your time, and the remaining $250 is paid on the day of your session. Your booking is confirmed instantly by email.',
     },
     {
       question: 'Will I remember the session?',

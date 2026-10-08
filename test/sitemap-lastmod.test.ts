@@ -7,6 +7,7 @@ import { dropFromSitemap } from '../scripts/sitemap-drop-noindex.mjs';
 test('maps URLs to their source files', () => {
   assert.equal(sourceFor('/'), 'src/pages/index.astro');
   assert.equal(sourceFor('/about'), 'src/pages/about.astro');
+  assert.equal(sourceFor('/qhht/port-st-lucie'), 'src/data/areas/port-st-lucie.ts');
   assert.equal(sourceFor('/about/'), 'src/pages/about.astro');
   assert.equal(sourceFor('/insights'), 'src/pages/insights/index.astro');
   assert.equal(sourceFor('/insights/past-life-regression-vs-qhht'), 'src/content/insights/past-life-regression-vs-qhht.md');
