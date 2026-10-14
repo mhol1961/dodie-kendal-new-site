@@ -3,11 +3,12 @@
  * MetaPixel — Meta (Facebook) Pixel base code + PageView tracking.
  *
  * Renders the standard Meta Pixel snippet (init + PageView) plus the
- * <noscript> fallback tracking image. Gated on BOTH:
- *   - PUBLIC_FB_PIXEL_ID being set in the environment, AND
- *   - import.meta.env.PROD being true.
+ * <noscript> fallback tracking image. Gated on ALL of:
+ *   - PUBLIC_FB_PIXEL_ID being set in the environment,
+ *   - import.meta.env.PROD being true, AND
+ *   - not a private preview build (PUBLIC_SITE_PREVIEW=1, scripts/deploy-preview.sh).
  *
- * Either guard alone renders nothing. The PROD gate is critical:
+ * Any one failing renders nothing. The PROD gate is critical:
  * without it, dev/preview/QA traffic would land in the same Facebook
  * audience and conversion stream as real visitors, polluting custom
  * audiences and skewing ad optimization — and that pollution is
@@ -27,7 +28,7 @@
  */
 
 const pixelId = import.meta.env.PUBLIC_FB_PIXEL_ID;
-const enabled = import.meta.env.PROD && pixelId;
+const enabled = import.meta.env.PROD && pixelId && import.meta.env.PUBLIC_SITE_PREVIEW !== '1';
 ---
 {enabled && (
   <>
