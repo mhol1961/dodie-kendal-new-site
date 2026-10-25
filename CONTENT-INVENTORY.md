@@ -12,7 +12,7 @@
 | Home hero copy | ⏳ | Tightened in `COPY-DECK.md`; needs Dodie's sign-off on phrasing. |
 | About page chapters (4–6) | ⏳ | Restructured from existing site text into chapters; voice preserved. |
 | QHHT explainer | ⏳ | Drafted in `COPY-DECK.md`; needs Dodie's review for accuracy. |
-| Book-page reassurance | ⏳ | Drafted; includes $300 / $50 deposit pricing. |
+| Book-page reassurance | ⏳ | Drafted; includes $350 / $50 deposit pricing. |
 | Contact-page intro + form labels | ⏳ | Drafted. |
 | FAQ Q&A (10–20 items) | ❌ | Seed list drafted in `COPY-DECK.md`; full answers to draft after Dodie review. |
 | Privacy Policy | ⏳ | Boilerplate template ready; needs counsel review or template-service generation. |

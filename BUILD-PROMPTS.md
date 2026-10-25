@@ -125,7 +125,7 @@ Already executed in the kickoff session. Tier 1 docs have full content; Tier 2 d
 
 > Build `src/pages/book.astro`. Sections:
 > 1. Pre-embed reassurance copy — 2 short paragraphs about confidentiality, what a 5-hour session involves, the $50 deposit.
-> 2. `BookingEmbed.astro` — wrap Dodie's GHL calendar iframe in a card with our tokens. Add a friendly heading "Select a time that feels right." Above the iframe, surface the price ("$300 total, $50 deposit at booking") to remove pricing surprise.
+> 2. `BookingEmbed.astro` — wrap Dodie's GHL calendar iframe in a card with our tokens. Add a friendly heading "Select a time that feels right." Above the iframe, surface the price ("$350 total, $50 deposit at booking") to remove pricing surprise.
 > 3. "What happens next" 3-step — Confirmation email → Pre-session prep guide → Day-of check-in.
 > 4. Privacy reassurance — link to `/privacy`.
 >

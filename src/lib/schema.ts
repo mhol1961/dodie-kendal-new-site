@@ -85,9 +85,9 @@ export function qhhtService() {
     ],
     offers: {
       '@type': 'Offer',
-      price: '300.00',
+      price: '350.00',
       priceCurrency: 'USD',
-      description: '$300 per session. A $50 deposit reserves your time, and the remaining $250 is paid on the day of your session.',
+      description: '$350 per session. A $50 deposit reserves your time, and the remaining $300 is paid on the day of your session.',
       availability: 'https://schema.org/InStock',
       url: `${SITE_URL}/book`,
     },

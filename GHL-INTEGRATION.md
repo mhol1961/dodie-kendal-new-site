@@ -12,7 +12,7 @@
 
 **What lives in GHL:**
 - The contacts database (all leads + booked clients)
-- The 5-hour QHHT session calendar with $50 deposit / $300 total
+- The 5-hour QHHT session calendar with $50 deposit / $350 total
 - Email + SMS automation workflows
 - Tagging conventions
 

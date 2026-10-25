@@ -14,7 +14,7 @@
 - [ ] No placeholder text remains anywhere (lorem ipsum, "TODO", "XXX").
 - [ ] Phone number is correct on every page: **772-247-5534**.
 - [ ] Email is correct on every page: **dodiekendall@gmail.com**.
-- [ ] Pricing is correct on every page: **$300 total, $50 deposit, 5-hour session**.
+- [ ] Pricing is correct on every page: **$350 total, $50 deposit, 5-hour session**.
 - [ ] Studio location is correct on every page: **Stuart, FL**.
 - [ ] All testimonials have explicit client permission to publish with name/city.
 - [ ] All blog posts pass `ultimate-seo-writer` final check.

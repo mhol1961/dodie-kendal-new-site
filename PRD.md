@@ -7,7 +7,7 @@
 
 ## 1. Background
 
-Dodie Kendall is an active QHHT (Quantum Healing Hypnosis Technique) practitioner based in Stuart, Florida. Her current site (`dodiekendall.com`) is hosted on GoHighLevel and reads as a templated brochure: hero text, single portrait, three testimonials, a GHL calendar embed, and a contact form. It does not build the level of trust required to convert a cold visitor into a $300 / 5-hour session client.
+Dodie Kendall is an active QHHT (Quantum Healing Hypnosis Technique) practitioner based in Stuart, Florida. Her current site (`dodiekendall.com`) is hosted on GoHighLevel and reads as a templated brochure: hero text, single portrait, three testimonials, a GHL calendar embed, and a contact form. It does not build the level of trust required to convert a cold visitor into a $350 / 5-hour session client.
 
 This rebuild is the **first of two sister-site rebuilds** for the same client. The other site, guidingwinds-unplug.com (sailing/adventure brand), is a separate engagement in a separate repo. Visual identity is intentionally distinct between the two; they share only an agency operating standard.
 
@@ -158,7 +158,7 @@ Full requirements in `COMPLIANCE.md`, `LEGAL-DISCLAIMERS.md`, `INTAKE-FORMS.md`,
 
 - **Brand identity:** existing coral/pink wordmark stays; secondary brand expressions follow `DESIGN.md`.
 - **Sister-site distinctness:** must read as visually distinct from guidingwinds-unplug.com.
-- **Booking flow:** preserve existing GHL calendar (5-hour, $300, $50 deposit) — don't break Dodie's automation.
+- **Booking flow:** preserve existing GHL calendar (5-hour, $350, $50 deposit) — don't break Dodie's automation.
 - **No GHL hosting / no GHL page builder.**
 - **No purple-pink, no Inter as display, no carousel sliders.**
 - **WCAG 2.1 AA** baseline; AAA where reachable.

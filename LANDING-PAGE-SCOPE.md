@@ -10,7 +10,7 @@
 Give Dodie's FB/IG ads a purpose-built destination (not the homepage) that
 converts cold social traffic into either:
 1. a captured email lead (top-of-funnel), or
-2. a booked $300 / 5-hour session.
+2. a booked $350 / 5-hour session.
 
 Cold social traffic is curious-but-skeptical and won't commit to a 5-hour
 session on first click — so at least one variant leads with low-friction email

@@ -24,7 +24,7 @@ This history matters because it gives her voice three textures that most QHHT si
 | Attribute | Show it by | Don't |
 | --- | --- | --- |
 | **Warm** | Use second-person; address the reader. Use questions. | Don't open with corporate "we" or "Dodie Kendall QHHT is..." |
-| **Grounded** | Use concrete details (5 hours, $300, a quiet room, a recliner, headphones). | Don't float; don't be vague about what actually happens. |
+| **Grounded** | Use concrete details (5 hours, $350, a quiet room, a recliner, headphones). | Don't float; don't be vague about what actually happens. |
 | **Faith-fluent** | Mention "Subconscious" *and* "Higher Self" *and* (sparingly) "Sacred Technology." Use them as Dodie does. | Don't add Eastern terms (chakras, prana, third eye) — they're not her vocabulary. |
 | **Universalist** | "Whatever name you give it." "However it speaks to you." | Don't presume the reader's belief system. |
 | **Hospitable** | "If it feels right." "When you're ready." "An invitation." | Don't use "must," "should," "you need to." |
@@ -85,7 +85,7 @@ This history matters because it gives her voice three textures that most QHHT si
 - **Em dashes** are encouraged for pacing.
 - **Single quotes** for inner-thought phrases ("Born to do this"); **double quotes** for actual quotations.
 - **Oxford comma:** yes.
-- **Numerals:** spell out one through nine; use digits for 10+. Always use digits for prices and durations ("$300", "5 hours").
+- **Numerals:** spell out one through nine; use digits for 10+. Always use digits for prices and durations ("$350", "5 hours").
 - **Headings:** sentence case for most; Title Case only for proper nouns or branded section titles.
 - **Bold:** sparingly, for genuine emphasis. Not for "I want this to look important."
 

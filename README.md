@@ -7,7 +7,7 @@ This is a rebuild of an existing GoHighLevel-hosted site. The new build lives on
 ## Quick facts
 
 - **Stack:** Astro + Tailwind CSS + a hand-curated subset of shadcn/ui, deployed to Cloudflare Workers.
-- **Booking:** Existing GHL 5-hour / $300 / $50-deposit calendar, embedded inside the new design.
+- **Booking:** Existing GHL 5-hour / $350 / $50-deposit calendar, embedded inside the new design.
 - **Sister site:** [guidingwinds-unplug.com](https://guidingwinds-unplug.com) — same client, separate brand and codebase.
 - **Reference site:** [shiftedsouls.com](https://shiftedsouls.com) — prior QHHT build by the same agency (visual + IA reference).
 - **Agency:** IntellaGrow.

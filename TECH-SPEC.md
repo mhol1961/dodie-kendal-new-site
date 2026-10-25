@@ -18,7 +18,7 @@
 | Type checking | TypeScript (strict) | Catches schema mismatches between form payloads and GHL API contracts. |
 | Content | Astro Content Collections (Markdown/MDX) | Blog + testimonials + FAQ live in `src/content/`. Type-safe. |
 | Forms | Astro server endpoints in `/src/pages/api/` | Server-side POST handlers; no client SDK leaked. |
-| Booking | GHL calendar iframe wrapped in `BookingEmbed.astro` | Preserves Dodie's existing 5-hour / $300 / $50-deposit flow. |
+| Booking | GHL calendar iframe wrapped in `BookingEmbed.astro` | Preserves Dodie's existing 5-hour / $350 / $50-deposit flow. |
 | Hosting | **Cloudflare Pages** (primary) | Free tier; great DX; native edge functions if needed. (Vercel is the documented fallback in ADR-001.) |
 | DNS | Cloudflare | Owns the zone; CNAME flattening for apex. |
 | Analytics | Plausible (cloud) | Privacy-first; no cookie banner needed. |

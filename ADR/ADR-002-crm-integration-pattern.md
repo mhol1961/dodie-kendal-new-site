@@ -6,7 +6,7 @@
 
 ## Context
 
-Dodie Kendall has an active GoHighLevel subaccount that owns her calendar (5-hour QHHT session, $300 total, $50 deposit), her contact database, her email/SMS automation, and her booking workflow. Migrating off GHL is not in scope — GHL is the right CRM for her practice. The question is **how the new website integrates with it**.
+Dodie Kendall has an active GoHighLevel subaccount that owns her calendar (5-hour QHHT session, $350 total, $50 deposit), her contact database, her email/SMS automation, and her booking workflow. Migrating off GHL is not in scope — GHL is the right CRM for her practice. The question is **how the new website integrates with it**.
 
 Three patterns were considered:
 

@@ -23,7 +23,7 @@
 | Dolores Cannon QHHT | informational | `/qhht`, About, blog |
 | Past life regression | informational/comparison | `/qhht`, blog |
 | Quantum healing hypnosis session | informational/transactional | `/book`, `/qhht` |
-| QHHT cost / QHHT price | transactional | `/book` (covers $300 / $50 deposit) |
+| QHHT cost / QHHT price | transactional | `/book` (covers $350 / $50 deposit) |
 | 5 hour hypnosis session | informational | `/qhht`, `/book` |
 | Subconscious mind hypnosis | informational | `/qhht`, blog |
 | Higher Self connection | informational | `/about`, `/qhht`, blog |

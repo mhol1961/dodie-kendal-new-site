@@ -29,7 +29,7 @@
 - **Type checking:** TypeScript (strict)
 - **Content:** Astro Content Collections for the blog ("Insights"); Markdown/MDX
 - **Forms:** Astro server endpoints (`/src/pages/api/`) posting to GHL public API
-- **Calendar/booking:** GHL native calendar embed (iframe wrapped in Astro component) — Dodie's existing 5-hour / $300 / $50-deposit calendar stays as-is
+- **Calendar/booking:** GHL native calendar embed (iframe wrapped in Astro component) — Dodie's existing 5-hour / $350 / $50-deposit calendar stays as-is
 - **Hosting:** **Cloudflare Pages** (primary) or **Vercel** (backup) — final decision in `ADR/ADR-001-stack-selection.md`
 - **Domain/DNS:** Cloudflare DNS; the existing `dodiekendall.com` domain cuts over from GHL at launch (LAUNCH-CHECKLIST.md captures the cutover)
 - **Analytics:** Plausible (privacy-first; GA4 alt if Dodie insists)
