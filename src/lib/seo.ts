@@ -13,6 +13,7 @@ export interface PageSeo {
   description: string;
   canonical: string;
   ogImage: string;
+  ogImageAlt: string;
   ogType: 'website' | 'article';
   noIndex?: boolean;
 }
@@ -35,6 +36,8 @@ interface SeoOptions {
   exactTitle?: string;
   description?: string;
   ogImage?: string;
+  /** Every share image is 1200x630 (og:image:width/height in the layouts). */
+  ogImageAlt?: string;
   ogType?: 'website' | 'article';
   noIndex?: boolean;
 }
@@ -60,6 +63,7 @@ export function getSeo(opts: SeoOptions): PageSeo {
     description,
     canonical: `${SITE_URL}${opts.path}`,
     ogImage: opts.ogImage ?? DEFAULT_OG_IMAGE,
+    ogImageAlt: opts.ogImageAlt ?? 'Dodie Kendall, QHHT in Stuart, FL',
     ogType: opts.ogType ?? 'website',
     noIndex: opts.noIndex,
   };

@@ -6,3 +6,8 @@
   Cache-Control: no-cache
 /dodie/QHHT%20Pre-session%20preparation%20guide.pdf
   Cache-Control: no-cache
+
+# Link-preview cards (og:image). Long cache so iMessage, Facebook etc. fetch them
+# fast; the URLs stay the same, so a changed card can take up to a week to show.
+/og/*
+  Cache-Control: public, max-age=604800

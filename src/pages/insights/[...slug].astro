@@ -39,6 +39,7 @@ const seo = getSeo({
   description: post.data.description,
   ogType: 'article',
   ogImage: new URL(post.data.ogImage ?? `/og/${post.id}.png`, Astro.site).href,
+  ogImageAlt: post.data.title,
 });
 
 const schemas = [
