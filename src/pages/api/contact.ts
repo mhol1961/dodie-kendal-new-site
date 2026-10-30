@@ -1,4 +1,6 @@
-// POST /api/contact — receives the contact form, posts to GHL, falls back to email.
+// POST /api/contact — receives the /contact form (ContactForm.astro), posts to GHL, falls back to email.
+// The form copies Dodie's GHL "QHHT Quiz" form, so its leads get the same tags that form's
+// leads carried (qhht-lead, qhht-quiz-complete) and the answer in contact.quiz_goal.
 // See TECH-SPEC.md §5, GHL-INTEGRATION.md §4, ADR-003 (fallback email).
 
 import type { APIRoute } from 'astro';
@@ -9,16 +11,18 @@ import { sendFallbackEmail } from '@lib/notify';
 import { verifyRequest } from '@lib/turnstile';
 import { visitorStatus } from '@lib/guide-limits';
 import { attributionSchema, attributionFields, attributionLine, isFacebookOrInstagram, FB_IG_TAG } from '@lib/attribution';
+import { CONTACT_GOALS } from '@lib/quiz';
 
 export const prerender = false;
 
 const payloadSchema = z.object({
-  fullName: z.string().trim().min(2).max(120),
-  email: z.string().email().transform((s) => s.toLowerCase()),
-  phone: z.string().min(7).max(20).optional(),
-  message: z.string().min(10).max(2000),
+  firstName: z.string().trim().min(1).max(80),
+  lastName: z.string().trim().max(80).optional(),
+  phone: z.string().trim().min(7).max(40),
+  email: z.string().trim().email().max(254).transform((s) => s.toLowerCase()),
+  quizGoal: z.enum(CONTACT_GOALS),
+  consentTransactional: z.boolean().default(false),
   consentMarketing: z.boolean().default(false),
-  consentTransactional: z.literal(true),
   'cf-turnstile-response': z.string().max(2048).optional(),
   attribution: attributionSchema,
 });
@@ -27,11 +31,15 @@ const honeypotKey = 'website';
 
 // Exact checkbox wording from ContactForm.astro, stored with each consent answer.
 const TRANSACTIONAL_TEXT =
-  'I consent to receive non-marketing text messages and email from Dodie Kendall QHHT about my session preparation, notifications, appointments, and reminders.';
+  'By checking this box, I consent to receive non-marketing text messages from Dodie Kendall QHHT about appointment confirmations, session reminders, and after-care. Message frequency varies, message & data rates may apply. Text HELP for assistance, reply STOP to opt out.';
 const MARKETING_TEXT =
-  'I consent to receive marketing text messages and email from Dodie Kendall QHHT about special offers, new updates, and Insights posts.';
+  'By checking this box, I consent to receive marketing and promotional messages including special offers, discounts, new product updates among others, from Dodie Kendall QHHT at the phone number provided. Frequency may vary. Message & data rates may apply. Text HELP for assistance, reply STOP to opt out.';
 
 export const POST: APIRoute = async ({ request }) => {
+  // The form needs JavaScript (Turnstile), so a native form post can't be verified.
+  if (!(request.headers.get('content-type') ?? '').includes('application/json')) {
+    return new Response(JSON.stringify({ error: 'JSON only' }), { status: 415 });
+  }
   let body: Record<string, unknown> = {};
   try {
     body = (await request.json()) as Record<string, unknown>;
@@ -55,8 +63,6 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const data = parsed.data;
-  const [firstName, ...rest] = data.fullName.split(/\s+/);
-  const lastName = rest.join(' ') || undefined;
 
   // Worker vars + secrets (wrangler.toml [vars], dashboard secrets, .dev.vars locally).
   const env = workerEnv as unknown as Record<string, string | undefined>;
@@ -73,10 +79,11 @@ export const POST: APIRoute = async ({ request }) => {
 
   // Build the validated payload once — reused for GHL and the fallback email
   const formPayload = {
-    fullName: data.fullName,
+    firstName: data.firstName,
+    lastName: data.lastName ?? '',
     email: data.email,
-    phone: data.phone ?? '',
-    message: data.message,
+    phone: data.phone,
+    quizGoal: data.quizGoal,
     consentMarketing: data.consentMarketing,
     consentTransactional: data.consentTransactional,
     submittedAt: new Date().toISOString(),
@@ -99,8 +106,8 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const { id } = await upsertContact(
       {
-        firstName,
-        lastName,
+        firstName: data.firstName,
+        lastName: data.lastName,
         email: data.email,
         phone: data.phone,
         source: 'website_contact_form',
@@ -108,13 +115,15 @@ export const POST: APIRoute = async ({ request }) => {
         // Only fills fields the contact doesn't have yet (see enrichmentPatch);
         // the note below keeps every message + consent as an append-only record.
         customField: {
-          your_message: data.message,
-          // Only record a grant: an unticked optional box must not overwrite a
+          quiz_goal: data.quizGoal,
+          // Only record grants: an unticked optional box must not overwrite a
           // "Yes" given elsewhere (revoking is done by unsubscribing).
           ...(data.consentMarketing && {
             consent_marketing: consentRecord(true, 'contact form', MARKETING_TEXT),
           }),
-          consent_transactional: consentRecord(data.consentTransactional, 'contact form', TRANSACTIONAL_TEXT),
+          ...(data.consentTransactional && {
+            consent_transactional: consentRecord(true, 'contact form', TRANSACTIONAL_TEXT),
+          }),
         },
       },
       { GHL_PRIVATE_INTEGRATION_TOKEN: token, GHL_LOCATION_ID: locationId }
@@ -122,23 +131,23 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Tags are best-effort enrichment: the contact is captured, so a tag failure
     // must not send this lead down the lost-lead fallback path.
-    for (const tag of ['site_contact', 'site_v2', ...(isFacebookOrInstagram(data.attribution) ? [FB_IG_TAG] : [])]) {
+    for (const tag of ['qhht-lead', 'qhht-quiz-complete', 'site_contact', 'site_v2', ...(isFacebookOrInstagram(data.attribution) ? [FB_IG_TAG] : [])]) {
       await applyTag(id, tag, { GHL_PRIVATE_INTEGRATION_TOKEN: token }).catch((err) =>
         console.error(`[contact] applyTag ${tag} failed (contact ${id} captured)`, err)
       );
     }
 
-    // `your_message` holds only the latest message; the note keeps every one.
+    // quiz_goal keeps only the first answer (fill-blank upsert); the note keeps every one.
     try {
       const consentLines = [
         consentRecord(data.consentTransactional, 'contact form', TRANSACTIONAL_TEXT),
         consentRecord(data.consentMarketing, 'contact form', MARKETING_TEXT),
       ].join('\n');
-      await addNote(id, `Website contact form (${formPayload.submittedAt}):\n\n${data.message}\n\nConsent:\n${consentLines}${attributionLine(data.attribution) ? `\n${attributionLine(data.attribution)}` : ''}`, {
+      await addNote(id, `Website contact form (${formPayload.submittedAt}):\n\nWhat's drawing you to QHHT? ${data.quizGoal}\n\nConsent:\n${consentLines}${attributionLine(data.attribution) ? `\n${attributionLine(data.attribution)}` : ''}`, {
         GHL_PRIVATE_INTEGRATION_TOKEN: token,
       });
     } catch (err) {
-      console.error('[contact] addNote failed (message still in your_message)', err);
+      console.error('[contact] addNote failed (contact captured)', err);
     }
 
     if (env.GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID && visitor === 'ok') {

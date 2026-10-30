@@ -172,3 +172,13 @@ export function resultFor(answers: Record<string, string>, results: QuizResult[]
     GENERAL_RESULT
   );
 }
+
+/** "What's drawing you to QHHT?" on the /contact form: the exact options of Dodie's
+ *  GHL "QHHT Quiz" form (its contact.quiz_goal dropdown), in its order. GHL rejects
+ *  any other value for that field. */
+export const CONTACT_GOALS = [
+  'Emotional healing',
+  'Clarity & direction',
+  'Past-life curiosity',
+  'A specific physical or recurring issue',
+] as const;

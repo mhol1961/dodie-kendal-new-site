@@ -20,6 +20,7 @@ export const FIELD_IDS = {
   your_message: 'BHzkahhWrkjczqaFRsFr',
   consent_marketing: 'arAprh8QemGfEipfFocR',
   consent_transactional: 'f6861b3ryLqcmAO9cF9k',
+  quiz_goal: 'IdlKJPrJmhzWiAZYcOGz',
 } as const;
 export type FieldKey = keyof typeof FIELD_IDS;
 
