@@ -1,7 +1,7 @@
 // Run: npm run test:unit
 import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
-import { enrichmentPatch, emailOptedOut, consentRecord, upsertContact, FIELD_IDS } from '../src/lib/ghl.ts';
+import { enrichmentPatch, emailOptedOut, consentRecord, upsertContact, applyTag, FIELD_IDS } from '../src/lib/ghl.ts';
 
 const ENV = { GHL_PRIVATE_INTEGRATION_TOKEN: 'tok', GHL_LOCATION_ID: 'loc1' };
 
@@ -97,4 +97,15 @@ test('enrichment failure never loses the capture; a rejected phone is retried wi
   const puts = calls.filter((c) => c.method === 'PUT');
   assert.equal(puts.length, 2);
   assert.deepEqual(puts[1].body, { firstName: 'Ann', source: 'web' });
+});
+
+test('a GHL 429 (burst limit) is retried once, other 4xx are not', async (t) => {
+  const statuses = [429, 200];
+  const fetchMock = t.mock.method(globalThis, 'fetch', async () => new Response('{}', { status: statuses.shift() }));
+  await applyTag('c1', 'qhht-lead', ENV);
+  assert.equal(fetchMock.mock.callCount(), 2);
+
+  statuses.push(422, 200);
+  await assert.rejects(applyTag('c1', 'qhht-lead', ENV));
+  assert.equal(fetchMock.mock.callCount(), 3);
 });

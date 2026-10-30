@@ -66,8 +66,9 @@ async function withIdempotentRetry<T>(fn: () => Promise<T>): Promise<T> {
   try {
     return await fn();
   } catch (err) {
-    if (err instanceof GhlError && err.status >= 500) {
-      await new Promise((r) => setTimeout(r, 500));
+    // 429: GHL's burst limit (per 10 s window); give it a moment longer.
+    if (err instanceof GhlError && (err.status >= 500 || err.status === 429)) {
+      await new Promise((r) => setTimeout(r, err.status === 429 ? 2000 : 500));
       return await fn();
     }
     throw err;

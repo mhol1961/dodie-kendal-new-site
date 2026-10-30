@@ -63,6 +63,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const data = parsed.data;
+  const consentSource = `contact form, phone ${data.phone}`;
 
   // Worker vars + secrets (wrangler.toml [vars], dashboard secrets, .dev.vars locally).
   const env = workerEnv as unknown as Record<string, string | undefined>;
@@ -71,7 +72,7 @@ export const POST: APIRoute = async ({ request }) => {
   if (!(await verifyRequest(request, env, data['cf-turnstile-response']))) {
     return new Response(JSON.stringify({ error: 'turnstile' }), { status: 400 });
   }
-  // Never blocks capture; over the cap (or limiter down) the autoresponder is skipped.
+  // Never blocks capture; over the cap the autoresponder workflow is skipped.
   const visitor = await visitorStatus(env, request, 'contact');
 
   const token = env.GHL_PRIVATE_INTEGRATION_TOKEN;
@@ -119,10 +120,10 @@ export const POST: APIRoute = async ({ request }) => {
           // Only record grants: an unticked optional box must not overwrite a
           // "Yes" given elsewhere (revoking is done by unsubscribing).
           ...(data.consentMarketing && {
-            consent_marketing: consentRecord(true, 'contact form', MARKETING_TEXT),
+            consent_marketing: consentRecord(true, consentSource, MARKETING_TEXT),
           }),
           ...(data.consentTransactional && {
-            consent_transactional: consentRecord(true, 'contact form', TRANSACTIONAL_TEXT),
+            consent_transactional: consentRecord(true, consentSource, TRANSACTIONAL_TEXT),
           }),
         },
       },
@@ -137,20 +138,22 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // quiz_goal keeps only the first answer (fill-blank upsert); the note keeps every one.
+    // The note is the full submission: the upsert only fills blank fields (an existing
+    // contact keeps its old name, phone and quiz_goal) and can stop at email-only on a GHL error.
     try {
       const consentLines = [
-        consentRecord(data.consentTransactional, 'contact form', TRANSACTIONAL_TEXT),
-        consentRecord(data.consentMarketing, 'contact form', MARKETING_TEXT),
+        consentRecord(data.consentTransactional, consentSource, TRANSACTIONAL_TEXT),
+        consentRecord(data.consentMarketing, consentSource, MARKETING_TEXT),
       ].join('\n');
-      await addNote(id, `Website contact form (${formPayload.submittedAt}):\n\nWhat's drawing you to QHHT? ${data.quizGoal}\n\nConsent:\n${consentLines}${attributionLine(data.attribution) ? `\n${attributionLine(data.attribution)}` : ''}`, {
+      await addNote(id, `Website contact form (${formPayload.submittedAt}):\n\nName: ${data.firstName}${data.lastName ? ` ${data.lastName}` : ''}\nPhone: ${data.phone}\nEmail: ${data.email}\nWhat's drawing you to QHHT? ${data.quizGoal}\n\nConsent:\n${consentLines}${attributionLine(data.attribution) ? `\n${attributionLine(data.attribution)}` : ''}`, {
         GHL_PRIVATE_INTEGRATION_TOKEN: token,
       });
     } catch (err) {
       console.error('[contact] addNote failed (contact captured)', err);
     }
 
-    if (env.GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID && visitor === 'ok') {
+    // Skipped only over the per-visitor cap; a limiter outage ('unknown') still enrolls.
+    if (env.GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID && visitor !== 'over') {
       try {
         await triggerWorkflow(id, env.GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID, {
           GHL_PRIVATE_INTEGRATION_TOKEN: token,
