@@ -152,8 +152,9 @@ export const POST: APIRoute = async ({ request }) => {
       console.error('[contact] addNote failed (contact captured)', err);
     }
 
-    // Skipped only over the per-visitor cap; a limiter outage ('unknown') still enrolls.
-    if (env.GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID && visitor !== 'over') {
+    // The workflow texts the lead, so it needs the texting box ticked (TCPA). Also skipped
+    // over the per-visitor cap; a limiter outage ('unknown') still enrolls.
+    if (env.GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID && data.consentTransactional && visitor !== 'over') {
       try {
         await triggerWorkflow(id, env.GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID, {
           GHL_PRIVATE_INTEGRATION_TOKEN: token,

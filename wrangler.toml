@@ -19,8 +19,9 @@ GHL_LOCATION_ID = "6pOamCMOsrYqjbufLI5y"
 GHL_CALENDAR_ID = "BMH5KWMN8ncgnlLupep5"
 # Free 30-min discovery call, offered first on /book (2026-10-03).
 GHL_DISCOVERY_CALENDAR_ID = "aeFKFAVilVygKrvPuocJ"
-# "QHHT New Inquiry Nurture": /api/contact enrolls each /contact lead. The GHL
-# "QHHT Quiz" form that /contact replaced (2026-10-30) fired it on submit; tags don't.
+# "QHHT New Inquiry Nurture": /api/contact enrolls a /contact lead only when they tick
+# the texting-consent box (it sends SMS). The GHL "QHHT Quiz" form that /contact
+# replaced (2026-10-30) fired it on every submit; tags don't.
 GHL_WORKFLOW_CONTACT_AUTORESPONDER_ID = "314812df-8559-461a-97f5-caf00f5fbfb5"
 # "QHHT Long-Term Nurture" (monthly marketing). It enrolls EVERY new contact; new
 # free-guide sign-ups are held out of it until they confirm their email (double opt-in).
