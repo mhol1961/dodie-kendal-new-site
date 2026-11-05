@@ -82,6 +82,16 @@ const options = [
     openNote.hidden = state !== 'open';
     calendar.inert = state !== 'open';
   };
+  // The Meta pixel sends a PageView when the URL hash changes, and this link only appears
+  // after a Yes. Scroll without touching the URL so answering Yes sends nothing.
+  talk.querySelector('a')!.addEventListener('click', (e) => {
+    const discovery = document.getElementById('discovery');
+    if (!discovery) return;
+    e.preventDefault();
+    discovery.tabIndex = -1;
+    discovery.scrollIntoView();
+    discovery.focus({ preventScroll: true });
+  });
   root.addEventListener('change', update);
   update();
 </script>
