@@ -2,6 +2,7 @@
 import { env as workerEnv } from 'cloudflare:workers';
 import Base from '@layouts/Base.astro';
 import BookingEmbed from '@components/BookingEmbed.astro';
+import BookingScreening from '@components/BookingScreening.astro';
 import TestimonialGrid from '@components/TestimonialGrid.astro';
 import YouTubePreview from '@components/YouTubePreview.astro';
 import { getSeo } from '@lib/seo';
@@ -75,7 +76,7 @@ const next = [
             Free 30-minute call
           </a>
         )}
-        <a href="#reserve" class="inline-flex min-h-[44px] items-center justify-center rounded-pill bg-brand px-6 py-2.5 text-base font-medium text-ink-inverse shadow-sm transition-all hover:bg-brand-hover hover:shadow-md">
+        <a href="#screening" class="inline-flex min-h-[44px] items-center justify-center rounded-pill bg-brand px-6 py-2.5 text-base font-medium text-ink-inverse shadow-sm transition-all hover:bg-brand-hover hover:shadow-md">
           Reserve a session · $50 deposit
         </a>
       </div>
@@ -160,8 +161,10 @@ const next = [
         </ul>
       </div>
 
-      <div class="mt-12">
-        <BookingEmbed calendarId={calendarId} fallbackUrl={fallbackUrl} />
+      <div id="screening" class="mt-12 scroll-mt-24">
+        <BookingScreening>
+          <BookingEmbed calendarId={calendarId} fallbackUrl={fallbackUrl} />
+        </BookingScreening>
       </div>
 
       <div class="mt-16">

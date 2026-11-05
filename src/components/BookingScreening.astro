@@ -1,0 +1,87 @@
+---
+/**
+ * The questions on /book before the $50 deposit. The session calendar goes in the slot
+ * and stays hidden until screeningState() says 'open'. Answers stay in the browser: no
+ * <form>, no fetch, no storage, and autocomplete="off" so a reload starts blank.
+ *
+ * The calendar is hidden with [inert] plus zero height, not display:none, so its iframe
+ * still loads at full width and GHL's resizer sizes it (see BookingEmbed.astro). The resizer
+ * sets visibility:visible inline on the iframe, hence the !invisible on it.
+ */
+const questions = [
+  { name: 'screening-psychotic-disorder', text: 'Have you been diagnosed with schizophrenia or another psychotic disorder?' },
+  { name: 'screening-medication', text: 'Are you currently taking anti-psychotic medication?' },
+  { name: 'screening-bipolar', text: 'Have you been diagnosed with bipolar disorder, or experienced psychosis?' },
+];
+const options = [
+  { value: 'yes', label: 'Yes' },
+  { value: 'no', label: 'No' },
+];
+---
+<div data-screening>
+  <div class="rounded-lg border border-border-subtle bg-bg-raised p-5 shadow-sm md:p-8">
+    <h2 class="font-display text-2xl text-ink">A few quick questions before you reserve.</h2>
+    <p class="mt-3 max-w-prose leading-relaxed text-ink-secondary">QHHT involves a very deep level of trance, so it isn't the right fit for everyone.</p>
+
+    <div class="mt-6 space-y-6">
+      {questions.map((q) => (
+        <fieldset>
+          <legend class="font-medium text-ink">{q.text}</legend>
+          <div class="mt-3 grid max-w-xs grid-cols-2 gap-3">
+            {options.map((o) => (
+              <label class="flex min-h-[44px] cursor-pointer items-center gap-3 rounded-lg border border-border-subtle bg-bg-base px-4 py-2 transition-colors hover:border-brand/50 has-[:checked]:border-brand has-[:checked]:bg-brand/5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand">
+                <input type="radio" name={q.name} value={o.value} required autocomplete="off" class="peer sr-only" />
+                <span aria-hidden="true" class="h-5 w-5 shrink-0 rounded-full border border-ink-muted peer-checked:border-[6px] peer-checked:border-brand"></span>
+                <span class="text-ink-secondary peer-checked:text-ink">{o.label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ))}
+
+      <label class="flex cursor-pointer items-start gap-3 text-ink-secondary">
+        <input type="checkbox" data-screening-agree required autocomplete="off" class="mt-0.5 h-5 w-5 shrink-0 rounded border-border-strong accent-brand" />
+        <span>I've read and agree to the <a href="/cancellation-policy" target="_blank" rel="noopener" class="font-medium text-ink underline underline-offset-2 hover:text-brand">Cancellation and Rescheduling Policy</a></span>
+      </label>
+    </div>
+
+    <noscript>
+      <p class="mt-6 text-sm text-ink-secondary">These questions need JavaScript. To reserve a session, please call 772-247-5534 or email dodiekendall@gmail.com.</p>
+    </noscript>
+
+    <div role="status" aria-live="polite">
+      <div data-screening-talk hidden class="mt-6 rounded-lg border border-border-subtle bg-bg-sunken p-5">
+        <p class="max-w-prose leading-relaxed text-ink">Thank you for letting me know. Let's talk before you reserve a session. Please book a free 30-minute call below, and I'll go over it with you personally.</p>
+        <a href="#discovery" class="mt-4 inline-flex min-h-[44px] items-center justify-center rounded-pill bg-brand px-6 py-2.5 text-base font-medium text-ink-inverse shadow-sm transition-all hover:bg-brand-hover hover:shadow-md">
+          Free 30-minute call
+        </a>
+      </div>
+      <p data-screening-open hidden class="sr-only">Thank you. The booking calendar is now open below.</p>
+    </div>
+  </div>
+
+  <div data-screening-calendar inert class="relative mt-8 [&[inert]]:mt-0 [&[inert]]:h-0 [&[inert]]:overflow-hidden [&[inert]]:invisible [&[inert]_iframe]:!invisible">
+    <slot />
+  </div>
+</div>
+
+<script>
+  import { screeningState } from '@lib/booking-screening';
+
+  const root = document.querySelector<HTMLElement>('[data-screening]')!;
+  const groups = [...root.querySelectorAll('fieldset')];
+  const agree = root.querySelector<HTMLInputElement>('[data-screening-agree]')!;
+  const talk = root.querySelector<HTMLElement>('[data-screening-talk]')!;
+  const openNote = root.querySelector<HTMLElement>('[data-screening-open]')!;
+  const calendar = root.querySelector<HTMLElement>('[data-screening-calendar]')!;
+
+  const update = () => {
+    const answers = groups.map((g) => g.querySelector<HTMLInputElement>('input:checked')?.value);
+    const state = screeningState(answers, agree.checked);
+    talk.hidden = state !== 'talk';
+    openNote.hidden = state !== 'open';
+    calendar.inert = state !== 'open';
+  };
+  root.addEventListener('change', update);
+  update();
+</script>

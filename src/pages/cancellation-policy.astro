@@ -1,0 +1,93 @@
+---
+import Base from '@layouts/Base.astro';
+import { getSeo } from '@lib/seo';
+import { breadcrumb } from '@lib/schema';
+
+// Dodie's wording, from docs/source/cancellation-policy-2026-11-05.pdf. Keep it exact.
+const seo = getSeo({
+  path: '/cancellation-policy',
+  title: 'Cancellation and Rescheduling Policy',
+  description: 'The Dodie Kendall QHHT deposit, cancellation and rescheduling policy for sessions in Stuart, FL.',
+});
+
+const schemas = [breadcrumb([{ name: 'Home', href: '/' }, { name: 'Cancellation Policy' }])];
+const strong = 'font-medium text-ink';
+const quickReference = [
+  ["First cancellation, 7+ days' notice, rescheduled within 30 days (or next available)", 'Carries over to your new date'],
+  ["Cancellation with less than 7 days' notice", 'Forfeited'],
+  ['Not rescheduled within the 30-day window', 'Forfeited'],
+  ['Second cancellation', 'Forfeited'],
+  ['No-show', 'Forfeited'],
+];
+---
+<Base seo={seo} schemas={schemas}>
+  <section class="section-y bg-bg-base">
+    <div class="container-prose">
+      <p class="text-xs uppercase tracking-wider text-ink-muted">Legal</p>
+      <h1 class="mt-2 font-display">Cancellation and Rescheduling Policy</h1>
+      <p class="mt-3 text-sm text-ink-muted">Effective Nov 5, 2026</p>
+
+      <div class="prose-content mt-10 space-y-8 text-ink-secondary leading-relaxed">
+        <p>Thank you for choosing a QHHT session with me. Each session reserves a large block of my day just for you, so I ask every client to honor the policy below. It keeps scheduling fair for you and for others waiting for a session.</p>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">Deposit</h2>
+          <p class="mt-3">A <strong class={strong}>$50.00 non-refundable deposit</strong> is required to reserve your session date.</p>
+          <ul class="mt-3 list-disc space-y-2 pl-6">
+            <li>Your appointment is not confirmed until the deposit is received.</li>
+            <li>The deposit is applied toward your session fee.</li>
+            <li>The deposit is non-refundable under all circumstances. It can only be carried over to a rescheduled session as described below.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">Cancellation and Rescheduling</h2>
+          <p class="mt-3">You may cancel <strong class={strong}>one time</strong> and keep your deposit, as long as you follow these steps:</p>
+          <ol class="mt-3 list-decimal space-y-2 pl-6">
+            <li><strong class={strong}>Give at least 7 days' notice.</strong> Cancel at least one full week (7 days) before your scheduled appointment.</li>
+            <li><strong class={strong}>Reschedule within 30 days.</strong> Your new session date must fall within 30 days of the date you cancel.</li>
+            <li><strong class={strong}>If I am booked out.</strong> If no openings are available in that 30-day window, you will be scheduled for my next available date.</li>
+          </ol>
+          <p class="mt-3">When you reschedule this way, your $50.00 deposit carries over to your new appointment.</p>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">When the Deposit Is Forfeited</h2>
+          <p class="mt-3">Your $50.00 deposit is forfeited, and a new deposit is required to book again, if any of the following happen:</p>
+          <ul class="mt-3 list-disc space-y-2 pl-6">
+            <li>You cancel with <strong class={strong}>less than 7 days' notice</strong>.</li>
+            <li>You <strong class={strong}>do not reschedule</strong> within 30 days of your cancellation date (or for my next available date, if I am booked out).</li>
+            <li>You <strong class={strong}>cancel a second time</strong>, including cancelling a rescheduled appointment.</li>
+            <li>You <strong class={strong}>do not show up</strong> for your appointment.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">Quick Reference</h2>
+          <table class="mt-4 w-full border-collapse border border-border-subtle text-left text-sm md:text-base">
+            <thead class="bg-bg-sunken text-ink">
+              <tr>
+                <th scope="col" class="border border-border-subtle p-3 font-medium">Situation</th>
+                <th scope="col" class="border border-border-subtle p-3 font-medium">What happens to your $50 deposit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {quickReference.map(([situation, outcome]) => (
+                <tr>
+                  <td class="border border-border-subtle p-3">{situation}</td>
+                  <td class="border border-border-subtle p-3">{outcome}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2 class="font-display text-2xl text-ink">Client Acknowledgment</h2>
+          <p class="mt-3">By paying the deposit, I confirm that I have read and agree to the Dodie Kendall QHHT Cancellation and Rescheduling Policy.</p>
+          <p class="mt-3">Questions? Contact Dodie Kendall at <a href="/" class="text-brand underline">dodiekendall.com</a>.</p>
+        </section>
+      </div>
+    </div>
+  </section>
+</Base>
