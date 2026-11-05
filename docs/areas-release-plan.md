@@ -16,7 +16,7 @@ five on 2026-10-08.
 
 1. `src/data/areas/index.ts`: add the next slug to `RELEASED` (the one-line change),
    e.g. `['port-st-lucie', 'jupiter']`. That builds the page and adds it to the
-   sitemap, the "Areas I serve" lists (`/qhht` and footer) and "Also serving" links.
+   sitemap, the "Areas I serve" list on `/qhht` and "Also serving" links.
 2. `public/llms.txt`: add the town's line under the Book line.
 3. Update the Status column above, push to `main` (the push deploys), then check the
    live page: indexable, canonical `https://dodiekendall.com/qhht/{slug}`, in

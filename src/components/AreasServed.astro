@@ -6,22 +6,9 @@
  */
 import { builtAreas } from '@/data/areas/index.ts';
 
-interface Props {
-  /** 'footer': a compact list for the footer. 'section': a full-width band. */
-  variant?: 'footer' | 'section';
-}
-
-const { variant = 'section' } = Astro.props;
 const areas = builtAreas();
 ---
-{areas.length > 0 && (variant === 'footer' ? (
-  <nav aria-label="Footer: Areas I serve" class="mt-6">
-    <h2 class="mb-3 text-base font-medium text-ink">Areas I serve</h2>
-    <ul class="space-y-2 text-ink-secondary">
-      {areas.map((a) => <li><a href={`/qhht/${a.slug}`} class="hover:text-brand">{a.name}</a></li>)}
-    </ul>
-  </nav>
-) : (
+{areas.length > 0 && (
   <section class="section-y bg-bg-sunken">
     <div class="container-default">
       <header class="mb-8 max-w-2xl">
@@ -36,4 +23,4 @@ const areas = builtAreas();
       </ul>
     </div>
   </section>
-))}
+)}

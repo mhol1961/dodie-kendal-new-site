@@ -3,7 +3,6 @@
  * Footer — 4-column desktop, 1-column mobile, with the "not medical advice" disclaimer.
  * DESIGN.md §Layout: sunken bg, brand/site/contact/legal columns.
  */
-import AreasServed from '@components/AreasServed.astro';
 
 const year = new Date().getFullYear();
 ---
@@ -51,7 +50,10 @@ const year = new Date().getFullYear();
           </a>
         </li>
       </ul>
-      <AreasServed variant="footer" />
+      <div class="mt-6">
+        <h2 class="mb-3 text-base font-medium text-ink">Areas I serve</h2>
+        <p class="text-ink-secondary">Martin, <a href="/qhht/port-st-lucie" class="underline underline-offset-2 hover:text-brand">St. Lucie</a> and Palm Beach counties. Clients also travel to Stuart from across the country and abroad.</p>
+      </div>
     </div>
 
     <div>
