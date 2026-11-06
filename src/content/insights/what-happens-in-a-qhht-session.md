@@ -37,7 +37,7 @@ Whatever you bring. Common ones:
 - "What is my purpose in this lifetime?"
 - "What do I need to know about my work / my health / my family right now?"
 
-There are no wrong questions. Before we meet, I'll send you a prep guide to help you focus your list to [the questions that matter most](/insights/how-to-prepare-for-your-first-quantum-healing-session) right now.
+There are no wrong questions, and you can bring as many as you want. Before we meet, I'll send you a prep guide to help you [shape your list](/insights/how-to-prepare-for-your-first-quantum-healing-session).
 
 ## What QHHT is not
 

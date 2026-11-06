@@ -16,7 +16,7 @@ QHHT is a conversation with the deepest part of you. The conversation works beca
 
 Three days before our pre-session call, I'll send you a prep guide with a short prompt: write down every question you'd ask if you knew you had a long, uninterrupted conversation with the part of yourself that has all the answers. Don't filter. Let it be messy. Then put the list down for a day. Come back. Edit. Cross some off. Add others.
 
-By the time we talk, you'll have a list of 5 to 10 questions that *feel* right. We'll narrow them together to the three or four that matter most.
+By the time we talk, you'll have the questions that *feel* right. Bring as many as you want, and we'll go through them together.
 
 ## The night before: sleep
 
@@ -55,7 +55,7 @@ For an in-person session at the studio:
 If you have time before the session starts, this short ritual helps:
 
 1. Sit quietly for 5 minutes. Close your eyes. Breathe.
-2. Bring each of your top questions to mind, one at a time. Don't try to answer them. Just hold each one for 30 seconds.
+2. Bring your questions to mind, one at a time. Don't try to answer them. Just hold each one for 30 seconds.
 3. Notice which one feels the heaviest, or the warmest, or the most alive. That's the one your Higher Self has probably been waiting for.
 
 You don't have to do this. But many clients say it shifts the session from "I hope something happens" to "I'm ready to listen."
