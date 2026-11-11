@@ -50,6 +50,45 @@ export function redirectTarget(href) {
   return url.toString();
 }
 
+/** [start, end] (inclusive) for a single `bytes=` range, 'invalid' when it can't be
+ *  satisfied, or null when there is no usable Range header. Pure; tested. */
+export function parseRange(header, size) {
+  const m = /^bytes=(\d*)-(\d*)$/.exec(header ?? '');
+  if (!m || (!m[1] && !m[2])) return null;
+  let start = m[1] ? Number(m[1]) : Math.max(0, size - Number(m[2]));
+  let end = m[1] && m[2] ? Math.min(Number(m[2]), size - 1) : size - 1;
+  if (!m[1] && Number(m[2]) === 0) return 'invalid';
+  return start > end || start >= size ? 'invalid' : [start, end];
+}
+
+// Byte ranges for /video/*. iPhone Safari will not play (or seek) a video unless the
+// server answers Range requests with 206, and neither the Astro handler (it fetches
+// assets by URL, dropping the header) nor the ASSETS binding does that.
+// ponytail: buffers the whole file per range request (fine up to the 25 MiB asset
+// limit); move videos to R2 or Cloudflare Stream if they get bigger or busier.
+async function serveVideo(request, env) {
+  const asset = await env.ASSETS.fetch(new Request(request.url));
+  if (asset.status !== 200) return asset;
+  const headers = new Headers(asset.headers);
+  headers.set('Accept-Ranges', 'bytes');
+  const wanted = request.headers.get('Range');
+  if (!wanted) return new Response(asset.body, { status: 200, headers });
+  // The binding gives no Content-Length inside the Worker, so measure the file.
+  const file = await asset.arrayBuffer();
+  const size = file.byteLength;
+  const range = parseRange(wanted, size);
+  if (!range) return new Response(file, { status: 200, headers });
+  if (range === 'invalid') {
+    headers.set('Content-Range', `bytes */${size}`);
+    headers.delete('Content-Length');
+    return new Response(null, { status: 416, headers });
+  }
+  const [start, end] = range;
+  headers.set('Content-Range', `bytes ${start}-${end}/${size}`);
+  headers.set('Content-Length', String(end - start + 1));
+  return new Response(request.method === 'HEAD' ? null : file.slice(start, end + 1), { status: 206, headers });
+}
+
 function withSecurityHeaders(response) {
   const res = new Response(response.body, response); // responses from ASSETS are immutable
   for (const [k, v] of Object.entries(SECURITY_HEADERS)) {
@@ -98,6 +137,9 @@ async function route(request, env, ctx) {
   if (to && isRead) return withSecurityHeaders(Response.redirect(to, 301));
   if (to && new URL(request.url).protocol === 'http:') {
     return withSecurityHeaders(new Response('Please use https://dodiekendall.com', { status: 403 }));
+  }
+  if (isRead && new URL(request.url).pathname.startsWith('/video/')) {
+    return withSecurityHeaders(await serveVideo(request, env));
   }
   return withSecurityHeaders(await handle(request, env, ctx));
 }

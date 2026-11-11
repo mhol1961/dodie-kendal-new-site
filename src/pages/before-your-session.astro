@@ -1,0 +1,47 @@
+---
+// /before-your-session: private page for booked clients (see welcome.astro).
+// Linked only from client emails. noindex and kept out of the sitemap.
+import Base from '@layouts/Base.astro';
+import Button from '@components/ui/Button.astro';
+import { getSeo } from '@lib/seo';
+
+const seo = getSeo({
+  path: '/before-your-session',
+  title: 'Before your session',
+  description: 'A few tips from Dodie before your QHHT session.',
+  noIndex: true,
+});
+---
+<Base seo={seo} leadMagnet={false} chat={false}>
+  <section class="section-y bg-bg-base">
+    <div class="container-default">
+      <div class="mx-auto max-w-prose text-center">
+        <p class="text-xs uppercase tracking-[0.22em] text-brand">Your QHHT session</p>
+        <h1 class="mt-4 font-display text-ink">Before your session</h1>
+        <p class="mt-4 text-lg leading-relaxed text-ink-secondary">A few tips from Dodie to help you relax into it.</p>
+      </div>
+
+      <video
+        class="mx-auto mt-10 block h-auto w-full max-w-[860px] rounded-lg border border-border-subtle bg-bg-sunken shadow-md"
+        width="1280"
+        height="720"
+        controls
+        playsinline
+        preload="metadata"
+        poster="/video/qhht-before-your-session-poster.jpg"
+        aria-label="A few tips from Dodie before your session"
+      >
+        <source src="/video/qhht-before-your-session.mp4" type="video/mp4" />
+        <a href="/video/qhht-before-your-session.mp4">Watch the video</a>
+      </video>
+
+      <div class="mx-auto mt-12 max-w-prose text-center">
+        <Button href="/dodie/qhht-pre-session-prep-guide.pdf" external>Open your preparation guide</Button>
+        <p class="mt-6 text-ink-secondary leading-relaxed">
+          <strong class="font-medium text-ink">Questions?</strong> Reply to your confirmation email or call
+          <a href="tel:+17722475534" class="text-brand underline underline-offset-4 hover:text-brand-hover">772-247-5534</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const src = readFileSync(new URL('../worker-entry.mjs', import.meta.url), 'utf8').replace(/^import \{ handle \}.*$/m, "const handle = () => { throw new Error('app reached'); };");
-const { canonicalPath, redirectTarget, SECURITY_HEADERS, default: worker } = await import('data:text/javascript,' + encodeURIComponent(src));
+const { canonicalPath, redirectTarget, parseRange, SECURITY_HEADERS, default: worker } = await import('data:text/javascript,' + encodeURIComponent(src));
 
 test('trailing slash is dropped (301 target), root stays', () => {
   assert.equal(canonicalPath('/about/'), '/about');
@@ -68,4 +68,28 @@ test('preview Worker: encoded, doubled-slash and non-read requests never reach t
   }
   const head = await worker.fetch(new Request('https://p.example/api/videos.json', { method: 'HEAD' }), env, {});
   assert.equal(head.headers.get('X-Robots-Tag'), 'noindex, nofollow');
+});
+
+test('videos answer byte ranges with 206 (iPhone Safari will not play without it)', async () => {
+  assert.deepEqual(parseRange('bytes=0-1', 10), [0, 1]);
+  assert.deepEqual(parseRange('bytes=4-', 10), [4, 9]);
+  assert.deepEqual(parseRange('bytes=-3', 10), [7, 9]);
+  assert.deepEqual(parseRange('bytes=2-99', 10), [2, 9]);
+  assert.equal(parseRange('bytes=10-', 10), 'invalid');
+  assert.equal(parseRange('bytes=5-2', 10), 'invalid');
+  assert.equal(parseRange(null, 10), null);
+  assert.equal(parseRange('bytes=0-1,4-5', 10), null);
+
+  const env = { ASSETS: { fetch: async () => new Response('0123456789', { headers: { 'Content-Type': 'video/mp4' } }) } };
+  const get = (h: Record<string, string> = {}) => worker.fetch(new Request('https://dodiekendall.com/video/a.mp4', { headers: h }), env, {});
+  const part = await get({ Range: 'bytes=2-5' });
+  assert.equal(part.status, 206);
+  assert.equal(part.headers.get('Content-Range'), 'bytes 2-5/10');
+  assert.equal(part.headers.get('Content-Type'), 'video/mp4');
+  assert.equal(await part.text(), '2345');
+  const whole = await get();
+  assert.equal(whole.status, 200);
+  assert.equal(whole.headers.get('Accept-Ranges'), 'bytes');
+  assert.equal(await whole.text(), '0123456789');
+  assert.equal((await get({ Range: 'bytes=50-' })).status, 416);
 });

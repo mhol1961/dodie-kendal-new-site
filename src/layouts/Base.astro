@@ -17,9 +17,11 @@ interface Props {
   /** Free-guide sign-up above the footer. Off where the page places its own
    *  (homepage) or isn't for visitors (/design). One per page: Turnstile + ids. */
   leadMagnet?: boolean;
+  /** Floating call/chat launcher. Off on the private booked-client pages. */
+  chat?: boolean;
 }
 
-const { seo, schemas = [], leadMagnet = true } = Astro.props;
+const { seo, schemas = [], leadMagnet = true, chat = true } = Astro.props;
 const cfBeaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
 const isProd = import.meta.env.PROD;
 const preview = import.meta.env.PUBLIC_SITE_PREVIEW === '1'; // private preview build: no tracking, chat or GHL sends
@@ -100,7 +102,7 @@ const preview = import.meta.env.PUBLIC_SITE_PREVIEW === '1'; // private preview 
     </main>
     <slot name="above-footer" />
     <Footer />
-    {!preview && <ChatWidget />}
+    {!preview && chat && <ChatWidget />}
   </body>
 </html>
 

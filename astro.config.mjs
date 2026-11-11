@@ -25,11 +25,12 @@ export default defineConfig({
     sitemap({
       // Match on the pathname: sitemap URLs end in a slash, so endsWith('/design')
       // never matched. Keeps API, admin, the design page and the noindex
-      // paid-traffic landing pages (incl. /free-guide) out of the sitemap.
+      // paid-traffic landing pages (incl. /free-guide) and the private booked-client
+      // pages (/welcome, /before-your-session) out of the sitemap.
       // CLAUDE: plugin note files that land in src/pages (also stripped from dist).
       filter: (page) => {
         const path = new URL(page).pathname;
-        return !/^\/(api|admin|design|free-guide|landing-page-[^/]+)(\/|$)/.test(path) && !/(^|\/)CLAUDE(\/|$)/.test(path);
+        return !/^\/(api|admin|design|free-guide|welcome|before-your-session|landing-page-[^/]+)(\/|$)/.test(path) && !/(^|\/)CLAUDE(\/|$)/.test(path);
       },
       // lastmod: post updatedDate ?? pubDate, else the page file's last commit.
       serialize: (item) => ({ ...item, lastmod: lastmodFor(item.url) }),
