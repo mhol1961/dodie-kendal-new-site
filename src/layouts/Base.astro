@@ -19,9 +19,12 @@ interface Props {
   leadMagnet?: boolean;
   /** Floating call/chat launcher. Off on the private booked-client pages. */
   chat?: boolean;
+  /** Meta Pixel. Off on the private booked-client pages: a page view there would
+   *  tell Meta this visitor booked a session. */
+  pixel?: boolean;
 }
 
-const { seo, schemas = [], leadMagnet = true, chat = true } = Astro.props;
+const { seo, schemas = [], leadMagnet = true, chat = true, pixel = true } = Astro.props;
 const cfBeaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
 const isProd = import.meta.env.PROD;
 const preview = import.meta.env.PUBLIC_SITE_PREVIEW === '1'; // private preview build: no tracking, chat or GHL sends
@@ -77,7 +80,7 @@ const preview = import.meta.env.PUBLIC_SITE_PREVIEW === '1'; // private preview 
     <AttributionCapture />
 
     <!-- Meta (Facebook) Pixel — only renders when PUBLIC_FB_PIXEL_ID is set -->
-    {!preview && <MetaPixel />}
+    {!preview && pixel && <MetaPixel />}
 
     <!-- Analytics: Cloudflare Web Analytics (cookie-free) — production only, when the token is set -->
     {isProd && !preview && cfBeaconToken && (

@@ -80,16 +80,33 @@ test('videos answer byte ranges with 206 (iPhone Safari will not play without it
   assert.equal(parseRange(null, 10), null);
   assert.equal(parseRange('bytes=0-1,4-5', 10), null);
 
-  const env = { ASSETS: { fetch: async () => new Response('0123456789', { headers: { 'Content-Type': 'video/mp4' } }) } };
-  const get = (h: Record<string, string> = {}) => worker.fetch(new Request('https://dodiekendall.com/video/a.mp4', { headers: h }), env, {});
+  let conditional: string | null = null;
+  const env = { ASSETS: { fetch: async (r: Request) => {
+    conditional = r.headers.get('If-None-Match') ?? conditional;
+    assert.equal(r.headers.get('Range'), null);
+    return new Response('0123456789', { headers: { 'Content-Type': 'video/mp4', ETag: '"v2"' } });
+  } } };
+  const get = (h: Record<string, string> = {}, method = 'GET') => worker.fetch(new Request('https://dodiekendall.com/video/a.mp4', { method, headers: h }), env, {});
   const part = await get({ Range: 'bytes=2-5' });
   assert.equal(part.status, 206);
   assert.equal(part.headers.get('Content-Range'), 'bytes 2-5/10');
   assert.equal(part.headers.get('Content-Type'), 'video/mp4');
   assert.equal(await part.text(), '2345');
+  assert.equal(await (await get({ Range: 'bytes=-3' })).text(), '789');
   const whole = await get();
   assert.equal(whole.status, 200);
   assert.equal(whole.headers.get('Accept-Ranges'), 'bytes');
   assert.equal(await whole.text(), '0123456789');
   assert.equal((await get({ Range: 'bytes=50-' })).status, 416);
+  const head = await get({ Range: 'bytes=0-3' }, 'HEAD');
+  assert.equal(head.status, 206);
+  assert.equal(head.headers.get('Content-Length'), '4');
+  assert.equal(await head.text(), '');
+  // If-Range: same file resumes; a replaced file is sent whole, never stitched.
+  assert.equal((await get({ Range: 'bytes=2-5', 'If-Range': '"v2"' })).status, 206);
+  const stale = await get({ Range: 'bytes=2-5', 'If-Range': '"v1"' });
+  assert.equal(stale.status, 200);
+  assert.equal(await stale.text(), '0123456789');
+  await get({ 'If-None-Match': '"v2"' });
+  assert.equal(conditional, '"v2"', 'cache validators still reach the asset store');
 });

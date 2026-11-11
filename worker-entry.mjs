@@ -64,21 +64,45 @@ export function parseRange(header, size) {
 // Byte ranges for /video/*. iPhone Safari will not play (or seek) a video unless the
 // server answers Range requests with 206, and neither the Astro handler (it fetches
 // assets by URL, dropping the header) nor the ASSETS binding does that.
-// ponytail: buffers the whole file per range request (fine up to the 25 MiB asset
-// limit); move videos to R2 or Cloudflare Stream if they get bigger or busier.
+// Nothing is buffered: the wanted bytes are streamed out of the asset, so memory stays
+// at one chunk however many range requests arrive at once.
+// ponytail: every range request still reads the file from byte 0 up to the range end;
+// move videos to R2 or Cloudflare Stream if they get much bigger or busier.
+const videoSizes = new Map(); // pathname -> { etag, size }; the binding sends no Content-Length
+
 async function serveVideo(request, env) {
-  const asset = await env.ASSETS.fetch(new Request(request.url));
+  const pass = new Headers(request.headers); // keeps If-None-Match etc. (304s)
+  pass.delete('Range');
+  pass.delete('If-Range');
+  const asset = await env.ASSETS.fetch(new Request(request.url, { headers: pass }));
   if (asset.status !== 200) return asset;
   const headers = new Headers(asset.headers);
   headers.set('Accept-Ranges', 'bytes');
+  const whole = () => new Response(request.method === 'HEAD' ? null : asset.body, { status: 200, headers });
   const wanted = request.headers.get('Range');
-  if (!wanted) return new Response(asset.body, { status: 200, headers });
-  // The binding gives no Content-Length inside the Worker, so measure the file.
-  const file = await asset.arrayBuffer();
-  const size = file.byteLength;
+  const etag = headers.get('ETag');
+  // If-Range: the client is resuming an older copy. Unless it is this exact file,
+  // send the whole thing so old and new bytes are never stitched together.
+  const ifRange = request.headers.get('If-Range');
+  if (!wanted || (ifRange && ifRange !== etag)) return whole();
+
+  const key = new URL(request.url).pathname;
+  let known = videoSizes.get(key);
+  if (!known || known.etag !== etag) {
+    let size = Number(headers.get('Content-Length')) || 0;
+    if (!size) {
+      // Count the bytes once per file (streamed and discarded, never held).
+      const counted = await env.ASSETS.fetch(new Request(request.url));
+      for await (const chunk of counted.body) size += chunk.byteLength;
+    }
+    known = { etag, size };
+    videoSizes.set(key, known);
+  }
+  const { size } = known;
   const range = parseRange(wanted, size);
-  if (!range) return new Response(file, { status: 200, headers });
+  if (!range) return whole();
   if (range === 'invalid') {
+    asset.body?.cancel();
     headers.set('Content-Range', `bytes */${size}`);
     headers.delete('Content-Length');
     return new Response(null, { status: 416, headers });
@@ -86,7 +110,39 @@ async function serveVideo(request, env) {
   const [start, end] = range;
   headers.set('Content-Range', `bytes ${start}-${end}/${size}`);
   headers.set('Content-Length', String(end - start + 1));
-  return new Response(request.method === 'HEAD' ? null : file.slice(start, end + 1), { status: 206, headers });
+  if (request.method === 'HEAD') {
+    asset.body?.cancel();
+    return new Response(null, { status: 206, headers });
+  }
+  return new Response(sliceStream(asset.body, start, end), { status: 206, headers });
+}
+
+/** Bytes start..end (inclusive) of a stream, passed along chunk by chunk. */
+function sliceStream(body, start, end) {
+  // FixedLengthStream (Workers) lets the response carry Content-Length; plain Node (tests) lacks it.
+  const { readable, writable } = globalThis.FixedLengthStream
+    ? new FixedLengthStream(end - start + 1)
+    : new TransformStream();
+  (async () => {
+    const reader = body.getReader();
+    const writer = writable.getWriter();
+    try {
+      for (let pos = 0; pos <= end; ) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const from = Math.max(start - pos, 0);
+        const to = Math.min(end + 1 - pos, value.byteLength);
+        if (to > from) await writer.write(value.subarray(from, to));
+        pos += value.byteLength;
+      }
+      await writer.close();
+    } catch (err) {
+      await writer.abort(err).catch(() => {}); // client went away
+    } finally {
+      reader.cancel().catch(() => {});
+    }
+  })();
+  return readable;
 }
 
 function withSecurityHeaders(response) {
