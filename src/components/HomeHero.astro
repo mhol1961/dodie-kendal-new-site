@@ -24,7 +24,7 @@ const {
   trustLine = 'In-person sessions · Stuart, FL',
 } = Astro.props;
 ---
-<section class="relative isolate overflow-hidden bg-bg-base text-ink min-h-[100vh] flex items-center">
+<section class="relative isolate overflow-hidden bg-bg-base text-ink min-h-[100vh] flex flex-col items-center md:flex-row">
   <!-- LAYER 1 — backlit palm tapestry. Warm tropical family as About hero but distinct composition:
        dense backlit fronds (no visible sun), dreamy and impressionistic vs About's sunburst-through-palms. -->
   <picture>
@@ -54,6 +54,9 @@ const {
       linear-gradient(100deg, oklch(var(--bg-base) / 0.90) 0%, oklch(var(--bg-base) / 0.58) 38%, oklch(var(--bg-base) / 0.15) 60%, transparent 78%),
       linear-gradient(0deg, oklch(var(--bg-base) / 0.45) 0%, transparent 28%);"
   ></div>
+  <!-- Phones only: text sits on the palms (no portrait behind it), so wash them with
+       the page cream to keep the small lines readable. -->
+  <div aria-hidden="true" class="absolute inset-0 z-[1] bg-bg-base/50 md:hidden"></div>
   <!-- Soft coral-pink glow at bottom -->
   <div
     aria-hidden="true"
@@ -62,6 +65,8 @@ const {
   ></div>
 
   <!-- LAYER 2 — Dodie portrait (white dress), anchored right, large.
+       Phones: the portrait sits BELOW the text in normal flow, so no words run
+       across her face. md and up: unchanged, absolutely placed on the right.
        The studio shot has a solid gray backdrop; we feather its left/top/bottom
        edges to transparent so the gray dissolves into the lit palms instead of a
        hard box over the text. The cinemagraph (Seedance image-to-video, boomerang
@@ -69,7 +74,7 @@ const {
        fallback. Same feather mask on both. -->
   <div
     aria-hidden="true"
-    class="pointer-events-none absolute inset-y-0 right-0 z-[2] w-full md:w-[58%] lg:w-[55%] flex items-end justify-end"
+    class="pointer-events-none relative order-last z-[2] mt-6 flex h-[62vh] w-full items-end justify-end md:absolute md:inset-y-0 md:right-0 md:order-none md:mt-0 md:h-auto md:w-[58%] lg:w-[55%]"
   >
     <!-- Soft halo behind the portrait -->
     <span class="pointer-events-none absolute top-1/2 right-[8%] -translate-y-1/2 w-[80%] aspect-square rounded-full bg-gradient-to-br from-teal-glow/25 via-brand/20 to-transparent blur-3xl"></span>
@@ -126,7 +131,7 @@ const {
   </div>
 
   <!-- LAYER 3 — kinetic text -->
-  <div class="relative z-10 container-default w-full">
+  <div class="relative z-10 container-default w-full pt-[max(12px,calc((100vh_-_700px)/3.5))] md:pt-0">
     <div class="max-w-2xl md:max-w-[52%]">
       <p class="hero-line eyebrow text-xs md:text-sm uppercase tracking-[0.28em] font-medium text-brand-hover">
         {eyebrow}
@@ -199,5 +204,11 @@ const {
   /* Make sure the portrait sits naturally on mobile — wider columns let it spill in */
   @media (max-width: 767px) {
     section { padding-bottom: 0; }
+    /* Phones: headline, text and Book button are there from the first frame. */
+    .hero-line {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
   }
 </style>

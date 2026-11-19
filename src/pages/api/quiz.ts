@@ -16,9 +16,10 @@ import { z } from 'zod';
 import { upsertContact, applyTag, addNote, sendContactEmail, sendContactSms, consentRecord, GhlError } from '@lib/ghl';
 import { sendFallbackEmail } from '@lib/notify';
 import { verifyRequest } from '@lib/turnstile';
-import { visitorStatus, claimSubmission, type D1Like } from '@lib/guide-limits';
+import { visitorStatus, claimSubmission, releaseSubmission, type D1Like } from '@lib/guide-limits';
 import { attributionSchema, attributionFields, attributionLine, isFacebookOrInstagram, FB_IG_TAG } from '@lib/attribution';
 import { QUIZ_VALUES, answersToTags } from '@lib/quiz';
+import { BAD_REQUEST, guard, isRecord } from '@lib/api-guard';
 
 export const prerender = false;
 
@@ -128,17 +129,39 @@ function successResponse(isFormPost: boolean, status: number, extra: Record<stri
   return jsonResponse(status, { ok: true, ...extra });
 }
 
-export const POST: APIRoute = async ({ request }) => {
+// If the lead was not saved (an unexpected error, or a 5xx answer), free the
+// submission id so the visitor's retry is processed instead of being answered
+// "already received".
+// ponytail: a retry that lands WHILE the first attempt is still running is still
+// answered as a duplicate; needs pending/done states if that ever shows up in logs.
+const handle: APIRoute = async (ctx) => {
+  const claim: { release?: () => Promise<void> } = {};
+  let res: Response | undefined;
+  try {
+    res = await capture(ctx.request, claim);
+    return res;
+  } finally {
+    if (!res || res.status >= 500) {
+      await claim.release?.().catch((err) => console.error('[quiz] could not release submission id', err));
+    }
+  }
+};
+
+async function capture(request: Request, claim: { release?: () => Promise<void> }): Promise<Response> {
   const contentType = request.headers.get('content-type') ?? '';
   const isFormPost = !contentType.includes('application/json');
 
-  let body: Record<string, unknown> = {};
+  // Unreadable body, or JSON that is not an object (null, a list, a bare word): 400.
+  let body: unknown;
   try {
     body = await readBody(request);
   } catch {
+    body = undefined;
+  }
+  if (!isRecord(body)) {
     return isFormPost
       ? htmlPage(400, { heading: 'Hmm, that didn’t go through.', message: 'Please go back and try again, or email dodiekendall@gmail.com.' })
-      : jsonResponse(400, { error: 'Invalid request body' });
+      : jsonResponse(400, BAD_REQUEST);
   }
 
   // Honeypot FIRST — before zod. Any non-empty value silently succeeds.
@@ -168,11 +191,16 @@ export const POST: APIRoute = async ({ request }) => {
   // its work: answer success without capturing or notifying twice.
   const db = (env as { LEAD_DB?: unknown }).LEAD_DB as D1Like | undefined;
   if (db && data.submissionId) {
+    let owned = true;
     const isNew = await claimSubmission(db, data.submissionId).catch((err) => {
       console.error('[quiz] submission dedupe check failed, continuing', err);
+      owned = false;
       return true;
     });
     if (!isNew) return successResponse(isFormPost, 200, { duplicate: true });
+    const id = data.submissionId;
+    // Only free an id this request really claimed (not one the failed check skipped).
+    if (owned) claim.release = () => releaseSubmission(db, id);
   }
   // Each quiz emails and texts Dodie. The lead is always captured; over the cap (or
   // with the limiter down) the confirmation email and Dodie's email/SMS are skipped.
@@ -320,7 +348,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   return successResponse(isFormPost, 200);
-};
+}
 
 // --- Email bodies (plain, branded; no user input echoed beyond the first name,
 //     which is escaped to keep the HTML safe). ---
@@ -349,3 +377,5 @@ function dodieAlertHtml(data: { firstName: string; email: string; phone?: string
     <p>Their answers are also tagged on the contact record (tags starting <code>quiz-</code>). Reach out personally.</p>
   </div>`;
 }
+
+export const POST: APIRoute = guard('quiz', handle);

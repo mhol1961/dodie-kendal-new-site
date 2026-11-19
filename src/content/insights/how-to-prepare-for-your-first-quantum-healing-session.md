@@ -12,7 +12,7 @@ Preparation for a [QHHT session](/qhht) is mostly internal, not logistical. Ther
 
 This is the single most important thing.
 
-QHHT is a conversation with the deepest part of you. The conversation works because *you* set the agenda. The questions you bring are the doorways through which the Subconscious will speak.
+QHHT is [a conversation with the deepest part of you](/insights/past-life-regression-vs-qhht). The conversation works because *you* set the agenda. The questions you bring are the doorways through which the Subconscious will speak.
 
 Three days before our pre-session call, I'll send you a prep guide with a short prompt: write down every question you'd ask if you knew you had a long, uninterrupted conversation with the part of yourself that has all the answers. Don't filter. Let it be messy. Then put the list down for a day. Come back. Edit. Cross some off. Add others.
 
@@ -20,7 +20,7 @@ By the time we talk, you'll have the questions that *feel* right. Bring as many 
 
 ## The night before: sleep
 
-Real, full sleep. Aim for 8 hours if you can. The Theta brainwave state you'll spend most of the session in is already a deeply rested state. Coming in tired risks dropping all the way to sleep instead of staying in the productive threshold.
+Real, full sleep. Aim for 8 hours if you can. The [Theta brainwave state](/insights/what-happens-in-a-qhht-session) you'll spend most of the session in is already a deeply rested state. Coming in tired risks dropping all the way to sleep instead of staying in the productive threshold.
 
 If you're a poor sleeper, that's fine. We work with what you have. But if you can give yourself the gift of one good night's sleep, this is the night.
 

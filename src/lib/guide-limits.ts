@@ -109,3 +109,8 @@ export async function claimSubmission(db: D1Like, id: string, now = Date.now()):
     .first<{ id: string }>();
   return row !== null;
 }
+
+/** Free a submission id whose work failed, so the visitor's retry is processed again. */
+export async function releaseSubmission(db: D1Like, id: string): Promise<void> {
+  await db.prepare('DELETE FROM form_submissions WHERE id = ?1').bind(id).run();
+}

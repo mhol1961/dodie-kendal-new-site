@@ -20,6 +20,7 @@ import { verifyRequest } from '@lib/turnstile';
 import { attributionSchema, attributionFields, attributionLine, isFacebookOrInstagram, FB_IG_TAG } from '@lib/attribution';
 import { optinToken, confirmUrl } from '@lib/optin';
 import { claimGuideEmail, releaseGuideEmail, visitorStatus, type D1Like } from '@lib/guide-limits';
+import { BAD_REQUEST, guard, isRecord } from '@lib/api-guard';
 
 export const prerender = false;
 
@@ -48,19 +49,21 @@ const honeypotKey = 'website';
 const json = (status: number, body: Record<string, unknown>) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
-export const POST: APIRoute = async ({ request, locals, redirect }) => {
+const handle: APIRoute = async ({ request, locals, redirect }) => {
   // Without JavaScript the form posts natively and no Turnstile token can exist,
   // so there is nothing safe to capture: hand over the (public) guide instead.
   if (!(request.headers.get('content-type') ?? '').includes('application/json')) {
     return redirect(GUIDE_PATH, 303);
   }
 
-  let body: Record<string, unknown> = {};
+  // Unreadable JSON, or JSON that is not an object (null, a list, a bare word): 400.
+  let body: unknown;
   try {
-    body = (await request.json()) as Record<string, unknown>;
+    body = await request.json();
   } catch {
-    return json(400, { error: 'Invalid JSON' });
+    body = undefined;
   }
+  if (!isRecord(body)) return json(400, BAD_REQUEST);
 
   // Honeypot FIRST — before zod. Any non-empty value silently 200s.
   const trap = body[honeypotKey];
@@ -275,3 +278,5 @@ function guideEmailHtml(firstName: string | undefined, buttonUrl: string, needsC
     <p style="font-size:13px;color:#7a6e66;">If the button does not work, copy this link into your browser: ${buttonUrl}</p>
   </div>`;
 }
+
+export const POST: APIRoute = guard('lead-magnet', handle);

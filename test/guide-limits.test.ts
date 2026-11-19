@@ -12,6 +12,7 @@ import {
   IP_MAX_PER_HOUR,
   visitorStatus,
   claimSubmission,
+  releaseSubmission,
   type D1Like,
 } from '../src/lib/guide-limits.ts';
 
@@ -125,4 +126,12 @@ test('a submission id is processed once; a retry with the same id is recognised'
   assert.equal(await claimSubmission(db, id, T0 + 1000), false);
   assert.equal(await claimSubmission(db, 'a6f1c2a5-0d0e-4a9b-9c55-1d2f3e4a5b6c', T0), true);
   assert.equal(await claimSubmission(db, id, T0 + DAY + 1), true, 'expires after a day');
+});
+
+test('a released submission id can be claimed again (failed attempt, then retry)', async () => {
+  const db = d1();
+  const id = '6f1c2a54-0d0e-4a9b-9c55-1d2f3e4a5b6c';
+  assert.equal(await claimSubmission(db, id, T0), true);
+  await releaseSubmission(db, id);
+  assert.equal(await claimSubmission(db, id, T0 + 1000), true);
 });

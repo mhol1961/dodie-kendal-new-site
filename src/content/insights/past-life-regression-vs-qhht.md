@@ -38,7 +38,7 @@ If you have a very specific past-life curiosity, say, an unexplained phobia or a
 
 ## When QHHT might be the better fit
 
-If you're sitting with a constellation of questions about your current life, *Why does this keep happening? What's my purpose? Why does my body do this? What am I missing?*, and you want a single conversation that can address all of them from the same vantage point, QHHT is probably what you want.
+If you're [sitting with a constellation of questions](/insights/how-to-prepare-for-your-first-quantum-healing-session) about your current life, *Why does this keep happening? What's my purpose? Why does my body do this? What am I missing?*, and you want a single conversation that can address all of them from the same vantage point, QHHT is probably what you want.
 
 ## Both are complementary, not medical
 
@@ -46,6 +46,6 @@ Worth saying clearly: neither modality is a substitute for medical or psychologi
 
 ## If you're curious
 
-I offer [QHHT sessions](/qhht) in person at my Stuart, FL studio. Plan for about five hours together. If a session feels right, you can [book here](/book). If you want to talk through whether it's a good fit for what you're working on, [send me a note](/contact).
+I offer [QHHT sessions](/qhht) in person at my Stuart, FL studio. Plan for [about five hours together](/insights/what-happens-in-a-qhht-session). If a session feels right, you can [book here](/book). If you want to talk through whether it's a good fit for what you're working on, [send me a note](/contact).
 
 [Dodie](/about)

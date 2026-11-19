@@ -2,8 +2,10 @@
 // See ADR-003 for the rationale and provider selection (Resend).
 
 export class NotifyError extends Error {
-  constructor(public status: number, message: string) {
+  status: number;
+  constructor(status: number, message: string) {
     super(message);
+    this.status = status;
     this.name = 'NotifyError';
   }
 }
@@ -31,16 +33,21 @@ function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;');
 }
 
+/** A blank optional field (undefined) has no JSON form; show it as empty, never throw. */
+function show(v: unknown): string {
+  return typeof v === 'string' ? v : (JSON.stringify(v) ?? '');
+}
+
 function renderPayload(payload: Record<string, unknown>): { html: string; text: string } {
   const entries = Object.entries(payload);
   const rows = entries
-    .map(([k, v]) => {
-      const value = typeof v === 'string' ? v : JSON.stringify(v);
-      return `<tr><td style="padding:6px 12px 6px 0;font-weight:600;vertical-align:top;">${escapeHtml(k)}</td><td style="padding:6px 0;white-space:pre-wrap;">${escapeHtml(value)}</td></tr>`;
-    })
+    .map(
+      ([k, v]) =>
+        `<tr><td style="padding:6px 12px 6px 0;font-weight:600;vertical-align:top;">${escapeHtml(k)}</td><td style="padding:6px 0;white-space:pre-wrap;">${escapeHtml(show(v))}</td></tr>`
+    )
     .join('');
   const html = `<table style="font-family:system-ui,sans-serif;font-size:14px;border-collapse:collapse;">${rows}</table>`;
-  const text = entries.map(([k, v]) => `${k}: ${typeof v === 'string' ? v : JSON.stringify(v)}`).join('\n');
+  const text = entries.map(([k, v]) => `${k}: ${show(v)}`).join('\n');
   return { html, text };
 }
 

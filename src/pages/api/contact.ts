@@ -12,6 +12,7 @@ import { verifyRequest } from '@lib/turnstile';
 import { visitorStatus } from '@lib/guide-limits';
 import { attributionSchema, attributionFields, attributionLine, isFacebookOrInstagram, FB_IG_TAG } from '@lib/attribution';
 import { CONTACT_GOALS } from '@lib/quiz';
+import { BAD_REQUEST, guard, isRecord } from '@lib/api-guard';
 
 export const prerender = false;
 
@@ -35,16 +36,20 @@ const TRANSACTIONAL_TEXT =
 const MARKETING_TEXT =
   'By checking this box, I consent to receive marketing and promotional messages including special offers, discounts, new product updates among others, from Dodie Kendall QHHT at the phone number provided. Frequency may vary. Message & data rates may apply. Text HELP for assistance, reply STOP to opt out.';
 
-export const POST: APIRoute = async ({ request }) => {
+const handle: APIRoute = async ({ request }) => {
   // The form needs JavaScript (Turnstile), so a native form post can't be verified.
   if (!(request.headers.get('content-type') ?? '').includes('application/json')) {
     return new Response(JSON.stringify({ error: 'JSON only' }), { status: 415 });
   }
-  let body: Record<string, unknown> = {};
+  // Unreadable JSON, or JSON that is not an object (null, a list, a bare word): 400.
+  let body: unknown;
   try {
-    body = (await request.json()) as Record<string, unknown>;
+    body = await request.json();
   } catch {
-    return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400 });
+    body = undefined;
+  }
+  if (!isRecord(body)) {
+    return new Response(JSON.stringify(BAD_REQUEST), { status: 400 });
   }
 
   // Honeypot FIRST — before zod. Any non-empty value silently 200s so bots can't
@@ -189,3 +194,5 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 };
+
+export const POST: APIRoute = guard('contact', handle);
