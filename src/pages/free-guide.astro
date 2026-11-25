@@ -29,7 +29,7 @@ const seo = getSeo({
   path: '/free-guide',
   title: 'Free Guide: Before Your First QHHT Session',
   description:
-    'A free, plain-language guide to your first QHHT session: what the relaxed state feels like, how to shape your questions, and what to bring. From Dodie Kendall.',
+    'A free guide to your first QHHT session: how it works, 4 things to do before you go, and a worksheet for your intention and your questions. From Dodie Kendall.',
   noIndex: true,
 });
 
@@ -38,23 +38,18 @@ const schemas = [qhhtService(), breadcrumb([{ name: 'Free guide' }])];
 const inside = [
   {
     number: '01',
-    title: 'What the relaxed state actually feels like',
-    body: 'Not asleep, not unconscious, not out of control. A plain description of the in-between place, so nothing about session day surprises you.',
+    title: 'How QHHT works',
+    body: 'A simple picture of the two sides of your brain: the busy gatekeeper and the big picture visionary. As you relax, the gate gently opens and the visionary takes the lead.',
   },
   {
     number: '02',
-    title: 'How to shape your guiding questions',
-    body: 'The single thing that changes a session most. Most people arrive with one big question. This walks you through finding the others, and you can bring as many as you want.',
+    title: 'The 4 things to do before your session',
+    body: 'Release all expectations. Say the very first thing that comes to mind. Trust the process. Be specific with your intent. Each one comes with something small to try.',
   },
   {
     number: '03',
-    title: 'Day-of: what to eat, wear, and bring',
-    body: 'Small, practical things that make a five-hour session comfortable rather than something you have to endure.',
-  },
-  {
-    number: '04',
-    title: 'What tends to unfold in the week after',
-    body: 'You leave with the audio recording. What people notice in the days that follow, and how to sit with it.',
+    title: 'Your intention worksheet',
+    body: 'A quiet page to write on. What you most want to understand, what you are ready to release, and the questions you will bring. Fill it in and take it with you.',
   },
 ];
 ---
@@ -77,10 +72,10 @@ const inside = [
           </h1>
 
           <p class="order-1 mt-6 max-w-prose text-lg leading-relaxed text-ink-secondary md:order-none">
-            A short, plain-language guide to your first Quantum Healing Hypnosis session.
-            What the deeply relaxed state actually feels like. How to shape the questions
-            you bring. What to eat and wear that day. And what tends to unfold in the week
-            after you go home with the recording.
+            A short, warm guide to your first Quantum Healing Hypnosis session. How it
+            works, and the part each side of your brain plays. Four simple things to do
+            before your session. And a worksheet to help you write down your intention
+            and the questions you want to bring.
           </p>
 
           <form
@@ -139,7 +134,7 @@ const inside = [
             <source srcset="/lead-magnet-cover.webp" type="image/webp" />
             <img
               src="/lead-magnet-cover.jpg"
-              alt="Cover of Dodie Kendall's free prep guide: Before your session."
+              alt="4 Things You Must Do Before Your First QHHT Session, free guide by Dodie Kendall"
               width="768"
               height="994"
               class="h-auto w-full rotate-[-3deg] rounded-lg shadow-[0_30px_60px_-20px_oklch(0.18_0.018_240_/_0.45)] transition-transform duration-500 hover:rotate-0"
@@ -176,7 +171,7 @@ const inside = [
         </p>
       </header>
 
-      <ol class="grid gap-8 md:grid-cols-2 md:gap-10" role="list">
+      <ol class="grid gap-8 md:grid-cols-3" role="list">
         {inside.map((item) => (
           <li class="relative rounded-lg border border-border-subtle bg-bg-raised p-7 shadow-sm">
             <p class="font-display text-5xl leading-none text-brand/30">{item.number}</p>

@@ -271,7 +271,7 @@ function guideEmailHtml(firstName: string | undefined, buttonUrl: string, needsC
     <p>Thank you for asking for the guide. Here it is:</p>
     <p><a href="${buttonUrl}" style="display:inline-block;background:#c2604f;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:999px;font-family:system-ui,sans-serif;font-size:15px;">${button}</a></p>
     ${confirmLine}
-    <p>It walks through what the deeply relaxed state feels like, how to shape the questions you bring, what to eat, wear and bring on the day, and what tends to unfold in the week after.</p>
+    <p>It explains how QHHT works and the part each side of your brain plays. It walks you through 4 things to do before your session: release all expectations, say the very first thing that comes to mind, trust the process, and be specific with your intent. The last page is a worksheet for your intention and your questions.</p>
     <p>Read it at your own pace. If questions come up, you can simply reply to this email. And when it feels right, you can book a session at
       <a href="https://dodiekendall.com/book" style="color:#c2604f;">dodiekendall.com/book</a>.</p>
     <p>With warmth,<br/>Dodie Kendall<br/>QHHT Practitioner · Stuart, FL</p>
